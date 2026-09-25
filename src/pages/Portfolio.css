@@ -1,0 +1,129 @@
+.portfolio-page {
+  max-width: 1300px;
+  margin-inline: auto;
+  padding: 0 28px 60px;
+}
+
+/* Hero */
+.portfolio-hero {
+  padding: 52px 0 36px;
+}
+.portfolio-hero .eyebrow { margin-bottom: 14px; }
+.portfolio-hero-title {
+  color: #809719;
+  font-size: clamp(48px, 6vw, 86px);
+  font-weight: 800;
+  letter-spacing: -0.065em;
+  line-height: 0.96;
+  margin: 0 0 22px;
+}
+.portfolio-hero-desc {
+  max-width: 520px;
+  color: #3a3e36;
+  font-size: 16px;
+  line-height: 1.65;
+  letter-spacing: -0.3px;
+}
+
+/* Case studies section */
+.case-studies { margin-top: 60px; }
+.case-studies-intro { margin-bottom: 28px; }
+.case-studies-intro .eyebrow { margin-bottom: 8px; }
+
+.case-studies-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.case-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--paper);
+  overflow: hidden;
+  transition: box-shadow var(--dur-base), transform var(--dur-base);
+}
+.case-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+/* Brand colour header strip */
+.case-card-brand {
+  display: grid;
+  place-items: center;
+  height: 120px;
+  font-family: Georgia, serif;
+}
+.case-moonbliss  .case-card-brand { background: #443b68; }
+.case-kesha      .case-card-brand { background: #f2d9d7; }
+.case-sol        .case-card-brand { background: #133629; }
+.case-bare-logic .case-card-brand { background: #f0eeef; }
+.case-aii        .case-card-brand { background: #020403; }
+.case-nothing-else .case-card-brand { background: #d9d6d7; }
+
+.case-wordmark {
+  font-family: Georgia, serif;
+  font-size: 26px;
+  line-height: 1;
+  text-align: center;
+}
+/* Reuse venture colour tokens */
+.case-wordmark.venture-moonbliss    { color: #e8dfef; font-size: 22px; letter-spacing: -0.6px; }
+.case-wordmark.venture-kesha        { color: #2a1617; font-size: 22px; }
+.case-wordmark.venture-sol          { color: #efd5b7; font-size: 42px; font-family: 'DM Sans', sans-serif; font-weight: 500; letter-spacing: -2px; }
+.case-wordmark.venture-bare-logic   { color: #191719; font-size: 28px; letter-spacing: -1px; }
+.case-wordmark.venture-aii          { color: #f7f7f5; font-size: 42px; font-family: Arial, sans-serif; font-style: italic; font-weight: 500; letter-spacing: -4px; }
+.case-wordmark.venture-nothing-else { color: #242124; font-size: 22px; letter-spacing: -0.7px; }
+
+.case-card-body {
+  padding: 22px 24px 24px;
+}
+.case-card-body .eyebrow { margin-bottom: 6px; }
+.case-card-body h3 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
+}
+.case-card-body p {
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.case-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* Portfolio CTA */
+.portfolio-cta {
+  margin-top: 64px;
+  padding: 52px 56px;
+  border-radius: var(--radius-xl);
+  background: var(--dark-bg);
+  color: #fff;
+  text-align: center;
+}
+.portfolio-cta .eyebrow { color: var(--accent); margin-bottom: 12px; }
+.portfolio-cta h2 {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1.06;
+  margin-bottom: 28px;
+}
+
+/* Responsive */
+@media (max-width: 1023px) {
+  .case-studies-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 767px) {
+  .portfolio-page { padding-inline: 18px; }
+  .portfolio-hero { padding-top: 36px; }
+  .portfolio-hero-title { font-size: clamp(42px, 11vw, 62px); }
+  .case-studies-grid { grid-template-columns: 1fr; }
+  .portfolio-cta { padding: 40px 22px; }
+}

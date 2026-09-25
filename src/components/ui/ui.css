@@ -1,0 +1,145 @@
+/* ─── Shared UI Components ──────────────────────────────────── */
+
+/* Button */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 22px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.btn svg { transition: transform var(--dur-fast) var(--ease-out); }
+.btn:hover { background: #eef1e6; border-color: #879369; }
+.btn:hover svg { transform: translate(2px, -2px); }
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #1e2618;
+}
+.btn-primary:hover {
+  border-color: var(--accent-hover);
+  background: var(--accent-hover);
+}
+
+.btn-dark {
+  border-color: #4a5244;
+  background: transparent;
+  color: #e8eee3;
+}
+.btn-dark:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn-sm {
+  min-height: 36px;
+  padding: 0 16px;
+  font-size: 11px;
+  gap: 9px;
+}
+
+/* Icon button */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background var(--dur-fast), border-color var(--dur-fast);
+}
+.icon-btn:hover { background: #eaf0db; border-color: #b3c87c; }
+
+/* Eyebrow label */
+.eyebrow {
+  display: inline-block;
+  color: #617319;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.2px;
+  line-height: 1.3;
+}
+
+/* Section heading */
+.section-heading {
+  color: var(--ink);
+  font-size: clamp(24px, 3vw, 38px);
+  font-weight: 700;
+  letter-spacing: -1.2px;
+  line-height: 1.2;
+}
+
+/* Pill tag */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border: 1px solid #d0d8b8;
+  border-radius: var(--radius-pill);
+  background: #eef3dc;
+  color: #4a5a18;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--border);
+  border: 0;
+  margin: 0;
+}
+
+/* Skip link */
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 200;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform 200ms;
+}
+.skip-link:focus { transform: translateY(0); }
+
+/* Scroll cue */
+.scroll-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-light);
+  font-size: 10px;
+  text-decoration: none;
+}
+.scroll-cue svg { transition: transform var(--dur-fast); }
+.scroll-cue:hover svg { transform: translateY(3px); }

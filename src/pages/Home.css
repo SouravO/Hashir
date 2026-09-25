@@ -1,0 +1,19 @@
+.home-page { }
+
+.home-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Each section sits in its own visual "block" */
+.home-section-block {
+  padding: 80px 28px;
+}
+.home-section-block + .home-section-block {
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 767px) {
+  .home-section-block { padding: 56px 18px; }
+}

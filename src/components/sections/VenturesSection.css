@@ -1,0 +1,147 @@
+/* ─── Ventures Strip ──────────────────────────────────────────── */
+.ventures-strip {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  align-items: center;
+  min-height: 140px;
+  border-radius: var(--radius-xl);
+  background: var(--dark-bg);
+  color: #f6f7f3;
+  overflow: hidden;
+}
+
+/* Intro */
+.ventures-strip-intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: stretch;
+  padding: 28px 24px;
+  border-right: 1px solid #2e3530;
+  flex-shrink: 0;
+}
+.venture-eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.ventures-strip-intro h2 {
+  margin: 0 0 14px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.38;
+  letter-spacing: -0.3px;
+}
+.ventures-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-size: 9px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  transition: color var(--dur-fast);
+}
+.ventures-all:hover { color: var(--accent-hover); }
+
+/* ─── Marquee ─────────────────────────────────────────────────── */
+.ventures-marquee-wrap {
+  overflow: hidden;
+  /* mask left/right edges for smooth fade */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.ventures-marquee {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  padding: 18px 12px;
+  animation: marquee-scroll 22s linear infinite;
+}
+.ventures-marquee-wrap:hover .ventures-marquee {
+  animation-play-state: paused;
+}
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Tiles */
+.venture-tile {
+  display: grid;
+  place-items: center;
+  width: 120px;
+  height: 80px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 6px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 18px;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 200ms var(--ease-out), filter 200ms, box-shadow 200ms;
+}
+.venture-tile:hover {
+  transform: scale(1.06) translateY(-2px);
+  filter: brightness(1.12);
+  box-shadow: 0 8px 22px #00000050;
+}
+
+/* Per-brand colours */
+.venture-tile--moonbliss    { background: #443b68; color: #e8dfef; font-size: 15px; letter-spacing: -0.4px; }
+.venture-tile--kesha        { background: #f2d9d7; color: #2a1617; font-size: 17px; }
+.venture-tile--sol          { background: #133629; color: #efd5b7; font-family: 'DM Sans', sans-serif; font-size: 32px; font-weight: 500; letter-spacing: -1.5px; }
+.venture-tile--bare-logic   { background: #f0eeef; color: #191719; font-size: 21px; letter-spacing: -0.8px; }
+.venture-tile--aii          { background: #020403; color: #f7f7f5; font-family: Arial, sans-serif; font-size: 32px; font-style: italic; font-weight: 500; letter-spacing: -3px; }
+.venture-tile--nothing-else { background: #d9d6d7; color: #242124; font-size: 17px; letter-spacing: -0.5px; }
+
+.sol-period   { color: #ea9b5c; }
+.aii-letters  { position: relative; }
+.aii-letters::after {
+  content: '';
+  position: absolute;
+  top: 5px; right: 0;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ─── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .ventures-strip { grid-template-columns: 180px 1fr; }
+  .ventures-strip-intro { padding: 22px 18px; }
+  .venture-tile { width: 100px; height: 72px; }
+  .venture-tile--sol, .venture-tile--aii { font-size: 26px; }
+}
+@media (max-width: 700px) {
+  .ventures-strip { grid-template-columns: 1fr; }
+  .ventures-strip-intro {
+    border-right: 0;
+    border-bottom: 1px solid #2e3530;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 20px;
+    padding: 18px 20px;
+  }
+  .ventures-strip-intro h2 { display: none; }
+  .ventures-all { margin-top: 0; }
+  .ventures-marquee-wrap { padding-block: 0; }
+  .ventures-marquee { padding: 16px 10px; gap: 10px; }
+  .venture-tile { width: 90px; height: 68px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ventures-marquee { animation: none; }
+}

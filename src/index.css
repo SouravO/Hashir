@@ -4,37 +4,144 @@
 @import '@fontsource/dm-sans/latin-700.css';
 @import '@fontsource/dm-sans/latin-800.css';
 
+/* ─── Design Tokens ─────────────────────────────────────────── */
 :root {
   font-family: 'DM Sans', Arial, sans-serif;
-  color: #171a17;
-  background: #f8f9f6;
+  color-scheme: light;
+
+  /* Palette */
+  --accent:        #a4be2d;
+  --accent-strong: #7c9318;
+  --accent-hover:  #b3cc35;
+  --ink:           #171a17;
+  --ink-light:     #3a3e36;
+  --muted:         #72766f;
+  --paper:         #f8f9f6;
+  --paper-alt:     #f2f3ef;
+  --border:        #e7e9e2;
+  --border-dark:   #444843;
+  --dark-bg:       #171a1b;
+  --dark-footer:   #202b20;
+
+  /* Spacing scale */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  40px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm:  0 2px 8px #10200814;
+  --shadow-md:  0 8px 32px #10200818;
+  --shadow-lg:  0 24px 80px #10200830;
+
+  /* Transitions */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast:    160ms;
+  --dur-base:    240ms;
+  --dur-slow:    400ms;
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color-scheme: light;
-  --accent: #a4be2d;
-  --accent-strong: #7c9318;
-  --ink: #171a17;
-  --muted: #72766f;
-  --paper: #f8f9f6;
-  --border: #e7e9e2;
 }
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; scrollbar-gutter: stable; }
-body { min-width: 320px; margin: 0; }
+
+/* ─── Reset ─────────────────────────────────────────────────── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+}
+
 body:has(dialog[open]) { overflow: hidden; }
+
+h1, h2, h3, h4, p { margin: 0; }
+
 button, input, textarea, select { font: inherit; }
 button, a, input, textarea { -webkit-tap-highlight-color: transparent; }
-button { color: inherit; }
+button { color: inherit; cursor: pointer; }
 button, a { touch-action: manipulation; }
 a { color: inherit; }
 img { display: block; max-width: 100%; }
 svg { flex-shrink: 0; }
-h1, h2, h3, p { margin: 0; }
-button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 4px; }
+ul { margin: 0; padding: 0; list-style: none; }
+
+/* Focus styles */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 3px;
+}
+
 ::selection { background: #dae6a6; color: #202919; }
+
+/* ─── Page Transitions ──────────────────────────────────────── */
+.page-enter {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 350ms var(--ease-out), transform 350ms var(--ease-out);
+}
+.page-exit {
+  opacity: 1;
+}
+.page-exit-active {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+/* ─── Scroll-reveal utility ─────────────────────────────────── */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+[data-reveal][data-delay="1"] { transition-delay: 80ms; }
+[data-reveal][data-delay="2"] { transition-delay: 160ms; }
+[data-reveal][data-delay="3"] { transition-delay: 240ms; }
+[data-reveal][data-delay="4"] { transition-delay: 320ms; }
+[data-reveal][data-delay="5"] { transition-delay: 400ms; }
+
+/* ─── Reduced motion ────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
 }
