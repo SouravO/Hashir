@@ -43,7 +43,10 @@ export default function Navbar({ onBookCall }) {
     { to: '/about',     label: 'About' },
     { to: '/portfolio', label: 'Portfolio' },
     { to: '/services',  label: 'Services' },
+    { to: '/process',   label: 'Process' },
     { to: '/ventures',  label: 'Ventures' },
+    { to: '/insights',  label: 'Insights' },
+    { to: '/results',   label: 'Results' },
     { to: '/contact',   label: 'Contact' },
   ]
 

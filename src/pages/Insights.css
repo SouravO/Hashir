@@ -1,0 +1,243 @@
+.insights-page {
+  max-width: 1300px;
+  margin-inline: auto;
+  padding: 0 28px 80px;
+}
+
+/* ── Hero ── */
+.insights-hero {
+  padding: 52px 0 36px;
+}
+.insights-hero .eyebrow { margin-bottom: 14px; }
+.insights-hero-title {
+  color: var(--accent-strong);
+  font-size: clamp(48px, 6vw, 88px);
+  font-weight: 800;
+  letter-spacing: -0.065em;
+  line-height: 0.96;
+  margin: 0 0 22px;
+}
+.insights-hero-desc {
+  max-width: 520px;
+  color: var(--ink-light);
+  font-size: 16px;
+  line-height: 1.65;
+  letter-spacing: -0.3px;
+}
+
+/* ── Filter ── */
+.insights-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+.filter-pill {
+  border: 1.5px solid var(--border);
+  background: transparent;
+  border-radius: var(--radius-pill);
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--dur-base) var(--ease-out);
+}
+.filter-pill:hover {
+  border-color: var(--accent);
+  color: var(--ink);
+}
+.filter-pill--active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── Content Layout ── */
+.insights-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── Cards ── */
+.insight-card {
+  position: relative;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--paper);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color var(--dur-base) var(--ease-out),
+              box-shadow var(--dur-base) var(--ease-out),
+              transform var(--dur-base) var(--ease-out);
+}
+.insight-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.insight-card-accent {
+  height: 4px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.insight-card-body {
+  padding: 28px 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.insight-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.insight-category,
+.insight-read-time {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.insight-card-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.insight-card-excerpt {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.insight-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.insight-date {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ── Large (featured) card ── */
+.insight-card--large {
+  flex-direction: row;
+  min-height: 280px;
+}
+.insight-card--large .insight-card-accent {
+  height: auto;
+  width: 6px;
+  flex-shrink: 0;
+}
+.insight-card--large .insight-card-body {
+  padding: 40px 48px;
+}
+.insight-card--large .insight-card-title {
+  font-size: clamp(22px, 2.5vw, 30px);
+  max-width: 600px;
+}
+.insight-card--large .insight-card-excerpt {
+  max-width: 560px;
+  font-size: 15px;
+}
+
+/* ── Grid ── */
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* ── Newsletter ── */
+.insights-newsletter {
+  margin-top: 80px;
+  border-radius: var(--radius-xl);
+  background: var(--dark-bg);
+  color: #fff;
+  padding: 64px 56px;
+}
+.newsletter-inner {
+  max-width: 480px;
+}
+.insights-newsletter .eyebrow {
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.insights-newsletter h2 {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1.0;
+  margin-bottom: 16px;
+}
+.insights-newsletter p {
+  color: #9aab94;
+  font-size: 15px;
+  line-height: 1.65;
+  margin-bottom: 28px;
+}
+.newsletter-form {
+  display: flex;
+  gap: 10px;
+}
+.newsletter-input {
+  flex: 1;
+  padding: 12px 18px;
+  border: 1.5px solid #3a3e36;
+  border-radius: var(--radius-pill);
+  background: #202b20;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--dur-base);
+}
+.newsletter-input::placeholder { color: #6a7a66; }
+.newsletter-input:focus { border-color: var(--accent); }
+
+/* ── Responsive ── */
+@media (max-width: 1023px) {
+  .insights-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 767px) {
+  .insights-page { padding-inline: 18px; }
+  .insights-hero { padding-top: 36px; }
+  .insights-hero-title { font-size: clamp(42px, 11vw, 64px); }
+  .insights-grid { grid-template-columns: 1fr; gap: 14px; }
+  .insight-card--large {
+    flex-direction: column;
+    min-height: auto;
+  }
+  .insight-card--large .insight-card-accent {
+    height: 4px;
+    width: 100%;
+  }
+  .insight-card--large .insight-card-body { padding: 24px 22px; }
+  .insights-newsletter { padding: 40px 22px; }
+  .newsletter-form { flex-direction: column; }
+}
+@media (max-width: 440px) {
+  .insights-filter { gap: 6px; }
+  .filter-pill { padding: 6px 12px; font-size: 12px; }
+  .insight-card-body { padding: 20px 18px; }
+}

@@ -100,6 +100,9 @@ export default function SiteFooter({ portraitSrc, onAboutClick }) {
         <nav className="footer-bar-nav" aria-label="Footer links">
           <Link to="/about">About</Link>
           <Link to="/services">Services</Link>
+          <Link to="/process">Process</Link>
+          <Link to="/insights">Insights</Link>
+          <Link to="/results">Results</Link>
           <Link to="/contact">Contact</Link>
         </nav>
       </div>

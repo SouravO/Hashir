@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import HeroSection     from '../components/sections/HeroSection'
 import ServicesSection  from '../components/sections/ServicesSection'
 import VenturesSection  from '../components/sections/VenturesSection'
+import MarqueeTicker    from '../components/ui/MarqueeTicker'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import './Home.css'
 
@@ -17,6 +18,9 @@ export default function Home({ onBookCall, onServiceSelect, onVentureSelect, onV
 
       {/* Full-viewport hero — only this is visible on load */}
       <HeroSection onBookCall={onBookCall} />
+
+      {/* Live marquee ticker */}
+      <MarqueeTicker />
 
       {/* Sections revealed on scroll */}
       <div className="home-sections">
