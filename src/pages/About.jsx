@@ -51,6 +51,7 @@ const reveals = {
 }
 
 const clipFrom = {
+  none: '[clip-path:inset(0)]',
   bottom: '[clip-path:inset(100%_0_0_0)]',
   top: '[clip-path:inset(0_0_100%_0)]',
   left: '[clip-path:inset(0_100%_0_0)]',
@@ -64,6 +65,7 @@ const connected = ['Positioning', 'Business model', 'Customer value', 'Commercia
 const lenses = [
   {
     id: 'assumption',
+    image: '/slide1.png',
     no: '01',
     title: 'Question the assumption',
     question: 'What are we taking for granted, and what needs to be validated?',
@@ -75,6 +77,7 @@ const lenses = [
   },
   {
     id: 'customer',
+    image: '/slide2.png',
     no: '02',
     title: 'Understand the customer',
     question: 'What does the market actually need, and why would customers choose this solution?',
@@ -86,6 +89,7 @@ const lenses = [
   },
   {
     id: 'logic',
+    image: '/slide3.png',
     no: '03',
     title: 'Test the business logic',
     question: 'Does the value proposition make commercial sense, and can the business support its goals?',
@@ -97,6 +101,7 @@ const lenses = [
   },
   {
     id: 'next',
+    image: '/slide4.png',
     no: '04',
     title: 'Identify the next decision',
     question: 'What matters now, what should happen next, and what evidence should guide the decision?',
@@ -253,26 +258,26 @@ function ClipFrame({ from = 'bottom', delay = 0, duration = 1400, bg = 'bg-[line
   )
 }
 
-function Img({ crop, tone = 'natural', alt = '', priority = false, delay = 0, className = '' }) {
+function Img({ src = IMAGE_SRC, crop, tone = 'natural', alt = '', priority = false, delay = 0, duration = 2400, className = '' }) {
   const priorityProps = priority ? { [FETCH_PRIORITY_PROP]: 'high' } : {}
   return (
     <div className="size-full" style={{ transform: `scale(${crop.zoom})`, transformOrigin: crop.pos }}>
       <img
-        src={IMAGE_SRC}
+        src={src}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
         {...priorityProps}
         decoding="async"
         draggable={false}
         onError={(event) => { event.currentTarget.style.visibility = 'hidden' }}
-        style={{ objectPosition: crop.pos, transitionDelay: delay ? `${delay}ms` : undefined }}
+        style={{ objectPosition: crop.pos, transitionDelay: delay ? `${delay}ms` : undefined, transitionDuration: `${duration}ms` }}
         className={`size-full object-cover ${TONES[tone].img} ${className}`}
       />
     </div>
   )
 }
 
-function Photo({ crop, tone = 'natural', from = 'bottom', delay = 0, duration = 1400, parallax = 0, priority = false, hover = false, alt = '', className = '', children }) {
+function Photo({ src = IMAGE_SRC, crop, tone = 'natural', from = 'bottom', delay = 0, duration = 1400, imageDuration = 2400, parallax = 0, priority = false, hover = false, alt = '', className = '', children }) {
   return (
     <ClipFrame from={from} delay={delay} duration={duration} className={`group/ph ${className}`}>
       <div
@@ -281,11 +286,13 @@ function Photo({ crop, tone = 'natural', from = 'bottom', delay = 0, duration = 
       >
         <div className={`size-full ${hover ? `transition-transform duration-[1400ms] ${ease} motion-safe:group-hover/ph:scale-[1.06]` : ''}`}>
           <Img
+            src={src}
             crop={crop}
             tone={tone}
             alt={alt}
             priority={priority}
             delay={delay}
+            duration={imageDuration}
             className={`scale-[1.2] transition-transform duration-[2400ms] ${ease} group-data-[in=true]/ph:scale-100 motion-reduce:scale-100 motion-reduce:transition-none`}
           />
         </div>
@@ -376,6 +383,7 @@ function Thinking() {
                   className={`absolute inset-0 transition-[opacity,clip-path] duration-[1100ms] ${easeClip} motion-reduce:transition-none ${on ? `z-10 opacity-100 ${lens.clip}` : 'z-0 opacity-0 [clip-path:inset(0_0_0_100%)]'}`}
                 >
                   <Img
+                    src={lens.image}
                     crop={lens.crop}
                     tone={lens.tone}
                     className={`transition-transform duration-[2400ms] ${ease} motion-reduce:transition-none ${on ? 'scale-100' : 'scale-[1.14]'}`}
@@ -448,7 +456,7 @@ export default function About() {
     <main id="main" ref={root} className="overflow-x-clip">
       <section aria-labelledby="about-title" className={`relative isolate overflow-hidden bg-[#101310] text-white lg:grid lg:grid-cols-12 ${heroH}`}>
         <div className={`relative min-h-[64svh] lg:col-span-8 ${heroH}`}>
-          <Photo crop={CROPS.hero} tone="natural" from="left" duration={1500} parallax={0.16} priority alt={IMAGE_ALT} className="absolute inset-0" />
+          <Photo src="/abouthero.png" crop={CROPS.hero} tone="natural" from="left" duration={650} imageDuration={900} parallax={0.16} priority alt={IMAGE_ALT} className="absolute inset-0" />
           <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,#101310_0%,#101310b3_30%,#10131000_65%)]" />
           {/* On desktop the frame stops above the tag bar so its border never disappears underneath it. */}
           <Reveal aria-hidden v="zoom" delay={800} className="absolute inset-4 md:inset-6 lg:bottom-[76px]">
@@ -480,7 +488,7 @@ export default function About() {
             <Reveal aria-hidden v="zoom" delay={900} className="absolute inset-0">
               <span className="absolute inset-0 translate-x-3 translate-y-3 border border-[#a4be2d]" />
             </Reveal>
-            <Photo crop={CROPS.heroInset} tone="muted" from="right" delay={500} duration={1300} className="relative aspect-[4/5] w-full" />
+            <Photo src="/abouthero1.png" crop={CROPS.heroInset} tone="muted" from="right" delay={120} duration={650} imageDuration={900} className="relative aspect-[4/5] w-full" />
           </div>
           <div className="flex flex-col gap-6">
             <Reveal as="p" delay={700} className="max-w-[40ch] text-[15px] leading-[1.7] text-[#dfe6d8]">
@@ -531,7 +539,7 @@ export default function About() {
               {/* On desktop the frame stretches to the height of the text column, so there is no empty area beneath it. */}
               <ClipFrame from="bottom" duration={1300} bg="bg-[#153B2B]" className="relative flex flex-col lg:h-full">
                 <div className="relative m-3 mb-0 aspect-[4/3] md:m-4 md:mb-0 lg:aspect-auto lg:min-h-[340px] lg:flex-1">
-                  <Photo crop={CROPS.storyMain} tone="natural" from="left" delay={150} duration={1500} parallax={0.1} hover className="absolute inset-0" />
+                  <Photo src="/abt3.png" crop={CROPS.storyMain} tone="natural" from="left" delay={150} duration={1500} parallax={0.1} hover className="absolute inset-0" />
                 </div>
                 <ol className="m-0 grid list-none grid-cols-5 p-0 text-white">
                   {thread.map((step, index) => (
@@ -546,7 +554,7 @@ export default function About() {
                 <Reveal aria-hidden v="zoom" delay={900} className="absolute inset-0">
                   <span className="absolute inset-0 -translate-x-2 translate-y-2 border border-[#a4be2d]" />
                 </Reveal>
-                <Photo crop={CROPS.storyInset} tone="tint" from="top" delay={450} duration={1200} parallax={0.14} className="relative aspect-[3/4] w-full" />
+                <Photo src="/abt3.1.png" crop={CROPS.storyInset} tone="tint" from="top" delay={450} duration={1200} parallax={0.14} className="relative aspect-[3/4] w-full" />
               </div>
             </div>
 
@@ -603,7 +611,7 @@ export default function About() {
 
           <article aria-labelledby="principle-one" className="mt-7 grid gap-3 lg:grid-cols-12">
             <div className="lg:col-span-7">
-              <Photo crop={CROPS.principleOne} tone="natural" from="left" duration={1500} parallax={0.1} hover className="relative aspect-[16/10] w-full">
+              <Photo src="/abt6.png?rev=3" crop={CROPS.principleOne} tone="natural" from="left" duration={1500} parallax={0.1} hover className="relative aspect-[16/10] w-full">
                 <Reveal aria-hidden v="x" delay={500} className="absolute bottom-0 left-5 z-10">
                   <span className={`block text-[clamp(110px,17vw,260px)] font-extrabold leading-[.78] tracking-[-.06em] ${strokeLight}`}>01</span>
                 </Reveal>
@@ -626,7 +634,7 @@ export default function About() {
             <ClipFrame from="bottom" duration={1200} bg="bg-[#F2F3EF]" className="relative text-[#101310] lg:col-span-5">
               <article aria-labelledby="principle-two" className="flex h-full flex-col">
                 <div className="relative h-[clamp(150px,15vw,210px)] shrink-0">
-                  <Photo crop={CROPS.principleTwo} tone="tint" from="left" delay={300} duration={1300} parallax={0.1} hover className="absolute inset-0">
+                  <Photo src="/abt4.png?rev=2" crop={CROPS.principleTwo} tone="tint" from="left" delay={300} duration={1300} parallax={0.1} hover className="absolute inset-0">
                     <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,#101310a6,#10131000_70%)]" />
                     <Reveal aria-hidden v="x" delay={600} className="absolute bottom-0 left-5 z-10">
                       <span className={`block text-[clamp(72px,8vw,112px)] font-extrabold leading-[.78] tracking-[-.06em] ${strokeLight}`}>02</span>
@@ -651,7 +659,7 @@ export default function About() {
             </ClipFrame>
 
             <article aria-labelledby="principle-three" className="lg:col-span-7">
-              <Photo crop={CROPS.principleThree} tone="muted" from="right" delay={150} duration={1600} parallax={0.12} hover className="relative h-full min-h-[380px] w-full">
+              <Photo src="/abt5.png?rev=3" crop={CROPS.principleThree} tone="muted" from="right" delay={150} duration={1600} parallax={0.12} hover className="relative h-full min-h-[380px] w-full">
                 <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,#101310e6,#10131000_65%)]" />
                 <Reveal aria-hidden v="x" delay={500} className="absolute right-5 top-3 z-10">
                   <span className={`block text-[clamp(90px,12vw,190px)] font-extrabold leading-[.9] tracking-[-.06em] ${strokeLight}`}>03</span>
@@ -693,7 +701,7 @@ export default function About() {
       </section>
 
       <section aria-labelledby="closing-heading" className="relative isolate flex min-h-[clamp(560px,84svh,820px)] items-end overflow-hidden bg-[#101310] text-white">
-        <Photo crop={CROPS.closing} tone="muted" from="top" duration={2000} parallax={0.14} className="absolute inset-0" />
+        <Photo src="/closingbg.png" crop={CROPS.closing} tone="muted" from="top" duration={2000} parallax={0.14} className="absolute inset-0" />
         <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_right,#101310e6_0%,#101310a6_45%,#153b2b4d_100%)]" />
         <Reveal aria-hidden v="zoom" delay={900} className="absolute inset-4 md:inset-6">
           <span className="absolute inset-0 border border-white/20" />
@@ -718,7 +726,7 @@ export default function About() {
 
           <ClipFrame from="right" delay={350} duration={1300} bg="bg-[#101310]/90" className="relative col-span-12 border border-[#a4be2d]/40 lg:col-span-5">
             <div className="p-6 md:p-8">
-              <Photo crop={CROPS.closingInset} tone="accent" from="left" delay={650} duration={1200} className="relative aspect-[16/7] w-full" />
+              <Photo src="/closing.png" crop={CROPS.closingInset} tone="accent" from="left" delay={650} duration={1200} className="relative aspect-[16/7] w-full" />
               <Reveal as="p" delay={800} className="mt-6 text-[16px] leading-[1.7] text-[#dfe6d8]">
                 Whether the question is where to position a new venture or how to turn a strategy into next quarter’s priorities, the work begins with seeing the situation as it is.
               </Reveal>

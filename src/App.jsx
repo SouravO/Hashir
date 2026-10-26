@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -6,11 +7,26 @@ import About from './pages/About'
 import Ventures from './pages/Ventures'
 import Contact from './pages/Contact'
 
+function ScrollToRouteTarget() {
+  const { pathname, hash } = useLocation()
+
+  useEffect(() => {
+    if (hash) {
+      document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView({ behavior: 'instant' })
+      return
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [pathname, hash])
+
+  return null
+}
+
 export default function App() {
   const { pathname } = useLocation()
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#f8f9f6]">
+      <ScrollToRouteTarget />
       <Navbar />
       <div key={pathname} className="flex-1 animate-page-enter motion-reduce:animate-none">
         <Routes>

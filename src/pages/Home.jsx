@@ -1,15 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowDown, ArrowUpRight } from '@phosphor-icons/react'
+import { ArrowUpRight } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
+import PixelCard from '../components/PixelCard'
 
 /* ---------- Editable content (all taken from the existing site copy) ---------- */
-const metrics = [
-  ['20+', 'Social Media Profiles', 'Designed & Managed'],
-  ['30+', 'Venture & Business', 'Transformations'],
-  ['5+', 'Domains of', 'Experience'],
-  ['20+', 'Business & Startup', 'Plans Delivered'],
-]
-
 const statement = 'Strong ventures are not ideas with a logo. They are a *market understood*, a *business model made clear*, and a plan *carried out* with discipline: strategy, positioning, and execution built as one structure.'
 
 const expertise = [
@@ -142,40 +136,168 @@ function CountUp({ to, suffix = '' }) {
 
 const Arrow = () => <ArrowUpRight size={18} aria-hidden className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
 
-/* ---------- Strategic framework diagram: scattered dots become a structure ---------- */
-const scatter = [[62, 88], [318, 52], [146, 196], [352, 162], [84, 300], [226, 274], [330, 338], [40, 176], [190, 60]]
-const gridPts = [110, 200, 290].flatMap((y) => [110, 200, 290].map((x) => [x, y]))
+/* ---------- Strategic framework visual: a tower built as you scroll ----------
+   `s` runs from 0 to 3 and is tied to the four stages (Discover, Architect, Activate, Scale).
 
-function Blueprint({ stage }) {
-  const fade = (on, d = 0) => ({ opacity: on ? 1 : 0, transition: `opacity 900ms ${EASE} ${d}ms` })
+   0.00         Blank panel (only the corner frame marks).
+   0.00 - 0.95  DISCOVER   Ground line draws in, piles are driven, the foundation slab is poured.
+   0.95 - 1.95  ARCHITECT  The steel frame rises floor by floor (slabs, columns, bracing).
+   1.70 - 2.60  ACTIVATE   Glazing and facade follow the frame up; the two wings are framed and clad.
+   2.60 - 3.00  SCALE      Roof parapets, crown and antenna, lobby entrance, trees,
+                           windows light up and the city skyline appears. Finished building.
+
+   Layout: on desktop (lg+) the visual is a sticky column beside the stages. On phones and tablets it is a
+   sticky panel pinned under the site header while the stages scroll beneath it, so it is visible on every screen.
+*/
+const GROUND = 340
+const FLOOR_H = 24
+const BAY = 28
+const FLOORS = 9
+const PILES = [125, 155, 185, 215, 245, 275]
+const up = (n) => Math.min(1, Math.max(0, n))
+const fade = (v) => ({ opacity: v, transition: 'opacity 350ms ease-out' })
+const grow = (origin, axis, v) => ({ transformOrigin: origin, transform: `${axis}(${v})`, opacity: v, transition: 'transform 350ms ease-out, opacity 350ms ease-out' })
+const CALM = [0.7, 1.45, 2.4, 3] /* representative build states when motion is reduced (one per stage) */
+const captions = ['Breaking ground', 'Foundation laid', 'Structure rising', 'Facade going on', 'Finishing touches', 'Complete']
+const pileLines = PILES.map((x) => `M${x} 352V374`).join('')
+
+/* One block of floors. skel(i) grows the frame of floor i (0 to 1), wall(i) fills it with glass, lit lights the windows, cap draws the roof parapet. */
+function Tower({ x, bays, floors, skel, wall, lit, cap, seed = 0 }) {
+  const w = bays * BAY
+  const top = GROUND - FLOOR_H * floors
+  return (
+    <g>
+      {Array.from({ length: floors }, (_, i) => {
+        const y = GROUND - FLOOR_H * (i + 1)
+        const a = skel(i)
+        const b = wall(i)
+        const posts = Array.from({ length: bays + 1 }, (__, c) => `M${x + c * BAY} ${y}V${y + FLOOR_H}`).join('')
+        return (
+          <g key={i} style={{ transformOrigin: `${x + w / 2}px ${y + FLOOR_H}px`, transform: `scaleY(${a})`, opacity: a, transition: 'transform 350ms ease-out, opacity 350ms ease-out' }}>
+            <rect x={x} y={y} width={w} height={FLOOR_H} fill="#f8f9f6" stroke="none" style={fade(b * 0.07)} />
+            {/* steel bracing: visible on the bare frame, hidden once the glass arrives */}
+            {Array.from({ length: bays }, (__, c) => ((i + c) % 2 === 0
+              ? <path key={`x${c}`} d={`M${x + c * BAY} ${y + FLOOR_H}L${x + (c + 1) * BAY} ${y}`} strokeOpacity=".35" style={fade(a * (1 - b))} />
+              : null))}
+            <path d={`M${x} ${y}H${x + w}${posts}`} />
+            {Array.from({ length: bays }, (__, c) => {
+              const on = (i * 3 + c + seed) % 4 === 0
+              return <rect key={c} x={x + c * BAY + 6} y={y + 7} width={BAY - 12} height={10} fill={on ? '#a4be2d' : '#f8f9f6'} stroke="none" style={fade(b * (on ? 0.2 + 0.7 * lit : 0.16))} />
+            })}
+          </g>
+        )
+      })}
+      <path d={`M${x - 3} ${top}H${x + w + 3}`} strokeWidth="2" style={fade(cap)} />
+    </g>
+  )
+}
+
+function Building({ s }) {
+  const frameP = up((s - 0.95) / 1.0)
+  const built = frameP * FLOORS
+  const groundP = up(s / 0.15)
+  const piles = up((s - 0.2) / 0.4)
+  const slab = up((s - 0.5) / 0.45)
+  const cap = up((s - 2.6) / 0.2)
+  const crown = up((s - 2.6) / 0.25)
+  const door = up((s - 2.65) / 0.2)
+  const trees = up((s - 2.75) / 0.2)
+  const lit = up((s - 2.7) / 0.3)
+  const sky = up((s - 2.5) / 0.4)
+  const capIdx = s < 0.35 ? 0 : s < 0.95 ? 1 : s < 1.95 ? 2 : s < 2.6 ? 3 : s < 2.95 ? 4 : 5
   return (
     <svg viewBox="0 0 400 400" className="h-full w-full" fill="none" stroke="#f8f9f6" strokeWidth="1" aria-hidden>
-      <circle cx="200" cy="200" r="150" strokeDasharray="2 6" strokeOpacity=".5" style={fade(stage === 0)} />
-      <g strokeOpacity=".28" style={fade(stage >= 1, 300)}>
-        <rect x="70" y="70" width="260" height="260" />
-        {[110, 200, 290].map((v) => <path key={v} d={`M${v} 70V330M70 ${v}H330`} />)}
+      <path d="M12 36V12H36M364 12H388V36" strokeOpacity=".5" />
+      <g transform="matrix(1 0 0 1.16 0 -54.4)">
+
+      {/* distant skyline, appears once the tower is done */}
+      <g strokeOpacity=".5" style={fade(sky * 0.5)}>
+        <rect x="14" y="236" width="34" height="104" /><path d="M14 262H48M14 288H48M14 314H48" />
+        <rect x="352" y="226" width="34" height="114" /><path d="M352 252H386M352 278H386M352 304H386" />
       </g>
-      <g stroke="#a4be2d" strokeOpacity=".6" style={{ transformOrigin: '200px 200px', transform: stage >= 3 ? 'scale(1)' : 'scale(.8)', opacity: stage >= 3 ? 1 : 0, transition: `transform 1200ms ${EASE}, opacity 900ms ${EASE}` }}>
-        <rect x="34" y="34" width="332" height="332" />
-        <rect x="8" y="8" width="384" height="384" strokeOpacity=".5" />
+
+      {/* DISCOVER: the scene starts blank. The ground line draws in from the centre, then the soil line */}
+      <path d="M12 340H388" strokeOpacity=".6" style={grow('200px 340px', 'scaleX', groundP)} />
+      <path d="M24 352H376" strokeOpacity=".2" strokeDasharray="2 6" style={grow('200px 352px', 'scaleX', up((s - 0.08) / 0.12))} />
+
+      {/* DISCOVER: piles driven into the ground, then the foundation slab is poured on top */}
+      <g strokeOpacity=".6" strokeWidth="1.5" style={grow('0px 352px', 'scaleY', piles)}><path d={pileLines} /></g>
+      <rect x="118" y="340" width="164" height="12" fill="#f8f9f6" fillOpacity=".12" style={grow('200px 346px', 'scaleX', slab)} />
+
+      {/* ARCHITECT + ACTIVATE: main tower, nine floors. Frame first, then glass follows it up */}
+      <Tower x={130} bays={5} floors={FLOORS} skel={(i) => up(frameP * FLOORS - i)} wall={(i) => up(((s - 1.7) / 0.85) * FLOORS - i)} lit={lit} cap={cap} />
+
+      {/* ACTIVATE: the two wings are framed and clad */}
+      <Tower x={74} bays={2} floors={4} skel={(i) => up(((s - 2) / 0.5) * 4 - i)} wall={(i) => up(((s - 2.3) / 0.4) * 4 - i)} lit={lit} cap={cap} seed={1} />
+      <Tower x={270} bays={2} floors={4} skel={(i) => up(((s - 2) / 0.5) * 4 - i)} wall={(i) => up(((s - 2.3) / 0.4) * 4 - i)} lit={lit} cap={cap} seed={2} />
+
+      {/* SCALE: lobby entrance with canopy */}
+      <g style={fade(door)}>
+        <rect x="188" y="319" width="24" height="21" fill="#171a1b" />
+        <path d="M200 319V340" strokeOpacity=".6" />
+        <path d="M178 314H222" stroke="#a4be2d" strokeWidth="2" />
       </g>
-      <path d="M110 290H200V200H290V110" pathLength="1" strokeDasharray="1" stroke="#a4be2d" strokeWidth="2.5" style={{ strokeDashoffset: stage >= 2 ? 0 : 1, transition: 'stroke-dashoffset 1400ms ease' }} />
-      {gridPts.map(([x, y], i) => {
-        const [px, py] = stage >= 1 ? [x, y] : scatter[i]
-        const hot = stage >= 2 && [6, 4, 2].includes(i)
-        return <circle key={i} r={hot ? 7 : 4.5} fill={hot ? '#a4be2d' : '#f8f9f6'} stroke="none" style={{ transform: `translate(${px}px, ${py}px)`, transition: `transform 1200ms ${EASE} ${i * 50}ms` }} />
-      })}
+
+      {/* SCALE: stepped crown, plant room and antenna with a beacon */}
+      <g style={fade(crown)}>
+        <rect x="160" y="110" width="80" height="14" />
+        <rect x="184" y="98" width="32" height="12" />
+        <path d="M200 98V66" />
+        <circle cx="200" cy="63" r="3.5" fill="#a4be2d" stroke="none" className="animate-pulse motion-reduce:animate-none" />
+      </g>
+
+      {/* SCALE: street trees */}
+      <g style={fade(trees)}>
+        <path d="M62 340V328M338 340V328" />
+        <circle cx="62" cy="320" r="8" strokeOpacity=".7" />
+        <circle cx="338" cy="320" r="8" strokeOpacity=".7" />
+      </g>
+
+      </g>
+
+      {/* caption */}
+      {captions.map((t, k) => <text key={t} x="14" y="388" fill="#a4be2d" stroke="none" fontSize="13" fontWeight="600" style={fade(capIdx === k ? 1 : 0)}>{t}</text>)}
+      <text x="386" y="388" textAnchor="end" fill="#f8f9f6" fillOpacity=".6" stroke="none" fontSize="13">Floors {Math.round(built)} / {FLOORS}</text>
     </svg>
   )
 }
 
 function Framework() {
   const [active, setActive] = useState(0)
+  const [progress, setProgress] = useState(0)
   const refs = useRef([])
+  const stickyRef = useRef(null)
+  /* One scroll loop drives both the active stage and the continuous build progress.
+     Progress is 0 until the first stage reaches the reading line, then one unit per stage, so the building grows with every scroll.
+     Desktop: the reading line is the middle of the screen. Phones/tablets: it sits just below the pinned building panel. */
   useEffect(() => {
-    const io = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) setActive(Number(e.target.dataset.i)) }), { rootMargin: '-45% 0px -45% 0px' })
-    refs.current.forEach((el) => el && io.observe(el))
-    return () => io.disconnect()
+    let raf = 0
+    const run = () => {
+      raf = 0
+      const vh = window.innerHeight
+      let line = vh * 0.5
+      const box = stickyRef.current
+      if (box && window.innerWidth < 1024) {
+        const bottom = (parseFloat(getComputedStyle(box).top) || 0) + box.offsetHeight
+        line = bottom + (vh - bottom) * 0.2
+      }
+      const tops = refs.current.map((el) => (el ? el.getBoundingClientRect().top + 24 : 0))
+      let v = 0
+      let idx = 0
+      for (let i = tops.length - 1; i >= 0; i -= 1) {
+        if (line >= tops[i]) { idx = i; v = i + (i < tops.length - 1 ? Math.min(1, (line - tops[i]) / (tops[i + 1] - tops[i])) : 0); break }
+      }
+      setActive(idx)
+      if (!calm()) {
+        const q = Math.round(v * 50) / 50
+        setProgress((prev) => (Math.abs(prev - q) < 0.01 ? prev : q))
+      }
+    }
+    const queue = () => { if (!raf) raf = requestAnimationFrame(run) }
+    queue()
+    window.addEventListener('scroll', queue, { passive: true })
+    window.addEventListener('resize', queue)
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('scroll', queue); window.removeEventListener('resize', queue) }
   }, [])
   const jump = (i) => refs.current[i]?.scrollIntoView({ behavior: calm() ? 'auto' : 'smooth', block: 'center' })
   return (
@@ -185,24 +307,25 @@ function Framework() {
           <Reveal className={eyebrow}>Strategic framework</Reveal>
           <Heading id="framework-title" lines={['From a loose opportunity', 'to a structure that scales.']} className={h2cls} />
         </header>
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
-          <div className="hidden lg:col-span-5 lg:block">
-            <div className="sticky top-28">
-              <div className="aspect-square bg-[#171a1b] p-6">
-                <Blueprint stage={active} />
+        {/* Mobile/tablet: the visual and the stages share one grid cell, the visual pins to the top while the stages scroll under it. Desktop: two columns. */}
+        <div className="grid lg:grid-cols-12 lg:gap-16">
+          <div className="pointer-events-none z-20 col-start-1 row-start-1 lg:pointer-events-auto lg:z-auto lg:col-span-5">
+            <div ref={stickyRef} className="pointer-events-auto sticky top-16 -mx-5 bg-[#f2f3ef] px-5 pb-3 pt-2 sm:-mx-7 sm:px-7 md:top-[72px] lg:top-28 lg:mx-0 lg:bg-transparent lg:p-0">
+              <div className="h-[min(42svh,340px)] bg-[#171a1b] p-3 sm:p-5 md:h-[min(46svh,460px)] lg:aspect-square lg:h-auto lg:p-6">
+                <Building s={calm() ? CALM[active] : progress} />
               </div>
-              <div className="mt-4 grid grid-cols-4 border-t border-[#171a1b]/20">
+              <div className="mt-4 hidden grid-cols-4 border-t border-[#171a1b]/20 lg:grid">
                 {stages.map(([name], i) => (
                   <button key={name} type="button" onClick={() => jump(i)} aria-label={`Go to stage ${i + 1}: ${name}`} className={`border-t-2 pt-3 text-left text-[13px] font-semibold transition-colors duration-500 -mt-px ${active === i ? 'border-[#7c9318] text-[#171a17]' : 'border-transparent text-[#72766f] hover:text-[#171a17]'}`}>{name}</button>
                 ))}
               </div>
             </div>
           </div>
-          <ol className="lg:col-span-7">
+          <ol className="col-start-1 row-start-1 pt-[calc(min(42svh,340px)_+_3rem)] md:pt-[calc(min(46svh,460px)_+_3rem)] lg:col-span-7 lg:col-start-6 lg:pt-0">
             {stages.map(([name, desc, out], i) => {
               const reached = active >= i
               return (
-                <li key={name} ref={(el) => { refs.current[i] = el }} data-i={i} className="relative pb-14 pl-14 lg:min-h-[48vh] lg:pb-0">
+                <li key={name} ref={(el) => { refs.current[i] = el }} className="relative min-h-[38svh] pb-14 pl-14 lg:min-h-[48vh] lg:pb-0">
                   <span className={`absolute left-0 top-1 z-10 grid size-7 place-items-center rounded-full border text-[11px] font-bold transition-colors duration-700 ${reached ? 'border-[#a4be2d] bg-[#a4be2d] text-[#1e2618]' : 'border-[#c4c9b9] bg-[#f2f3ef] text-[#72766f]'}`}>{i + 1}</span>
                   {i < stages.length - 1 && (
                     <span className="absolute bottom-0 left-[13px] top-9 w-px bg-[#d0d5c6]" aria-hidden>
@@ -254,11 +377,14 @@ function Showcase({ v, i }) {
 function Principle({ title, text, i }) {
   const [ref, seen] = useInView()
   return (
-    <div ref={ref} className={['', 'md:pt-14', 'md:pt-28'][i]}>
-      <div className="h-px bg-[#7c9318]" style={{ transform: seen ? 'scaleX(1)' : 'scaleX(0)', transformOrigin: 'left', transition: `transform 1400ms ${EASE} ${i * 150}ms` }} />
-      <div style={rise(seen, 250 + i * 150)}>
-        <h3 className="mt-6 text-[clamp(24px,2.4vw,32px)] font-bold leading-[1.12] tracking-[-.03em]">{title}</h3>
-        <p className="mt-4 max-w-[380px] text-[15px] leading-[1.65] text-[#555a52]">{text}</p>
+    <div ref={ref} className="group relative flex min-h-[250px] flex-col border border-[#dce1d3] bg-[#f8f9f6] p-6 transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[#bdc98b] hover:shadow-[0_14px_35px_#27300f0c] sm:min-h-[275px] sm:p-8">
+      <div className="mb-7 flex items-center justify-between">
+        <span className="text-sm font-semibold tabular-nums tracking-[.12em] text-[#7c9318]">0{i + 1}</span>
+        <span className="h-px flex-1 bg-[#dce1d3] ml-4" aria-hidden />
+      </div>
+      <div className="mt-auto" style={rise(seen, 180 + i * 100)}>
+        <h3 className="text-[clamp(22px,2.2vw,30px)] font-bold leading-[1.12] tracking-[-.03em]">{title}</h3>
+        <p className="mt-4 max-w-[380px] text-sm leading-[1.7] text-[#555a52] sm:text-[15px]">{text}</p>
       </div>
     </div>
   )
@@ -279,23 +405,21 @@ export default function Home() {
     <main id="main" className="overflow-x-clip font-sans text-[#171a17]">
       {/* 1. Hero */}
       <section id="home" aria-labelledby="hero-title" className="relative flex min-h-[calc(100svh-72px)] flex-col max-[768px]:min-h-[calc(100svh-64px)]">
-        <div className={`${wrap} flex flex-1 flex-col pb-5 pt-8 sm:pt-10 lg:pt-12`}>
-          <div className="grid flex-1 items-center gap-8 lg:grid-cols-12 lg:gap-8">
+        <div className="mx-auto flex w-full max-w-[1720px] flex-1 flex-col px-5 py-10 sm:px-8 sm:py-12 lg:px-12 xl:px-16 2xl:px-20">
+          <div className="grid flex-1 items-center gap-8 lg:grid-cols-12 lg:gap-12 xl:gap-16">
             <div className="lg:col-span-7">
               <div style={rise(ready)}>
-                <h1 id="hero-title" className="text-[clamp(58px,8.5vw,112px)] font-extrabold leading-[.88] tracking-[-.075em]">Hashir Usman</h1>
-                <p className="mt-3 text-[11px] font-semibold uppercase tracking-[.14em] text-[#687060] sm:text-xs">Venture Architect <span aria-hidden>·</span> Business Consultant</p>
+                <h1 id="hero-title" className="text-[clamp(60px,7.8vw,138px)] font-extrabold leading-[.88] tracking-[-.075em]">Hashir Usman</h1>
               </div>
-              <Heading tag="h2" on={ready} delay={120} className="mt-6 text-[clamp(38px,5.2vw,72px)] font-extrabold leading-[.94] tracking-[-.065em]" lines={['Build with clarity.', <span className="text-[#7c9318]">Scale with intention.</span>]} />
-              <p className="mt-5 max-w-[440px] text-[15px] leading-[1.55] text-[#2f332e] sm:text-base" style={rise(ready, 500)}>I help founders and businesses turn opportunities into structured, investable ventures through strategy, systems, brand, and execution.</p>
+              <Heading tag="h2" on={ready} delay={120} className="mt-7 text-[clamp(40px,5vw,88px)] font-extrabold leading-[.94] tracking-[-.065em]" lines={['Build with clarity.', <span className="text-[#7c9318]">Scale with intention.</span>]} />
+              <p className="mt-6 max-w-[600px] text-base leading-[1.6] text-[#2f332e] sm:text-lg xl:text-xl" style={rise(ready, 500)}>Strategy, systems, brand, and execution for founders building lasting ventures.</p>
               <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3" style={rise(ready, 620)}>
-                <Link to="/ventures" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4be2d] bg-[#a4be2d] px-6 text-[13px] font-semibold text-[#1e2618] transition-colors duration-300 hover:border-[#b3cc35] hover:bg-[#b3cc35] active:scale-[.97]">Explore ventures <Arrow /></Link>
-                <Link to="/contact" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4aaa0] px-6 text-[13px] font-semibold transition-colors duration-300 hover:border-[#171a1b] hover:bg-[#171a1b] hover:text-white active:scale-[.97]">Book a call <Arrow /></Link>
-                <a href="#positioning" className="group ml-2 hidden items-center gap-2 text-[11px] text-[#3a3e35] sm:inline-flex">Scroll <ArrowDown size={16} aria-hidden className="animate-bounce-down motion-reduce:animate-none" /></a>
+                <Link to="/ventures" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4be2d] bg-[#a4be2d] px-6 text-[13px] font-semibold text-[#1e2618] transition-colors duration-300 hover:border-[#b3cc35] hover:bg-[#b3cc35] active:scale-[.97]">See what’s cooking <Arrow /></Link>
+                <Link to="/contact" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4aaa0] px-6 text-[13px] font-semibold transition-colors duration-300 hover:border-[#171a1b] hover:bg-[#171a1b] hover:text-white active:scale-[.97]">Got an idea? <Arrow /></Link>
               </div>
             </div>
             <div className="lg:col-span-5">
-              <div className="relative mx-auto aspect-[4/5] w-full max-w-[420px] lg:ml-auto lg:max-h-[min(68svh,600px)] lg:max-w-none" style={{ clipPath: ready ? 'inset(0 0 0 0)' : 'inset(100% 0 0 0)', transition: `clip-path 1500ms ${EASE} 200ms` }}>
+              <div className="relative mx-auto aspect-[4/5] w-full max-w-[520px] lg:ml-auto lg:max-h-[min(72svh,820px)] lg:max-w-none" style={{ clipPath: ready ? 'inset(0 0 0 0)' : 'inset(100% 0 0 0)', transition: `clip-path 1500ms ${EASE} 200ms` }}>
                 <div className={`absolute inset-0 left-[10%] top-[8%] rounded-tl-[20px] bg-[#adca2d] ${dotted}`} aria-hidden />
                 <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full" fill="none" stroke="#171a1b" aria-hidden>
                   <g strokeOpacity=".22">{[100, 200, 300].map((x) => <path key={x} d={`M${x} 0V500`} />)}{[120, 230, 340, 450].map((y) => <path key={y} d={`M0 ${y}H400`} />)}</g>
@@ -306,14 +430,6 @@ export default function Home() {
                 <img className="absolute inset-0 h-full w-full max-w-none object-cover object-top" src="/images/hashir-portrait.webp" srcSet="/images/hashir-portrait-small.webp 480w, /images/hashir-portrait-medium.webp 800w, /images/hashir-portrait.webp 1120w" sizes="(max-width:1023px) 94vw, 40vw" width="1120" height="1400" alt="Portrait of Hashir Usman" fetchPriority="high" />
               </div>
             </div>
-          </div>
-          <div className="mt-6 grid grid-cols-2 border-t border-[#d9ddd1] md:grid-cols-4" aria-label="Experience in numbers">
-            {metrics.map(([n, a, b], i) => (
-              <div key={a} className={`py-5 pr-4 md:px-5 md:first:pl-0 ${i ? 'md:border-l md:border-[#e3e6dd]' : ''} ${i % 2 ? 'pl-4' : ''}`} style={rise(ready, 1000 + i * 90, 16)}>
-                <strong className="mb-1.5 block text-[clamp(26px,3vw,36px)] font-bold leading-none tracking-[-.04em] text-[#7c9318]">{n}</strong>
-                <p className="text-[11px] leading-[1.5] text-[#30372b]">{a}<br />{b}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -345,23 +461,49 @@ export default function Home() {
             </div>
             <Reveal delay={200} className="lg:col-span-4"><p className="max-w-[380px] text-[15px] leading-[1.65] text-[#72766f]">Practical support from shaping the opportunity through to building the systems that help it grow.</p></Reveal>
           </header>
-          <div className="grid border-l border-t border-[#d9ddd1] md:grid-cols-2">
-            {expertise.map((e, i) => (
-              <Reveal key={e.title} delay={(i % 2) * 120} className="border-b border-r border-[#d9ddd1]">
-                <div className="group relative flex h-full min-h-[340px] flex-col p-7 transition-colors duration-500 hover:bg-[#171a1b] sm:p-10">
-                  <div className="flex items-start justify-between">
-                    <span className="text-xs font-bold text-[#7c9318] transition-colors duration-500 group-hover:text-[#a4be2d]">0{i + 1}</span>
-                    <svg viewBox="0 0 64 64" className="size-14 text-[#171a1b] transition-colors duration-500 group-hover:text-[#a4be2d]" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>{glyphs[i]}</svg>
-                  </div>
-                  <h3 className="mt-14 max-w-[420px] text-[clamp(24px,2.4vw,34px)] font-bold leading-[1.1] tracking-[-.035em] transition-colors duration-500 group-hover:text-white">{e.title}</h3>
-                  <p className="mt-4 max-w-[420px] text-[15px] leading-[1.6] text-[#72766f] transition-colors duration-500 group-hover:text-[#b9bfb0]">{e.desc}</p>
-                  <ul className="mt-auto flex flex-wrap gap-y-2 pt-8 text-xs text-[#4a4f47] transition-colors duration-500 group-hover:text-[#d9ddd1]">
-                    {e.tags.map((t) => <li key={t} className="mr-3 border-l border-[#c4c9b9] pl-3 first:border-0 first:pl-0 group-hover:border-white/25">{t}</li>)}
-                  </ul>
-                  <span className="absolute bottom-0 left-0 h-[3px] w-full origin-left scale-x-0 bg-[#a4be2d] transition-transform duration-700 group-hover:scale-x-100" aria-hidden />
-                </div>
-              </Reveal>
-            ))}
+          <div className="grid gap-4 md:grid-cols-2 lg:gap-6">
+            {expertise.map((e, i) => {
+              const baseColor = i === 2 ? '#f2f3ef' : '#f8f9f6'
+              return (
+                <Reveal key={e.title} delay={(i % 2) * 120}>
+                  <PixelCard
+                    colors={['#a4be2d', '#d4e77a', '#7c9318']}
+                    glowColor="#a4be2d"
+                    shape="square"
+                    origin="pointer"
+                    gap={12}
+                    pixelSize={3}
+                    speed={28}
+                    revealDuration={600}
+                    spotlight={0.55}
+                    glow={0.35}
+                    opacity={0.55}
+                    fade={0.45}
+                    trigger="hover"
+                    intro={false}
+                    theme="light"
+                    radius={20}
+                    baseColor={baseColor}
+                    className="rounded-[20px]"
+                  >
+                    <div className="group relative flex h-full min-h-[340px] w-full flex-col p-7 sm:p-10">
+                      <div className="flex items-start justify-between">
+                        <span className="grid size-10 place-items-center rounded-full border border-[#d9ddd1] bg-white/70 text-xs font-bold tabular-nums text-[#7c9318] transition-colors duration-500 group-hover:border-[#a4be2d]/40 group-hover:bg-white/5 group-hover:text-[#a4be2d]">0{i + 1}</span>
+                        <span className="grid size-14 place-items-center rounded-2xl border border-[#e2e6dc] bg-white/70 text-[#171a1b] transition-[background-color,border-color,color,transform] duration-500 group-hover:-translate-y-1 group-hover:border-[#a4be2d]/30 group-hover:bg-[#a4be2d]/10 group-hover:text-[#a4be2d]">
+                          <svg viewBox="0 0 64 64" className="size-9" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>{glyphs[i]}</svg>
+                        </span>
+                      </div>
+                      <h3 className="mt-10 max-w-[420px] text-[clamp(24px,2.4vw,34px)] font-bold leading-[1.1] tracking-[-.035em] text-[#171a17] transition-colors duration-500 group-hover:text-white">{e.title}</h3>
+                      <p className="mt-4 max-w-[420px] text-[15px] leading-[1.6] text-[#72766f] transition-colors duration-500 group-hover:text-[#b9bfb0]">{e.desc}</p>
+                      <ul className="mt-auto flex flex-wrap gap-2 pt-8 text-[11px] text-[#4a4f47] transition-colors duration-500 group-hover:text-[#d9ddd1]">
+                        {e.tags.map((t) => <li key={t} className="rounded-full border border-[#d9ddd1] bg-white/60 px-3 py-1.5 transition-colors duration-500 group-hover:border-white/20 group-hover:bg-white/5">{t}</li>)}
+                      </ul>
+                      <span className="absolute bottom-0 left-8 right-8 h-[3px] rounded-full bg-[#a4be2d] opacity-35 transition-opacity duration-500 group-hover:opacity-100" aria-hidden />
+                    </div>
+                  </PixelCard>
+                </Reveal>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -380,20 +522,26 @@ export default function Home() {
             <Reveal delay={200} className="lg:col-span-4 lg:text-right"><Link to="/ventures" className="group inline-flex items-center gap-2 text-sm font-semibold text-[#617319] transition-colors hover:text-[#171a17]">All ventures <Arrow /></Link></Reveal>
           </header>
           {ventures.map((v, i) => <Showcase key={v.name} v={v} i={i} />)}
+          <div className="mt-16 flex justify-center border-t border-[#d9ddd1] pt-10 sm:mt-20 sm:pt-12">
+            <Link to="/ventures#collection" className="group inline-flex min-h-12 items-center gap-3 rounded-full border border-[#a4be2d] bg-[#a4be2d] px-6 text-sm font-semibold text-[#1e2618] no-underline transition-[transform,background-color] duration-200 hover:scale-[1.02] hover:bg-[#b3cc35] active:scale-[.98]">The full lineup <Arrow /></Link>
+          </div>
         </div>
       </section>
 
       {/* 6. Working principles & impact */}
-      <section aria-labelledby="principles-heading" className="bg-[#f2f3ef] py-24 sm:py-36">
+      <section aria-labelledby="principles-heading" className="bg-[#f2f3ef] py-20 sm:py-24">
         <div className={wrap}>
-          <header className="mb-16 max-w-3xl">
-            <Reveal className={eyebrow}>Working principles</Reveal>
-            <Heading id="principles-heading" lines={['Three commitments', 'behind every engagement.']} className={h2cls} />
+          <header className="mb-10 grid gap-6 md:mb-14 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-8">
+              <Reveal className={eyebrow}>Working principles</Reveal>
+              <Heading id="principles-heading" lines={['Three commitments', 'behind every engagement.']} className={h2cls} />
+            </div>
+            <Reveal delay={180} className="max-w-md text-sm leading-[1.7] text-[#72766f] lg:col-span-4 lg:pb-2 lg:text-base">A practical standard for every decision, from defining the opportunity to building for lasting growth.</Reveal>
           </header>
-          <div className="grid gap-12 md:grid-cols-3 md:gap-10">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             {principles.map(([t, d], i) => <Principle key={t} title={t} text={d} i={i} />)}
           </div>
-          <dl className="mt-24 grid border-t border-[#d0d5c6] sm:grid-cols-3 sm:mt-32">
+          <dl className="mt-16 grid border-t border-[#d0d5c6] sm:grid-cols-3 sm:mt-20">
             {impact.map(([n, s, unit, text], i) => (
               <Reveal key={unit} delay={i * 120} className={`py-8 sm:pr-8 ${i ? 'sm:border-l sm:border-[#d0d5c6] sm:pl-8' : ''}`}>
                 <dt className="sr-only">{unit}</dt>
@@ -407,28 +555,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 7. Closing CTA */}
-      <section aria-labelledby="cta-title" className="relative overflow-hidden bg-[#171a1b] py-28 text-[#f8f9f6] sm:py-40">
-        <svg viewBox="0 0 600 600" className="pointer-events-none absolute -right-[20%] top-1/2 w-[90vw] max-w-[900px] -translate-y-1/2 opacity-30 lg:right-[-8%]" fill="none" stroke="#a4be2d" strokeWidth="1" aria-hidden>
-          {[280, 200, 120].map((r) => <circle key={r} cx="300" cy="300" r={r} strokeOpacity=".5" />)}
-          <path d="M300 0V600M0 300H600" strokeOpacity=".3" />
-        </svg>
-        <div className={`${wrap} relative`}>
-          <Reveal className="mb-6 flex items-center gap-3 text-[13px] font-semibold text-[#a4be2d] before:h-px before:w-8 before:bg-[#a4be2d]">For founders, operators, and business leaders</Reveal>
-          <Heading id="cta-title" lines={['Let’s build', 'what’s next.']} className="text-[clamp(52px,12vw,190px)] font-extrabold leading-[.92] tracking-[-.07em]" />
-          <Reveal delay={200}><p className="mt-8 max-w-[480px] text-base leading-[1.6] text-[#b9bfb0]">Bring a business challenge, an early idea, or a venture that needs structure. We will start with the problem.</p></Reveal>
-          <div className="mt-14 max-w-3xl border-b border-white/15">
-            {[['/contact', 'Start a conversation', 'Discuss a venture or a business challenge.'], ['/ventures', 'Explore selected ventures', 'See how earlier ventures were built.']].map(([to, t, s], i) => (
-              <Reveal key={to} delay={300 + i * 120}>
-                <Link to={to} className="group flex items-center justify-between gap-6 border-t border-white/15 py-6 transition-colors duration-300 hover:text-[#a4be2d]">
-                  <span><span className="block text-[clamp(22px,3vw,40px)] font-bold tracking-[-.03em]">{t}</span><span className="mt-1 block text-sm text-[#a5ac9b]">{s}</span></span>
-                  <ArrowUpRight size={36} aria-hidden className="shrink-0 transition-transform duration-500 group-hover:-translate-y-1.5 group-hover:translate-x-1.5" />
-                </Link>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      
     </main>
   )
 }
