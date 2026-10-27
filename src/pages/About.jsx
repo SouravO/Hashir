@@ -58,19 +58,19 @@ const clipFrom = {
   right: '[clip-path:inset(0_0_0_100%)]',
 }
 
-const tags = ['Venture building', 'Business strategy', 'Growth systems', 'Brand positioning', 'Go-to-market planning']
-const thread = ['Opportunity', 'Market', 'Logic', 'Decisions', 'Execution']
-const connected = ['Positioning', 'Business model', 'Customer value', 'Commercial reality', 'Execution']
+const tags = ['Venture building', 'Business consulting', 'Valuation readiness', 'Funding & investor prep', 'Founder mentoring']
+const thread = ['Unclear', 'Clear', 'Plan', 'Real', 'Better']
+const connected = ['Brand positioning', 'Customer segments', 'Product offering', 'Pricing & channels', 'Sales & conversion']
 
 const lenses = [
   {
     id: 'assumption',
     image: '/slide1.png',
     no: '01',
-    title: 'Question the assumption',
-    question: 'What are we taking for granted, and what needs to be validated?',
-    detail: 'Most plans rest on a few beliefs nobody has tested: that customers feel the problem sharply, that they will pay for a fix, that a channel will work. List them, rank them by how much depends on each, and decide which deserve evidence first.',
-    caption: 'Start with what is assumed.',
+    title: 'I’ve got an idea.',
+    question: 'Nice. Let’s start with the idea.',
+    detail: 'We look at the problem it solves, who the customers could be, what the market and competitors look like, how the business model might work, and what needs validating first. You leave with clearer thinking and a few important questions to answer.',
+    caption: 'Start with the idea.',
     crop: { pos: '50% 25%', zoom: 1 },
     tone: 'natural',
     clip: '[clip-path:inset(0_0_0_0)]',
@@ -79,10 +79,10 @@ const lenses = [
     id: 'customer',
     image: '/slide2.png',
     no: '02',
-    title: 'Understand the customer',
-    question: 'What does the market actually need, and why would customers choose this solution?',
-    detail: 'Customers compare alternatives, not ideas. The useful questions are what they do today, what that costs them, and what would make switching worthwhile. The answers shape positioning far more than any slogan does.',
-    caption: 'Look closer at who it is for.',
+    title: 'I run a business.',
+    question: 'Tell me what’s happening in the business.',
+    detail: 'The business model, sales and growth, positioning, profitability, and whatever is getting in the way. The aim is a clearer view of the issues and the decisions worth exploring, with no unnecessary presentations.',
+    caption: 'Look at what’s really happening.',
     crop: { pos: '30% 30%', zoom: 1.7 },
     tone: 'muted',
     clip: '[clip-path:inset(6%_0_0_10%)]',
@@ -91,10 +91,10 @@ const lenses = [
     id: 'logic',
     image: '/slide3.png',
     no: '03',
-    title: 'Test the business logic',
-    question: 'Does the value proposition make commercial sense, and can the business support its goals?',
-    detail: 'A proposition has to survive arithmetic: what is offered, to whom, at what price, supported by which costs and capabilities. If the numbers and the ambition disagree, one of them has to change, and it is better to learn that on paper.',
-    caption: 'Check that the structure holds.',
+    title: 'I need more customers.',
+    question: 'Let’s look at who you’re trying to reach.',
+    detail: 'Brand positioning, customer segments, the product offer, pricing and channels, launch planning, and how interest turns into sales. A good product still needs people who understand why it matters.',
+    caption: 'Start with who it’s for.',
     crop: { pos: '70% 60%', zoom: 2 },
     tone: 'tint',
     clip: '[clip-path:inset(0_12%_8%_0)]',
@@ -103,10 +103,10 @@ const lenses = [
     id: 'next',
     image: '/slide4.png',
     no: '04',
-    title: 'Identify the next decision',
-    question: 'What matters now, what should happen next, and what evidence should guide the decision?',
-    detail: 'A plan is useful when it names the one decision that unlocks the others, and the evidence that would settle it. Everything else can wait its turn.',
-    caption: 'Choose the one move that matters.',
+    title: 'I’m preparing for growth.',
+    question: 'Building something big? Let’s get the direction right.',
+    detail: 'Where the business stands today, the risks and assumptions behind the plan, investor readiness, and the strategic decisions ahead. The conversation ends with immediate next steps.',
+    caption: 'Choose the next move.',
     crop: { pos: '50% 15%', zoom: 1.4 },
     tone: 'accent',
     clip: '[clip-path:inset(8%_5%_0_5%)]',
@@ -336,7 +336,7 @@ function Thinking() {
     <div className="mt-7 grid gap-x-8 gap-y-6 lg:grid-cols-12">
       <div className="relative lg:col-span-5 lg:col-start-8 lg:row-start-1">
         {/* Tab buttons are direct children of the tablist; the entrance animation lives on each button. */}
-        <div role="tablist" aria-orientation="vertical" aria-label="Four strategic questions" onKeyDown={onKeyDown} className="relative">
+        <div role="tablist" aria-orientation="vertical" aria-label="Four ways to start a conversation" onKeyDown={onKeyDown} className="relative">
           <span aria-hidden className="absolute left-0 top-0 h-full w-px bg-white/20" />
           <span aria-hidden style={{ transform: `scaleY(${(active + 1) / lenses.length})` }} className={`absolute left-0 top-0 h-full w-[3px] origin-top bg-[#a4be2d] transition-transform duration-700 ${ease} motion-reduce:transition-none`} />
           {lenses.map((lens, index) => {
@@ -431,7 +431,7 @@ function Thinking() {
               // The outgoing panel stays visible just long enough to fade out, then drops out of the accessibility tree.
               className={`col-start-1 row-start-1 transition-[visibility] duration-0 motion-reduce:transition-none ${focusIn} ${on ? 'visible' : 'invisible delay-[700ms]'}`}
             >
-              <p style={step(80)} className={`text-xs font-semibold text-[#a4be2d] ${move} duration-700 ${ease} motion-reduce:transition-none ${on ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>Question {lens.no}</p>
+              <p style={step(80)} className={`text-xs font-semibold text-[#a4be2d] ${move} duration-700 ${ease} motion-reduce:transition-none ${on ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>Starting point {lens.no}</p>
               <h3 style={step(160)} className={`mt-3 text-[clamp(26px,3vw,42px)] font-bold leading-[1.05] tracking-[-.045em] text-white ${move} duration-700 ${ease} motion-reduce:transition-none ${on ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>{lens.title}</h3>
               <p style={step(240)} className={`mt-4 border-l-2 border-[#a4be2d] pl-4 text-[17px] font-medium leading-[1.45] text-[#e3e9dc] ${move} duration-700 ${ease} motion-reduce:transition-none ${on ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>{lens.question}</p>
               <p style={step(320)} className={`mt-4 text-[15px] leading-[1.75] text-[#b9c7b2] ${move} duration-700 ${ease} motion-reduce:transition-none ${on ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>{lens.detail}</p>
@@ -468,7 +468,7 @@ export default function About() {
             <span>About</span>
           </Reveal>
           <Reveal aria-hidden delay={900} className="absolute bottom-28 left-3 hidden text-[11px] font-medium tracking-[.28em] text-white/60 [writing-mode:vertical-rl] lg:block">
-            <span className="rotate-180 inline-block">Thinking, strategy, execution</span>
+            <span className="rotate-180 inline-block">Architect, builder, consultant</span>
           </Reveal>
         </div>
 
@@ -476,7 +476,7 @@ export default function About() {
           <Lines
             as="h1"
             id="about-title"
-            lines={['The mind', 'behind the', <span key="v" className="text-[#a4be2d]">venture.</span>]}
+            lines={['Hi again.', 'I’m', <span key="v" className="text-[#a4be2d]">Hashir.</span>]}
             delay={250}
             step={140}
             className="text-[clamp(54px,10.5vw,176px)] font-extrabold leading-[.88] tracking-[-.06em]"
@@ -492,7 +492,7 @@ export default function About() {
           </div>
           <div className="flex flex-col gap-6">
             <Reveal as="p" delay={700} className="max-w-[40ch] text-[15px] leading-[1.7] text-[#dfe6d8]">
-              I’m Hashir Usman, a venture architect and business consultant. This page is about how I think: how an opportunity is questioned, tested against the market, and turned into decisions a business can act on.
+              I like building things. Brands. Businesses. Systems. Strategies. And occasionally, fixing problems nobody realised were connected.
             </Reveal>
             <Reveal delay={850}>
               <a href="#story" className={`group inline-flex min-h-11 items-center gap-4 text-sm font-medium text-white no-underline ${focus}`}>
@@ -520,17 +520,17 @@ export default function About() {
         <div className={wrap}>
           <div className="grid grid-cols-12 items-end gap-x-6 gap-y-5">
             <div className="col-span-12 lg:col-span-9">
-              <Chapter no="02" label="The perspective" />
+              <Chapter no="02" label="The human behind HU." />
               <Lines
                 as="h2"
                 id="story-heading"
-                lines={['A good idea needs', <Hl key="h">commercial logic</Hl>, 'before it needs scale.']}
+                lines={['Big ideas are fun.', <Hl key="h">Making them work</Hl>, 'is my thing.']}
                 delay={100}
                 className="mt-4 text-[clamp(36px,6vw,92px)] font-extrabold leading-[.98] tracking-[-.055em] text-[#101310]"
               />
             </div>
             <Reveal as="p" delay={300} className="col-span-12 max-w-[30ch] border-l-2 border-[#a4be2d] pl-4 text-[13px] leading-[1.65] text-[#4f5a4d] lg:col-span-3">
-              Thinking comes before tooling: the questions first, then the model, then the plan.
+              Different problems. Same curiosity.
             </Reveal>
           </div>
 
@@ -561,21 +561,21 @@ export default function About() {
             <div className="relative z-10 col-span-12 lg:col-span-5 lg:-ml-16 lg:mt-12">
               <ClipFrame from="right" delay={200} duration={1200} bg="bg-[#101310]" className="relative">
                 <div className="p-6 text-white md:p-9">
-                  <Reveal as="p" delay={350} className="text-xs font-semibold text-[#a4be2d]">In practice</Reveal>
+                  <Reveal as="p" delay={350} className="text-xs font-semibold text-[#a4be2d]">A little about me</Reveal>
                   <div className="mt-4 space-y-5 text-[16px] leading-[1.75] text-[#cdd8c6]">
                     <Reveal as="p" delay={450}>
-                      Venture building takes more than an attractive idea. The opportunity has to make commercial sense, the positioning has to be clear, and the plan has to work in practice.
+                      My work has taken me through different industries, business stages, and plenty of interesting challenges, across strategy, branding, marketing, operations, and startup development.
                     </Reveal>
                     <Reveal as="p" delay={560}>
-                      That starts with the market: who the customer is, what they use today, and why they would switch. From there the business model, the pricing, and the link between value and revenue can be tested rather than assumed.
+                      Some days it’s strategy. Some days it’s marketing. Some days it’s figuring out why a business is making sales but not enough money. And some days we’re building something completely new.
                     </Reveal>
                   </div>
                   <Rule delay={700} tone="bg-[#a4be2d]" className="mt-7" />
                 </div>
               </ClipFrame>
               <Reveal v="zoom" delay={700} className="relative z-10 -mt-3 ml-6 border border-[#101310] bg-[#a4be2d] p-5 text-[#101310] lg:ml-14">
-                <p className="text-sm font-bold">Then, execution</p>
-                <p className="mt-2 text-[14px] leading-[1.65]">Strategy earns its keep when it becomes decisions: what to do first, what to leave, who owns it, and how the team will know it is working.</p>
+                <p className="text-sm font-bold">The part I enjoy</p>
+                <p className="mt-2 text-[14px] leading-[1.65]">Where an unclear situation starts to make sense, an idea becomes a plan, and a plan becomes something real.</p>
               </Reveal>
             </div>
           </div>
@@ -590,7 +590,7 @@ export default function About() {
               <Lines
                 as="h2"
                 id="principles-heading"
-                lines={['Principles that', 'shape the thinking.']}
+                lines={['What I believe', 'about building.']}
                 delay={100}
                 className="mt-4 text-[clamp(36px,6vw,92px)] font-extrabold leading-[.98] tracking-[-.055em]"
               />
@@ -604,7 +604,7 @@ export default function About() {
                 <span>03</span>
               </div>
               <Reveal as="p" delay={250} className="mt-4 max-w-[34ch] text-[15px] leading-[1.7] text-[#b9c7b2]">
-                Three habits of mind that run through every question I take on.
+                Simple beliefs that shape how I work with founders and businesses.
               </Reveal>
             </div>
           </div>
@@ -621,10 +621,10 @@ export default function About() {
               <div className="flex h-full flex-col justify-between gap-8 p-6 md:p-9">
                 <div>
                   <Rule delay={400} tone="bg-[#a4be2d]" />
-                  <Lines as="h3" id="principle-one" lines={['See the problem', 'clearly.']} delay={400} className="mt-6 text-[clamp(30px,3.6vw,52px)] font-bold leading-[1.02] tracking-[-.045em]" />
+                  <Lines as="h3" id="principle-one" lines={['Good questions come', 'before good strategies.']} delay={400} className="mt-6 text-[clamp(30px,3.6vw,52px)] font-bold leading-[1.02] tracking-[-.045em]" />
                 </div>
                 <Reveal as="p" delay={600} className="max-w-[44ch] text-[15px] leading-[1.75] text-[#cdd8c6]">
-                  Before anything is repositioned, redesigned, or funded, it helps to see what is happening in the market and in the business: who the customers are, what the market rewards, and where the business is genuinely stuck.
+                  Before anything is repositioned, redesigned, or funded, it helps to understand the idea, the customer, the market, and what is actually going on in the business. Then the strategy has something real to stand on.
                 </Reveal>
               </div>
             </ClipFrame>
@@ -642,9 +642,9 @@ export default function About() {
                   </Photo>
                 </div>
                 <div className="flex flex-1 flex-col p-6 md:p-8">
-                  <Lines as="h3" id="principle-two" lines={['Connect the', 'entire picture.']} delay={450} className="text-[clamp(28px,3vw,42px)] font-bold leading-[1.04] tracking-[-.045em]" />
+                  <Lines as="h3" id="principle-two" lines={['Great branding needs', 'a good business underneath.']} delay={450} className="text-[clamp(28px,3vw,42px)] font-bold leading-[1.04] tracking-[-.045em]" />
                   <Reveal as="p" delay={600} className="mt-4 max-w-[44ch] text-[15px] leading-[1.7] text-[#3a4137]">
-                    A choice in one area reshapes the others, so they are treated as connected decisions and tested against each other.
+                    Positioning, marketing, and identity work best when the product, the offer, and the customer experience already make sense.
                   </Reveal>
                   <ul className="m-0 mt-5 grid list-none grid-cols-2 gap-x-4 gap-y-2 p-0 text-[13px] text-[#4f5a4d]">
                     {connected.map((item, index) => (
@@ -667,9 +667,9 @@ export default function About() {
                 <div className="absolute inset-x-0 bottom-0 z-10 p-6 md:p-9">
                   <Rule delay={600} tone="bg-[#a4be2d]" />
                   <div className="mt-5 flex flex-col justify-between gap-5 md:flex-row md:items-end">
-                    <Lines as="h3" id="principle-three" lines={['Build for', 'what comes next.']} delay={600} className="text-[clamp(30px,3.6vw,52px)] font-bold leading-[1.02] tracking-[-.045em]" />
+                    <Lines as="h3" id="principle-three" lines={['A plan only matters', 'when someone can', 'execute it.']} delay={600} className="text-[clamp(30px,3.6vw,52px)] font-bold leading-[1.02] tracking-[-.045em]" />
                     <Reveal as="p" delay={800} className="max-w-[38ch] text-[15px] leading-[1.7] text-[#e3e9dc]">
-                      Practical systems, informed decisions, and priorities a team can sustain. Short-term wins matter, and they matter more when they lead somewhere.
+                      And growth is much nicer when the systems can handle it. SOPs, roles, reporting, and workflows keep a business running as it gets bigger.
                     </Reveal>
                   </div>
                 </div>
@@ -683,17 +683,17 @@ export default function About() {
         <div className={wrap}>
           <div className="grid grid-cols-12 items-end gap-x-6 gap-y-5">
             <div className="col-span-12 lg:col-span-8">
-              <Chapter no="04" label="Strategic thinking" dark />
+              <Chapter no="04" label="Where we start" dark />
               <Lines
                 as="h2"
                 id="thinking-heading"
-                lines={['Four questions that', 'move a decision.']}
+                lines={['What brings', 'you here?']}
                 delay={100}
                 className="mt-4 text-[clamp(36px,6vw,92px)] font-extrabold leading-[.98] tracking-[-.055em]"
               />
             </div>
             <Reveal as="p" delay={300} className="col-span-12 max-w-[34ch] text-[15px] leading-[1.7] text-[#b9c7b2] lg:col-span-4">
-              Lenses for thinking, not a proprietary method and not a promise of outcomes. Choose a question to change the view.
+              Every conversation starts somewhere. Choose what sounds like you.
             </Reveal>
           </div>
           <Thinking />
@@ -712,14 +712,14 @@ export default function About() {
             <Lines
               as="h2"
               id="closing-heading"
-              lines={['Clear thinking.', <span key="p" className="text-[#a4be2d]">Meaningful progress.</span>]}
+              lines={['Build with clarity.', <span key="p" className="text-[#a4be2d]">Scale with intention.</span>]}
               delay={150}
               step={160}
               className="mt-6 text-[clamp(40px,6.4vw,104px)] font-extrabold leading-[.95] tracking-[-.055em]"
             />
             <Rule delay={500} tone="bg-white/30" className="mt-8" />
             <Reveal delay={650} className="mt-4 flex justify-between gap-4 text-xs text-white/70">
-              <span>Hashir Usman, Venture Architect &amp; Business Consultant</span>
+              <span>Hashir Usman, Startup Architect • Venture Builder • Business Consultant</span>
               <span className="hidden sm:inline">Bengaluru, India</span>
             </Reveal>
           </div>
@@ -728,17 +728,17 @@ export default function About() {
             <div className="p-6 md:p-8">
               <Photo src="/closing.png" crop={CROPS.closingInset} tone="accent" from="left" delay={650} duration={1200} className="relative aspect-[16/7] w-full" />
               <Reveal as="p" delay={800} className="mt-6 text-[16px] leading-[1.7] text-[#dfe6d8]">
-                Whether the question is where to position a new venture or how to turn a strategy into next quarter’s priorities, the work begins with seeing the situation as it is.
+                Good things usually start with a conversation. An idea, a business problem, or just a question you can’t quite figure out. I’m listening.
               </Reveal>
               <Reveal delay={950} className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-4">
                 <div className="min-w-[200px] flex-1">
-                  <LinkBlock to="/contact">Start a conversation</LinkBlock>
+                  <LinkBlock to="/contact">Book a conversation</LinkBlock>
                 </div>
                 <Link
                   to="/ventures"
                   className={`group inline-flex min-h-11 items-center gap-2 border-b border-white/40 pb-1 text-[15px] text-white no-underline transition-colors duration-300 hover:border-[#a4be2d] hover:text-[#a4be2d] focus-visible:border-[#a4be2d] ${focus}`}
                 >
-                  See the ventures
+                  See what I’ve built
                   <ArrowRight size={16} weight="light" aria-hidden className="transition-transform duration-300 motion-safe:group-hover:translate-x-1 motion-safe:group-focus-visible:translate-x-1" />
                 </Link>
               </Reveal>

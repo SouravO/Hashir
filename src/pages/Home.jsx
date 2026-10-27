@@ -2,15 +2,16 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 import PixelCard from '../components/PixelCard'
+import { brands, brandImage } from '../data/brands'
 
-/* ---------- Editable content (all taken from the existing site copy) ---------- */
-const statement = 'Strong ventures are not ideas with a logo. They are a *market understood*, a *business model made clear*, and a plan *carried out* with discipline: strategy, positioning, and execution built as one structure.'
+/* ---------- Editable content (taken from the HU. content blueprint) ---------- */
+const statement = 'I build businesses, and fix a few things along the way. I work with *startup founders*, *business owners*, and *teams* to turn ideas into plans, and plans into action.'
 
 const expertise = [
-  { title: 'Venture Architecture & Business Design', desc: 'Shape an opportunity into a focused, investable venture with a plan to reach market.', tags: ['Opportunity framing', 'Business models', 'Investor narratives'] },
-  { title: 'Business Strategy & Market Positioning', desc: 'Clarify positioning and priorities so the next stage has a clear direction.', tags: ['Positioning', 'Brand strategy', 'Clear priorities'] },
-  { title: 'Go-to-Market Strategy & Growth', desc: 'Connect launch planning, brand, and marketing so a venture reaches its market with intent.', tags: ['Launch planning', 'Marketing', 'Growth consulting'] },
-  { title: 'Business Systems & Venture Scaling', desc: 'Build the operating processes and practical systems that support execution as the venture grows.', tags: ['Operating processes', 'Practical systems', 'Execution support'] },
+  { title: 'Venture Architecture', desc: 'Making startup ideas more practical, testable, and ready to build.', tags: ['Idea validation', 'Business models', 'Venture strategy'] },
+  { title: 'Business Strategy', desc: 'Understanding the market, the business model, and what the next move should be.', tags: ['Market assessment', 'Management consulting', 'Growth roadmaps'] },
+  { title: 'Brand & Growth', desc: 'Helping businesses get noticed, understood, chosen, and purchased.', tags: ['Positioning', 'Go-to-market', 'Customer acquisition'] },
+  { title: 'Systems & Scaling', desc: 'Making operations, people, processes, and performance work better together.', tags: ['SOPs & workflows', 'KPIs & reporting', 'Automation & AI'] },
 ]
 
 const glyphs = [
@@ -21,33 +22,21 @@ const glyphs = [
 ]
 
 const stages = [
-  ['Discover', 'Identify opportunities, understand markets, and define the problem.', 'A defined problem and a clear opportunity.'],
-  ['Architect', 'Establish positioning, business models, strategy, and operating structures.', 'Positioning, a business model, and an operating structure.'],
-  ['Activate', 'Translate strategy into execution, launch plans, and practical systems.', 'A launch plan and the systems to carry it out.'],
-  ['Scale', 'Refine operations, improve performance, and establish sustainable growth.', 'Sharper operations and a base for lasting growth.'],
-]
-
-/* Add `challenge` and `outcome` text to any venture and it appears automatically. Leave empty until verified. */
-const ventures = [
-  { name: 'Moonbliss', category: 'Wellness', year: '2020', work: 'Built from the ground up — positioning, identity, digital presence, and go-to-market strategy.', scope: ['Positioning', 'Identity', 'Digital presence', 'Go-to-market'], challenge: '', outcome: '', panel: 'bg-[#133629] text-[#f2f3ef]', stroke: '#a4be2d', mark: 'font-serif tracking-[-.03em] text-[clamp(44px,7.4vw,108px)]' },
-  { name: 'Kesha', category: 'Lifestyle', year: '2021', work: 'Shaped the brand identity and social media presence for a lifestyle label.', scope: ['Brand identity', 'Social media presence'], challenge: '', outcome: '', panel: 'bg-[#adca2d] text-[#171a1b]', stroke: '#171a1b', mark: 'font-serif tracking-[-.02em] text-[clamp(48px,8vw,116px)]' },
-  { name: 'sol.', category: 'Consumer Goods', year: '2021', work: 'Designed the go-to-market plan and brand systems for a sustainability-focused venture.', scope: ['Go-to-market plan', 'Brand systems'], challenge: '', outcome: '', panel: 'bg-[#171a1b] text-[#a4be2d]', stroke: '#a4be2d', mark: 'font-sans font-medium tracking-[-.06em] text-[clamp(72px,12vw,176px)]' },
-]
-const shapes = [
-  <><circle cx="300" cy="90" r="60" /><circle cx="300" cy="90" r="38" /></>,
-  <><path d="M0 220Q100 140 200 220T400 220" /><path d="M0 250Q100 170 200 250T400 250" /></>,
-  <><circle cx="90" cy="210" r="52" /><path d="M90 130v-30M90 290v20M10 210H-10M170 210h30" /></>,
+  ['Opportunity', 'Customer problem, market understanding, competitors, and idea validation.', 'A clearer view of whether the idea has a market.'],
+  ['Business', 'Business model, revenue structure, pricing, positioning, and the brand that carries it.', 'A model that explains how the money works.'],
+  ['Launch', 'MVP planning, go-to-market strategy, launch priorities, and early customer acquisition.', 'A clear answer to what should happen first.'],
+  ['Growth', 'Team roles, SOPs, reporting, milestones, and funding readiness for what comes next.', 'Systems that can handle growth, and milestones to aim for.'],
 ]
 
 const principles = [
-  ['Clarity before complexity', 'Define the problem, the model, and the message before adding anything else. Teams move faster when they know what matters.'],
-  ['Strategy connected to execution', 'A strategy only counts when people can act on it. Every engagement ends in decisions, priorities, and next steps.'],
-  ['Sustainable systems over short-term wins', 'Build the processes, brand, and operating habits that keep a venture growing long after launch.'],
+  ['Startup idea call', 'Got an idea you can’t stop thinking about? We’ll work out what makes sense, what needs testing, and what to do next.'],
+  ['Business strategy call', 'Something not working the way you expected? We’ll look at the business, find the gaps, and see what needs attention.'],
+  ['Systems and scaling call', 'Growing faster than your systems? We’ll look at SOPs, teams, and workflows to make the operation easier to manage.'],
 ]
 const impact = [
-  [5, '+', 'years', 'Across strategy, brand, systems, and growth'],
-  [6, '', 'ventures', 'Built and supported across several domains'],
-  [10, '+', 'decks', 'Investor-ready pitch decks delivered'],
+  [10, '', 'areas of work', 'From startup architecture to funding preparation'],
+  [5, '', 'strategy calls', 'One-to-one, from first idea to founder direction'],
+  [1, '', 'conversation', 'Is where good things usually start'],
 ]
 
 /* ---------- Motion + style helpers (kept local to this page) ---------- */
@@ -137,14 +126,14 @@ function CountUp({ to, suffix = '' }) {
 const Arrow = () => <ArrowUpRight size={18} aria-hidden className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
 
 /* ---------- Strategic framework visual: a tower built as you scroll ----------
-   `s` runs from 0 to 3 and is tied to the four stages (Discover, Architect, Activate, Scale).
+   `s` runs from 0 to 3 and is tied to the four stages (Opportunity, Business, Launch, Growth).
 
    0.00         Blank panel (only the corner frame marks).
-   0.00 - 0.95  DISCOVER   Ground line draws in, piles are driven, the foundation slab is poured.
-   0.95 - 1.95  ARCHITECT  The steel frame rises floor by floor (slabs, columns, bracing).
-   1.70 - 2.60  ACTIVATE   Glazing and facade follow the frame up; the two wings are framed and clad.
-   2.60 - 3.00  SCALE      Roof parapets, crown and antenna, lobby entrance, trees,
-                           windows light up and the city skyline appears. Finished building.
+   0.00 - 0.95  OPPORTUNITY  Ground line draws in, piles are driven, the foundation slab is poured.
+   0.95 - 1.95  BUSINESS     The steel frame rises floor by floor (slabs, columns, bracing).
+   1.70 - 2.60  LAUNCH       Glazing and facade follow the frame up; the two wings are framed and clad.
+   2.60 - 3.00  GROWTH       Roof parapets, crown and antenna, lobby entrance, trees,
+                             windows light up and the city skyline appears. Finished building.
 
    Layout: on desktop (lg+) the visual is a sticky column beside the stages. On phones and tablets it is a
    sticky panel pinned under the site header while the stages scroll beneath it, so it is visible on every screen.
@@ -216,29 +205,29 @@ function Building({ s }) {
         <rect x="352" y="226" width="34" height="114" /><path d="M352 252H386M352 278H386M352 304H386" />
       </g>
 
-      {/* DISCOVER: the scene starts blank. The ground line draws in from the centre, then the soil line */}
+      {/* OPPORTUNITY: the scene starts blank. The ground line draws in from the centre, then the soil line */}
       <path d="M12 340H388" strokeOpacity=".6" style={grow('200px 340px', 'scaleX', groundP)} />
       <path d="M24 352H376" strokeOpacity=".2" strokeDasharray="2 6" style={grow('200px 352px', 'scaleX', up((s - 0.08) / 0.12))} />
 
-      {/* DISCOVER: piles driven into the ground, then the foundation slab is poured on top */}
+      {/* OPPORTUNITY: piles driven into the ground, then the foundation slab is poured on top */}
       <g strokeOpacity=".6" strokeWidth="1.5" style={grow('0px 352px', 'scaleY', piles)}><path d={pileLines} /></g>
       <rect x="118" y="340" width="164" height="12" fill="#f8f9f6" fillOpacity=".12" style={grow('200px 346px', 'scaleX', slab)} />
 
-      {/* ARCHITECT + ACTIVATE: main tower, nine floors. Frame first, then glass follows it up */}
+      {/* BUSINESS + LAUNCH: main tower, nine floors. Frame first, then glass follows it up */}
       <Tower x={130} bays={5} floors={FLOORS} skel={(i) => up(frameP * FLOORS - i)} wall={(i) => up(((s - 1.7) / 0.85) * FLOORS - i)} lit={lit} cap={cap} />
 
-      {/* ACTIVATE: the two wings are framed and clad */}
+      {/* LAUNCH: the two wings are framed and clad */}
       <Tower x={74} bays={2} floors={4} skel={(i) => up(((s - 2) / 0.5) * 4 - i)} wall={(i) => up(((s - 2.3) / 0.4) * 4 - i)} lit={lit} cap={cap} seed={1} />
       <Tower x={270} bays={2} floors={4} skel={(i) => up(((s - 2) / 0.5) * 4 - i)} wall={(i) => up(((s - 2.3) / 0.4) * 4 - i)} lit={lit} cap={cap} seed={2} />
 
-      {/* SCALE: lobby entrance with canopy */}
+      {/* GROWTH: lobby entrance with canopy */}
       <g style={fade(door)}>
         <rect x="188" y="319" width="24" height="21" fill="#171a1b" />
         <path d="M200 319V340" strokeOpacity=".6" />
         <path d="M178 314H222" stroke="#a4be2d" strokeWidth="2" />
       </g>
 
-      {/* SCALE: stepped crown, plant room and antenna with a beacon */}
+      {/* GROWTH: stepped crown, plant room and antenna with a beacon */}
       <g style={fade(crown)}>
         <rect x="160" y="110" width="80" height="14" />
         <rect x="184" y="98" width="32" height="12" />
@@ -246,7 +235,7 @@ function Building({ s }) {
         <circle cx="200" cy="63" r="3.5" fill="#a4be2d" stroke="none" className="animate-pulse motion-reduce:animate-none" />
       </g>
 
-      {/* SCALE: street trees */}
+      {/* GROWTH: street trees */}
       <g style={fade(trees)}>
         <path d="M62 340V328M338 340V328" />
         <circle cx="62" cy="320" r="8" strokeOpacity=".7" />
@@ -304,8 +293,8 @@ function Framework() {
     <section id="framework" className="bg-[#f2f3ef] py-24 sm:py-36" aria-labelledby="framework-title">
       <div className={wrap}>
         <header className="mb-14 max-w-3xl sm:mb-20">
-          <Reveal className={eyebrow}>Strategic framework</Reveal>
-          <Heading id="framework-title" lines={['From a loose opportunity', 'to a structure that scales.']} className={h2cls} />
+          <Reveal className={eyebrow}>From idea to actual business</Reveal>
+          <Heading id="framework-title" lines={['That idea in your head?', 'Give it somewhere to go.']} className={h2cls} />
         </header>
         {/* Mobile/tablet: the visual and the stages share one grid cell, the visual pins to the top while the stages scroll under it. Desktop: two columns. */}
         <div className="grid lg:grid-cols-12 lg:gap-16">
@@ -345,32 +334,100 @@ function Framework() {
   )
 }
 
-function Showcase({ v, i }) {
-  const [ref, seen] = useInView('0px 0px -15% 0px')
-  const flip = i % 2 === 1
-  const rows = [['Category', v.category], ['Year', v.year], ['Scope', v.scope.join(', ')], ['Challenge', v.challenge], ['Outcome', v.outcome]].filter(([, t]) => t)
-  const draw = { strokeDashoffset: seen ? 0 : 1, transition: `stroke-dashoffset 2000ms ${EASE} 500ms` }
+/* ---------- Brand portfolio: every brand image, two rows drifting in opposite directions ----------
+   Data lives in src/data/brands.js. Each card links to that brand's full brief on the Ventures page.
+   The rows pause on hover/focus, and become plain scrollable rows when the visitor prefers reduced motion. */
+const MARQUEE_CSS = `
+@keyframes bm-slide{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+.bm-track{animation:bm-slide var(--bm-d,70s) linear infinite;will-change:transform}
+.bm-rev{animation-direction:reverse}
+.bm-row:hover .bm-track,.bm-row:focus-within .bm-track{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.bm-track{animation:none}.bm-row{overflow-x:auto}.bm-dup{display:none}}
+`
+const years = brands.map((b) => Number(b.year))
+const yearSpan = `${Math.min(...years)}\u2013${String(Math.max(...years)).slice(2)}`
+
+/* Brand artwork with a text fallback, so a missing file never shows a broken-image icon. */
+function BrandArt({ b, alt = '', className = '', imgClass = '' }) {
+  const [bad, setBad] = useState(false)
   return (
-    <article ref={ref} className={`group grid items-center gap-8 lg:grid-cols-12 lg:gap-14 ${i ? 'mt-24 lg:mt-40' : ''}`} aria-label={v.name}>
-      <div className={`relative aspect-[4/3] overflow-hidden ${v.panel} ${flip ? 'lg:order-2 lg:col-span-6 lg:col-start-7' : 'lg:col-span-7'}`} style={{ clipPath: seen ? 'inset(0 0 0 0)' : 'inset(0 0 100% 0)', transition: `clip-path 1300ms ${EASE}` }}>
-        <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full" fill="none" stroke={v.stroke} strokeOpacity=".4" aria-hidden>
-          <path d="M16 40V16H40M360 16H384V40M384 260V284H360M40 284H16V260" strokeOpacity=".7" />
-          <g strokeDasharray="1" style={draw}>{shapes[i]}</g>
-        </svg>
-        <div className="absolute inset-0 grid place-items-center transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]"><span className={v.mark}>{v.name}</span></div>
-        <span className="absolute bottom-5 left-6 text-[13px] font-medium opacity-80">{v.category}, {v.year}</span>
+    <div className={`relative overflow-hidden bg-[#f2f3ef] ${className}`}>
+      {bad
+        ? <span className="absolute inset-0 grid place-items-center p-3 text-center text-sm font-bold text-[#171a1b]/60">{b.name}</span>
+        : <img src={brandImage(b.file)} alt={alt} loading="lazy" decoding="async" draggable={false} onError={() => setBad(true)} className={`absolute inset-0 size-full object-cover ${imgClass}`} />}
+    </div>
+  )
+}
+
+function BrandCard({ b, dup }) {
+  return (
+    <li aria-hidden={dup || undefined} className={`w-[220px] shrink-0 sm:w-[260px] lg:w-[280px] ${dup ? 'bm-dup' : ''}`}>
+      <Link
+        to={`/ventures#brand-${b.id}`}
+        tabIndex={dup ? -1 : undefined}
+        className="group/card flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[.04] text-[#f8f9f6] no-underline transition-[transform,border-color,background-color] duration-500 hover:-translate-y-1.5 hover:border-[#a4be2d]/60 hover:bg-white/[.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a4be2d]"
+      >
+        <BrandArt b={b} alt={dup ? '' : `${b.name} brand artwork`} className="aspect-square" imgClass="transition-transform duration-[1200ms] ease-out group-hover/card:scale-[1.06]" />
+        <div className="flex flex-1 flex-col p-4 sm:p-5">
+          <div className="flex items-baseline justify-between gap-3">
+            <h3 className="m-0 text-lg font-bold tracking-[-.03em]">{b.name}</h3>
+            <span className="text-xs tabular-nums text-[#a4be2d]">{b.year}</span>
+          </div>
+          <p className="m-0 mt-1 text-xs font-semibold text-[#a4be2d]">{b.category}</p>
+          <p className="m-0 mt-3 line-clamp-2 text-[13px] leading-[1.55] text-[#b9bfb0]">{b.short}</p>
+        </div>
+      </Link>
+    </li>
+  )
+}
+
+function MarqueeRow({ items, reverse = false, seconds = 70 }) {
+  const loop = [...items, ...items]
+  return (
+    <div className="bm-row relative overflow-hidden py-3 [-webkit-mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)] [mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)]">
+      <ul className={`bm-track m-0 flex w-max list-none gap-4 p-0 pr-4 sm:gap-5 sm:pr-5 ${reverse ? 'bm-rev' : ''}`} style={{ '--bm-d': `${seconds}s` }}>
+        {loop.map((b, i) => <BrandCard key={`${b.id}-${i}`} b={b} dup={i >= items.length} />)}
+      </ul>
+    </div>
+  )
+}
+
+function Portfolio() {
+  const rows = [brands.filter((_, i) => i % 2 === 0), brands.filter((_, i) => i % 2 === 1)]
+  const sectors = new Set(brands.map((b) => b.group)).size
+  const stats = [[<CountUp key="b" to={brands.length} />, 'startups & businesses'], [<CountUp key="s" to={sectors} />, 'industries'], [yearSpan, 'years of work']]
+  return (
+    <section id="brands" aria-labelledby="brands-heading" className="relative overflow-hidden bg-[#171a1b] py-24 text-[#f8f9f6] sm:py-36">
+      <style>{MARQUEE_CSS}</style>
+      <div aria-hidden className="pointer-events-none absolute -top-48 left-1/2 size-[680px] -translate-x-1/2 rounded-full bg-[#a4be2d]/10 blur-3xl" />
+      <div className={`${wrap} relative`}>
+        <header className="mb-12 grid gap-8 sm:mb-16 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-8">
+            <Reveal className="mb-5 flex items-center gap-3 text-[13px] font-semibold text-[#a4be2d] before:h-px before:w-8 before:bg-[#a4be2d]">Things I’ve had my hands in</Reveal>
+            <Heading id="brands-heading" lines={[`${brands.length} builds.`, 'A lot of stories.']} className={h2cls} />
+          </div>
+          <Reveal delay={200} className="lg:col-span-4"><p className="max-w-[400px] text-[15px] leading-[1.65] text-[#a5ac9b]">Different industries. Different headaches. Some started as ideas, some needed structure, others needed a fresh way of doing things.</p></Reveal>
+        </header>
+        <dl className="m-0 grid grid-cols-3 border-y border-white/15">
+          {stats.map(([n, label], i) => (
+            <Reveal key={label} delay={i * 100} className={`flex flex-col py-6 sm:py-8 ${i ? 'border-l border-white/15 pl-4 sm:pl-8' : 'pr-4'}`}>
+              <dd className="m-0 text-[clamp(30px,5vw,64px)] font-extrabold leading-none tracking-[-.05em] text-[#a4be2d]">{n}</dd>
+              <dt className="order-2 mt-2 text-xs text-[#a5ac9b] sm:text-sm">{label}</dt>
+            </Reveal>
+          ))}
+        </dl>
       </div>
-      <div className={flip ? 'lg:order-1 lg:col-span-5 lg:col-start-1' : 'lg:col-span-5 lg:col-start-8'}>
-        <Reveal delay={150}><h3 className="text-[clamp(38px,4.6vw,64px)] font-extrabold leading-none tracking-[-.05em]">{v.name}</h3></Reveal>
-        <Reveal delay={250}><p className="mt-5 max-w-[440px] text-lg leading-[1.55] text-[#4a4f47]">{v.work}</p></Reveal>
-        <Reveal delay={350}>
-          <dl className="mt-8 border-t border-[#d9ddd1] text-sm">
-            {rows.map(([k, t]) => <div key={k} className="grid grid-cols-[96px_1fr] gap-4 border-b border-[#e7e9e2] py-3.5"><dt className="text-[#72766f]">{k}</dt><dd className="font-medium">{t}</dd></div>)}
-          </dl>
-          <Link to="/ventures" className="group/link mt-8 inline-flex items-center gap-2 border-b-[1.5px] border-[#171a17] pb-1 text-sm font-semibold transition-colors hover:border-[#7c9318] hover:text-[#617319]">View on the Ventures page <ArrowUpRight size={16} aria-hidden className="transition-transform duration-300 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" /></Link>
-        </Reveal>
+
+      <div className="relative mt-10 space-y-2 sm:mt-14 sm:space-y-3">
+        <MarqueeRow items={rows[0]} seconds={75} />
+        <MarqueeRow items={rows[1]} seconds={85} reverse />
       </div>
-    </article>
+
+      <div className={`${wrap} relative mt-12 flex flex-col items-start justify-between gap-6 sm:mt-16 sm:flex-row sm:items-center`}>
+        <p className="m-0 max-w-[44ch] text-sm leading-[1.65] text-[#a5ac9b]">Tap any project to see what it is and the scope I worked on.</p>
+        <Link to="/ventures#collection" className="group inline-flex min-h-12 items-center gap-3 rounded-full border border-[#a4be2d] bg-[#a4be2d] px-6 text-sm font-semibold text-[#1e2618] no-underline transition-[transform,background-color] duration-200 hover:scale-[1.02] hover:bg-[#b3cc35] active:scale-[.98]">See all startups & businesses <Arrow /></Link>
+      </div>
+    </section>
   )
 }
 
@@ -394,7 +451,7 @@ export default function Home() {
   const [ready, setReady] = useState(calm)
   const [statRef, p] = useScrollProgress()
   useEffect(() => {
-    document.title = 'Hashir Usman | Venture Architect & Business Consultant'
+    document.title = 'Hashir Usman | Startup Architect, Venture Builder & Business Consultant'
     const t = setTimeout(() => setReady(true), 80)
     return () => clearTimeout(t)
   }, [])
@@ -411,11 +468,11 @@ export default function Home() {
               <div style={rise(ready)}>
                 <h1 id="hero-title" className="text-[clamp(60px,7.8vw,138px)] font-extrabold leading-[.88] tracking-[-.075em]">Hashir Usman</h1>
               </div>
-              <Heading tag="h2" on={ready} delay={120} className="mt-7 text-[clamp(40px,5vw,88px)] font-extrabold leading-[.94] tracking-[-.065em]" lines={['Build with clarity.', <span className="text-[#7c9318]">Scale with intention.</span>]} />
-              <p className="mt-6 max-w-[600px] text-base leading-[1.6] text-[#2f332e] sm:text-lg xl:text-xl" style={rise(ready, 500)}>Strategy, systems, brand, and execution for founders building lasting ventures.</p>
+              <Heading tag="h2" on={ready} delay={120} className="mt-7 text-[clamp(40px,5vw,88px)] font-extrabold leading-[.94] tracking-[-.065em]" lines={['Is your business growing?', <span className="text-[#7c9318]">Or just getting busier?</span>]} />
+              <p className="mt-6 max-w-[600px] text-base leading-[1.6] text-[#2f332e] sm:text-lg xl:text-xl" style={rise(ready, 500)}>Startup architect. Venture builder. Business consultant. I help people start businesses, fix what’s not working, and build systems that make growth a little less chaotic.</p>
               <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3" style={rise(ready, 620)}>
-                <Link to="/ventures" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4be2d] bg-[#a4be2d] px-6 text-[13px] font-semibold text-[#1e2618] transition-colors duration-300 hover:border-[#b3cc35] hover:bg-[#b3cc35] active:scale-[.97]">See what’s cooking <Arrow /></Link>
-                <Link to="/contact" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4aaa0] px-6 text-[13px] font-semibold transition-colors duration-300 hover:border-[#171a1b] hover:bg-[#171a1b] hover:text-white active:scale-[.97]">Got an idea? <Arrow /></Link>
+                <Link to="/contact" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4be2d] bg-[#a4be2d] px-6 text-[13px] font-semibold text-[#1e2618] transition-colors duration-300 hover:border-[#b3cc35] hover:bg-[#b3cc35] active:scale-[.97]">Book a strategy call <Arrow /></Link>
+                <Link to="/ventures" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4aaa0] px-6 text-[13px] font-semibold transition-colors duration-300 hover:border-[#171a1b] hover:bg-[#171a1b] hover:text-white active:scale-[.97]">See my work <Arrow /></Link>
               </div>
             </div>
             <div className="lg:col-span-5">
@@ -439,7 +496,7 @@ export default function Home() {
         <div className={`${wrap} grid gap-10 lg:grid-cols-12`}>
           <div className="lg:col-span-3">
             <div className="lg:sticky lg:top-28">
-              <p className="mb-4 text-[13px] font-semibold text-[#a4be2d]">The thinking behind the work</p>
+              <p className="mb-4 text-[13px] font-semibold text-[#a4be2d]">A little about me</p>
               <div className="h-px w-full max-w-[160px] bg-white/15"><div className="h-px origin-left bg-[#a4be2d]" style={{ transform: `scaleX(${p})`, transition: 'transform 300ms linear' }} /></div>
             </div>
           </div>
@@ -456,10 +513,10 @@ export default function Home() {
         <div className={wrap}>
           <header className="mb-14 grid gap-8 lg:grid-cols-12 lg:items-end">
             <div className="lg:col-span-8">
-              <Reveal className={eyebrow}>Core expertise</Reveal>
-              <Heading id="expertise-heading" lines={['Four disciplines.', 'One connected structure.']} className={h2cls} />
+              <Reveal className={eyebrow}>The bigger picture</Reveal>
+              <Heading id="expertise-heading" lines={['Four things I spend a lot', 'of time thinking about.']} className={h2cls} />
             </div>
-            <Reveal delay={200} className="lg:col-span-4"><p className="max-w-[380px] text-[15px] leading-[1.65] text-[#72766f]">Practical support from shaping the opportunity through to building the systems that help it grow.</p></Reveal>
+            <Reveal delay={200} className="lg:col-span-4"><p className="max-w-[380px] text-[15px] leading-[1.65] text-[#72766f]">From that first crazy idea to a business that’s ready for its next big move.</p></Reveal>
           </header>
           <div className="grid gap-4 md:grid-cols-2 lg:gap-6">
             {expertise.map((e, i) => {
@@ -511,32 +568,18 @@ export default function Home() {
       {/* 4. Strategic framework */}
       <Framework />
 
-      {/* 5. Selected ventures */}
-      <section id="work" aria-labelledby="work-heading" className="py-24 sm:py-36">
-        <div className={wrap}>
-          <header className="mb-16 grid gap-8 lg:mb-24 lg:grid-cols-12 lg:items-end">
-            <div className="lg:col-span-8">
-              <Reveal className={eyebrow}>Selected ventures</Reveal>
-              <Heading id="work-heading" lines={['A few ventures,', 'built with intention.']} className={h2cls} />
-            </div>
-            <Reveal delay={200} className="lg:col-span-4 lg:text-right"><Link to="/ventures" className="group inline-flex items-center gap-2 text-sm font-semibold text-[#617319] transition-colors hover:text-[#171a17]">All ventures <Arrow /></Link></Reveal>
-          </header>
-          {ventures.map((v, i) => <Showcase key={v.name} v={v} i={i} />)}
-          <div className="mt-16 flex justify-center border-t border-[#d9ddd1] pt-10 sm:mt-20 sm:pt-12">
-            <Link to="/ventures#collection" className="group inline-flex min-h-12 items-center gap-3 rounded-full border border-[#a4be2d] bg-[#a4be2d] px-6 text-sm font-semibold text-[#1e2618] no-underline transition-[transform,background-color] duration-200 hover:scale-[1.02] hover:bg-[#b3cc35] active:scale-[.98]">The full lineup <Arrow /></Link>
-          </div>
-        </div>
-      </section>
+      {/* 5b. Brand portfolio: all brand images with a short description each, linking to the Ventures page */}
+      <Portfolio />
 
-      {/* 6. Working principles & impact */}
+      {/* 6. Strategy calls & numbers */}
       <section aria-labelledby="principles-heading" className="bg-[#f2f3ef] py-20 sm:py-24">
         <div className={wrap}>
           <header className="mb-10 grid gap-6 md:mb-14 lg:grid-cols-12 lg:items-end">
             <div className="lg:col-span-8">
-              <Reveal className={eyebrow}>Working principles</Reveal>
-              <Heading id="principles-heading" lines={['Three commitments', 'behind every engagement.']} className={h2cls} />
+              <Reveal className={eyebrow}>One conversation can help</Reveal>
+              <Heading id="principles-heading" lines={['Got 100 questions?', 'Start with the right one.']} className={h2cls} />
             </div>
-            <Reveal delay={180} className="max-w-md text-sm leading-[1.7] text-[#72766f] lg:col-span-4 lg:pb-2 lg:text-base">A practical standard for every decision, from defining the opportunity to building for lasting growth.</Reveal>
+            <Reveal delay={180} className="max-w-md text-sm leading-[1.7] text-[#72766f] lg:col-span-4 lg:pb-2 lg:text-base">You don’t always need a complete business transformation. Sometimes you just need a focused conversation to decide what to do next.</Reveal>
           </header>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             {principles.map(([t, d], i) => <Principle key={t} title={t} text={d} i={i} />)}

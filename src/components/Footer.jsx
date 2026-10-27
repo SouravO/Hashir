@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { ArrowUpRight, EnvelopeSimple, InstagramLogo, LinkedinLogo, MapPin, Phone, XLogo, YoutubeLogo } from '@phosphor-icons/react'
 
 const email = 'connect@hashirusman.online'
-const links = [['Home', '/'], ['About', '/about'], ['Ventures', '/ventures'], ['Contact', '/contact']]
+const links = [['Home', '/'], ['About', '/about'], ['Ventures', '/ventures'], ['Founderverse', '/founderverse'], ['Contact', '/contact']]
 const socials = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/', Icon: LinkedinLogo },
   { label: 'X', href: 'https://x.com/', Icon: XLogo },
@@ -16,7 +16,8 @@ export default function Footer() {
       <div className="mx-auto grid w-full max-w-[1600px] gap-9 px-6 py-12 sm:px-8 sm:py-14 md:grid-cols-2 lg:grid-cols-12 lg:items-start lg:gap-8 xl:px-10 xl:py-16">
         <section className="md:col-span-2 lg:col-span-4 lg:pr-8" aria-labelledby="footer-about-title">
           <p className="mb-5 text-xs font-semibold uppercase tracking-[.18em] text-[#a4be2d]">Venture architect · Business consultant</p>
-          <h2 id="footer-about-title" className="text-2xl font-bold tracking-[-.04em] text-[#f4f6f1] sm:text-3xl">Hashir Usman</h2>
+          <h2 id="footer-about-title" className="sr-only">Hashir Usman</h2>
+          <img src="/logo.png" alt="Hashir Usman" className="h-24 w-24 object-contain" />
           <p className="mt-4 max-w-xl text-sm leading-7 text-[#b8c4b4] sm:text-[15px]">I partner with founders and businesses to turn promising ideas into clear strategies, strong brands, and ventures built to grow.</p>
           <Link to="/about" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#a4be2d] no-underline transition-colors hover:text-[#c5d96a]">More about me <ArrowUpRight size={17} aria-hidden /></Link>
         </section>

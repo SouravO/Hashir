@@ -1,6 +1,7 @@
 import { version, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowDown, ArrowRight } from '@phosphor-icons/react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { brands, brandImage, groups } from '../data/brands'
 
 // One image for every placement. Swap this (or give a venture its own `image`) when real photos exist.
 const VENTURE_IMAGE = '/image.png'
@@ -9,20 +10,11 @@ const HERO_ALT = 'Featured photograph for the Ventures page'
 const FETCH_PRIORITY_PROP = Number.parseInt(version, 10) >= 19 ? 'fetchPriority' : 'fetchpriority'
 const NO_METRICS = 'No further outcome metrics are documented in the portfolio.'
 
-// Real portfolio data. `url` is null on purpose: add a real link and a visit button appears.
-const ventures = [
-  { id: 'moonbliss', name: 'Moonbliss', category: 'Wellness', year: '2020', url: null, tone: 'natural', crop: { pos: '30% 40%', zoom: 1.2 }, challenge: 'Build a wellness brand from the ground up.', strategy: 'Position the brand around the combination of ritual and science.', execution: 'Develop positioning, identity, digital presence, and go-to-market strategy.', results: 'A complete wellness brand.' },
-  { id: 'kesha', name: 'Kesha', category: 'Lifestyle', year: '2021', url: null, tone: 'tint', crop: { pos: '70% 30%', zoom: 1.7 }, challenge: 'Establish a clear identity and social presence for a lifestyle label.', strategy: 'Focus the brand on self-expression, colour, and community for modern urban women.', execution: 'Shape the brand identity and social media presence.', results: 'A defined identity and social media presence.' },
-  { id: 'sol', name: 'sol.', category: 'Consumer Goods', year: '2021', url: null, tone: 'muted', crop: { pos: '50% 70%', zoom: 1.5 }, challenge: 'Prepare a consumer goods venture for market with a sustainability focus.', strategy: 'Build the go-to-market plan around conscious living.', execution: 'Design the go-to-market plan and brand systems.', results: 'A go-to-market plan and brand systems.' },
-  { id: 'bare-logic', name: 'Bare Logic', category: 'Skincare', year: '2022', url: null, tone: 'natural', crop: { pos: '60% 20%', zoom: 1.4 }, challenge: 'Clarify the story of a science-backed skincare startup.', strategy: 'Develop investor narrative and brand positioning.', execution: 'Create an investor narrative and positioning for the brand.', results: 'Investor narrative and brand positioning.' },
-  { id: 'aii', name: 'Aii', category: 'Technology', year: '2023', url: null, tone: 'natural', crop: { pos: '50% 35%', zoom: 1.1 }, context: 'An AI-first technology company, taken on in 2023.', challenge: 'Create a business foundation for an AI-first technology company.', strategy: 'Connect the venture model, systems, and growth strategy.', execution: 'Architect the venture model, business systems, and growth strategy.', results: 'A venture model, business systems, and growth strategy.' },
-  { id: 'nothing-else', name: 'Nothing Else', category: 'Creative Studio', year: '2023', url: null, tone: 'accent', crop: { pos: '40% 55%', zoom: 1.3 }, challenge: 'Give a creative studio a clear brand and content direction.', strategy: 'Emphasize minimalism and craft.', execution: 'Build the brand strategy and content ecosystem.', results: 'A brand strategy and content ecosystem.' },
-]
-const featured = ventures.find((v) => v.id === 'aii')
-const collection = ventures.filter((v) => v.id !== featured.id)
-const years = ventures.map((v) => Number(v.year))
+// The featured case study. The full brand collection now lives in src/data/brands.js.
+const featured = { id: 'aii', name: 'Aii', category: 'Technology', year: '2023', url: null, crop: { pos: '50% 35%', zoom: 1.1 }, context: 'An AI-first technology company, taken on in 2023.', challenge: 'Create a business foundation for an AI-first technology company.', strategy: 'Connect the venture model, systems, and growth strategy.', execution: 'Architect the venture model, business systems, and growth strategy.', results: 'A venture model, business systems, and growth strategy.' }
+const years = [...brands.map((b) => Number(b.year)), Number(featured.year)]
 const span = `${Math.min(...years)}\u2013${Math.max(...years)}`
-const nameRow = `${ventures.map((v) => v.name).join('   \u2014   ')}   \u2014   `
+const nameRow = `${brands.map((b) => b.name).join('   \u2014   ')}   \u2014   `
 
 // Each stage only restates decisions documented in the ventures above.
 const stages = [
@@ -45,6 +37,7 @@ const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outli
 const stroke = 'text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,.55)]'
 const pill = 'rounded-full border px-3 py-1 text-xs font-medium'
 const move = 'transition-[opacity,transform,translate,scale]'
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
 // Scroll-scrubbed motion. Elements marked data-p get a CSS variable --p (0 to 1) that follows scroll, and
 // the styles read it with calc(). Modes: top (page scroll), enter (arriving), read (passing through
@@ -172,60 +165,152 @@ function VentureLink({ venture, className = '' }) {
   )
 }
 
-// Desktop: a row of panels where the active one opens wide. Mobile: the same panels stacked.
-// Hover, focus and tap all open a panel, and every panel's essentials stay readable once opened.
-function Gallery() {
-  const [open, setOpen] = useState(0)
+// Brand artwork from /public/ventures with a text fallback, so a missing file never shows a broken-image icon.
+function BrandArt({ b, alt = '', className = '', imgClass = '' }) {
+  const [bad, setBad] = useState(false)
   return (
-    <div className="mt-8 flex flex-col gap-2 lg:h-[clamp(560px,78svh,720px)] lg:flex-row lg:gap-3">
-      {collection.map((v, i) => {
-        const on = i === open
-        return (
-          <article
-            key={v.id}
-            id={v.id}
-            onMouseEnter={() => setOpen(i)}
-            className={`relative isolate flex scroll-mt-24 flex-col justify-end overflow-hidden rounded-[28px] bg-[#101310] text-white transition-[flex-grow,min-height] duration-[800ms] ${ease} motion-reduce:transition-none lg:min-h-0 lg:basis-0 ${on ? 'min-h-[640px] lg:flex-[7]' : 'min-h-[88px] lg:flex-[1]'}`}
-          >
-            <Cover crop={v.crop} tone={v.tone} on={on} mobileHeader={on}>
-              <div aria-hidden className={`absolute inset-0 transition-colors duration-700 ${on ? 'bg-[linear-gradient(to_top,#101310f0,#10131000_70%)]' : 'bg-[#101310]/55'}`} />
-            </Cover>
-            <button
-              type="button"
-              aria-expanded={on}
-              aria-controls={`panel-${v.id}`}
-              tabIndex={on ? -1 : 0}
-              onClick={() => setOpen(i)}
-              onFocus={() => setOpen(i)}
-              className={`absolute inset-0 z-20 flex items-center justify-between gap-3 px-5 text-left transition-opacity duration-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#a4be2d] lg:flex-col lg:px-0 lg:py-6 ${on ? 'pointer-events-none opacity-0' : 'opacity-100 delay-300'}`}
-            >
-              <span className="text-xs font-semibold tabular-nums text-[#a4be2d]">{v.year}</span>
-              <span className="text-xl font-bold tracking-[-.03em] lg:rotate-180 lg:text-2xl lg:[writing-mode:vertical-rl]">{v.name}</span>
-              <span aria-hidden className="grid size-8 place-items-center rounded-full border border-white/40 text-lg leading-none">+</span>
-            </button>
-            <div id={`panel-${v.id}`} className={`relative z-10 flex flex-col gap-4 transition-opacity duration-500 ${on ? 'visible px-5 pb-6 pt-[230px] opacity-100 delay-[250ms] sm:px-6 sm:pb-7 lg:p-9' : 'invisible max-h-0 overflow-hidden p-0 opacity-0'}`}>
-              <div className="flex items-center gap-3"><span className={`${pill} border-[#a4be2d]/60 text-[#a4be2d]`}>{v.category}</span><span className="text-xs tabular-nums text-white/70">{v.year}</span></div>
-              <h3 className="m-0 text-[clamp(38px,4.6vw,72px)] font-extrabold leading-[.95] tracking-[-.055em]">{v.name}</h3>
-              <p className="m-0 max-w-[52ch] text-[16px] leading-[1.6] text-[#e3e9dc]">{v.challenge}</p>
-              <dl className="m-0 grid gap-x-6 gap-y-3 text-[13px] leading-[1.6] text-[#cdd8c6] lg:grid-cols-3">
-                {[['Approach', v.strategy], ['Delivered', v.execution], ['Outcome', `${v.results} ${NO_METRICS}`]].map(([label, text]) => (
-                  <div key={label} className="border-t border-white/20 pt-3"><dt className="mb-1 text-[11px] font-bold text-[#a4be2d]">{label}</dt><dd className="m-0">{text}</dd></div>
-                ))}
-              </dl>
-              <VentureLink venture={v} />
-            </div>
-          </article>
-        )
-      })}
+    <div className={`relative overflow-hidden bg-[#f2f3ef] ${className}`}>
+      {bad
+        ? <span className="absolute inset-0 grid place-items-center p-2 text-center text-xs font-bold text-[#171a1b]/60">{b.name}</span>
+        : <img src={brandImage(b.file)} alt={alt} loading="lazy" decoding="async" draggable={false} onError={() => setBad(true)} className={`absolute inset-0 size-full object-cover ${imgClass}`} />}
     </div>
+  )
+}
+
+// The whole portfolio in one place: a logo wall for a quick overview, sector filters, and one expandable
+// row per brand holding its full brief. Works on every screen size, and #brand-<id> links open a brand directly.
+function Directory() {
+  const { hash } = useLocation()
+  const [filter, setFilter] = useState('All')
+  const [open, setOpen] = useState(brands[0].id)
+  const timer = useRef(0)
+  const list = filter === 'All' ? brands : brands.filter((b) => b.group === filter)
+  const sectorChips = ['All', ...groups]
+
+  const reveal = (id, delay, force) => {
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => {
+      const el = document.getElementById(`brand-${id}`)
+      if (!el) return
+      const top = el.getBoundingClientRect().top
+      if (force || top < 72 || top > window.innerHeight * 0.55) el.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block: 'start' })
+    }, delay)
+  }
+  const toggle = (id) => {
+    const next = open === id ? null : id
+    setOpen(next)
+    if (next) reveal(id, reduced() ? 0 : 640, false)
+  }
+  const pick = (g) => {
+    setFilter(g)
+    setOpen((g === 'All' ? brands : brands.filter((b) => b.group === g))[0].id)
+  }
+
+  useEffect(() => {
+    if (!hash.startsWith('#brand-')) return
+    const id = hash.slice('#brand-'.length)
+    if (brands.some((b) => b.id === id)) { setFilter('All'); setOpen(id); reveal(id, 700, true) }
+  }, [hash])
+  useEffect(() => () => clearTimeout(timer.current), [])
+
+  return (
+    <>
+      {/* Sector filters */}
+      <div role="group" aria-label="Filter brands by sector" className="mt-10 flex flex-wrap gap-2">
+        {sectorChips.map((g) => {
+          const count = g === 'All' ? brands.length : brands.filter((b) => b.group === g).length
+          const on = filter === g
+          return (
+            <button key={g} type="button" aria-pressed={on} onClick={() => pick(g)} className={`${pill} inline-flex min-h-10 items-center gap-2 px-4 text-sm transition-colors duration-300 ${on ? 'border-[#a4be2d] bg-[#a4be2d] text-[#101310]' : 'border-white/25 text-white/80 hover:border-[#a4be2d] hover:text-[#a4be2d]'} ${focus}`}>
+              {g}<span className={`text-xs tabular-nums ${on ? 'text-[#101310]/70' : 'text-[#a4be2d]'}`}>{count}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* One row per brand, the open one shows its full brief */}
+      <ul className="m-0 mt-8 list-none border-b border-white/15 p-0">
+        {list.map((b) => {
+          const on = open === b.id
+          const no = String(brands.indexOf(b) + 1).padStart(2, '0')
+          return (
+            <li key={b.id}>
+              <article id={`brand-${b.id}`} className="scroll-mt-24 border-t border-white/15">
+                <h3 className="m-0">
+                  <button
+                    type="button"
+                    id={`tab-${b.id}`}
+                    aria-expanded={on}
+                    aria-controls={`panel-${b.id}`}
+                    onClick={() => toggle(b.id)}
+                    className={`group/row flex w-full items-center gap-4 py-4 text-left sm:gap-6 sm:py-5 ${focus}`}
+                  >
+                    <BrandArt b={b} className="size-14 shrink-0 rounded-xl sm:size-[72px]" imgClass={`transition-transform duration-700 ${ease} group-hover/row:scale-110`} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-xs font-semibold tabular-nums text-[#a4be2d]">{no}<span className="font-medium text-white/60"> · {b.category} · {b.year}</span></span>
+                      <span className={`mt-1 block truncate text-[clamp(24px,3.6vw,48px)] font-extrabold leading-[1.05] tracking-[-.045em] transition-colors duration-300 ${on ? 'text-[#a4be2d]' : 'text-white group-hover/row:text-[#a4be2d]'}`}>{b.name}</span>
+                    </span>
+                    <span aria-hidden className={`grid size-9 shrink-0 place-items-center rounded-full border text-lg leading-none transition-[transform,background-color,border-color,color] duration-500 ${on ? 'rotate-45 border-[#a4be2d] bg-[#a4be2d] text-[#101310]' : 'border-white/40 text-white'}`}>+</span>
+                  </button>
+                </h3>
+                <div id={`panel-${b.id}`} role="region" aria-labelledby={`tab-${b.id}`} className={`grid transition-[grid-template-rows] duration-[600ms] ${ease} motion-reduce:transition-none ${on ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                  <div className={`min-h-0 overflow-hidden transition-[opacity,visibility] duration-500 motion-reduce:transition-none ${on ? 'visible opacity-100 delay-150' : 'invisible opacity-0'}`}>
+                    <div className="grid gap-6 pb-8 pt-2 lg:grid-cols-12 lg:gap-10 lg:pb-12">
+                      <div className="lg:col-span-4">
+                        <BrandArt b={b} alt={`${b.name} brand artwork`} className="aspect-square w-40 rounded-2xl sm:w-52 lg:w-full" imgClass={`transition-transform duration-[1400ms] ${ease} ${on ? 'scale-100' : 'scale-110'}`} />
+                        <dl className="m-0 mt-6 grid grid-cols-2 gap-x-6 gap-y-4 text-[13px] leading-[1.5] text-[#cdd8c6]">
+                          {[['Sector', b.group], ['Category', b.category], ['Year', b.year]].map(([label, text]) => (
+                            <div key={label}><dt className="mb-0.5 text-[11px] font-bold uppercase tracking-[.08em] text-[#a4be2d]">{label}</dt><dd className="m-0">{text}</dd></div>
+                          ))}
+                          <div className="col-span-2 border-t border-white/20 pt-3"><dt className="mb-0.5 text-[11px] font-bold uppercase tracking-[.08em] text-[#a4be2d]">Built for</dt><dd className="m-0">{b.audience}</dd></div>
+                        </dl>
+                      </div>
+                      <div className="lg:col-span-8">
+                        <p className="m-0 max-w-[56ch] text-[clamp(18px,1.8vw,24px)] leading-[1.45] text-white">{b.short}</p>
+                        <ul className="m-0 mt-5 flex list-none flex-wrap gap-2 p-0">
+                          <li className={`${pill} border-[#a4be2d]/60 text-[#a4be2d]`}>{b.category}</li>
+                          {b.scope.map((s) => <li key={s} className={`${pill} border-white/25 text-white/80`}>{s}</li>)}
+                        </ul>
+                        <p className="m-0 mt-6 max-w-[64ch] text-[15px] leading-[1.8] text-[#cdd8c6]">{b.overview}</p>
+                        <ol className="m-0 mt-8 grid list-none gap-3 p-0 md:grid-cols-3">
+                          {b.highlights.map((h, i) => (
+                            <li key={h} className="rounded-2xl border border-white/15 bg-white/[.04] p-4">
+                              <span className="text-xs font-bold tabular-nums text-[#a4be2d]">0{i + 1}</span>
+                              <p className="m-0 mt-2 text-[14px] leading-[1.55] text-white">{h}</p>
+                            </li>
+                          ))}
+                        </ol>
+                        <dl className="m-0 mt-8 grid gap-x-8 gap-y-5 text-[14px] leading-[1.65] text-[#cdd8c6] sm:grid-cols-2">
+                          {[['Challenge', b.challenge], ['Approach', b.strategy], ['Delivered', b.execution], ['Outcome', b.results]].map(([label, text]) => (
+                            <div key={label} className="border-t border-white/20 pt-3"><dt className="mb-1 text-[11px] font-bold uppercase tracking-[.08em] text-[#a4be2d]">{label}</dt><dd className="m-0">{text}</dd></div>
+                          ))}
+                        </dl>
+                        <VentureLink venture={b} className="mt-6" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </li>
+          )
+        })}
+      </ul>
+    </>
   )
 }
 
 export default function Ventures() {
   const root = useRef(null)
+  const { hash } = useLocation()
   useScrollVars(root)
   useReveal(root)
   useEffect(() => { document.title = 'Ventures | Hashir Usman' }, [])
+  // Section links such as /ventures#collection (brand links are handled inside Directory).
+  useEffect(() => {
+    if (!hash || hash.startsWith('#brand-')) return undefined
+    const frame = requestAnimationFrame(() => document.getElementById(hash.slice(1))?.scrollIntoView())
+    return () => cancelAnimationFrame(frame)
+  }, [hash])
 
   const steps = [
     ['Context', featured.context],
@@ -261,10 +346,10 @@ export default function Ventures() {
         </div>
         <nav aria-label="Ventures index" className={`${wrap} mt-5`}>
           <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
-            {ventures.map((v) => (
-              <li key={v.id}>
-                <a href={v.id === featured.id ? '#featured' : '#collection'} className={`inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 px-4 text-sm text-white/85 no-underline transition-colors hover:border-[#a4be2d] hover:text-[#a4be2d] ${focus}`}>
-                  <span className="text-xs tabular-nums text-[#a4be2d]">{v.year}</span>{v.name}
+            {[['#featured', `Featured case: ${featured.name}`, featured.year], ['#collection', `All ${brands.length} brands`, span], ['#value', 'How the work creates value', '']].map(([href, label, meta]) => (
+              <li key={href}>
+                <a href={href} className={`inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 px-4 text-sm text-white/85 no-underline transition-colors hover:border-[#a4be2d] hover:text-[#a4be2d] ${focus}`}>
+                  {meta ? <span className="text-xs tabular-nums text-[#a4be2d]">{meta}</span> : null}{label}
                 </a>
               </li>
             ))}
@@ -272,16 +357,14 @@ export default function Ventures() {
         </nav>
       </section>
 
-      {/* 02 Featured venture: oversized wordmark, a scrubbed statement and a timeline that draws itself */}
+      {/* 02 Featured venture: a scrubbed statement and a timeline that draws itself */}
       <section id="featured" aria-labelledby="featured-title" className="scroll-mt-16 overflow-hidden bg-[#F2F3EF] py-[clamp(48px,5.5vw,88px)] text-[#101310]">
         <div className={wrap}>
           <div className="flex items-center justify-between gap-4 text-xs font-semibold text-[#617319]">
             <span>02 / Featured venture</span>
             <span className="flex gap-2"><span className={`${pill} border-[#617319]/40`}>{featured.category}</span><span className={`${pill} border-[#617319]/40`}>{featured.year}</span></span>
           </div>
-          <div data-p="through" className="mt-2">
-            <h2 id="featured-title" style={{ transform: 'translateX(calc((.5 - var(--p, .5)) * 18vw))' }} className="m-0 whitespace-nowrap text-[clamp(120px,25vw,400px)] font-extrabold leading-[.8] tracking-[-.08em] text-[#153B2B] will-change-transform">{featured.name}</h2>
-          </div>
+          <h2 id="featured-title" className="sr-only">{featured.name} featured venture</h2>
           <div className="mt-8 grid gap-x-12 gap-y-10 lg:grid-cols-12">
             <div data-p="through" className="relative aspect-[4/5] overflow-hidden rounded-[28px] lg:col-span-5 lg:self-start">
               <div style={{ transform: 'translateY(calc((.5 - var(--p, .5)) * 14%))' }} className="absolute inset-x-0 -inset-y-[8%] will-change-transform">
@@ -310,7 +393,7 @@ export default function Ventures() {
         </div>
       </section>
 
-      {/* 03 Collection: an accordion of panels instead of a card grid */}
+      {/* 03 Collection: every brand, with a logo wall, sector filters and an expandable full brief per brand */}
       <section id="collection" aria-labelledby="collection-title" className="scroll-mt-16 bg-[#153B2B] py-[clamp(44px,5vw,80px)] text-white">
         <div className={wrap}>
           <div className="grid items-end gap-x-6 gap-y-4 lg:grid-cols-12">
@@ -318,14 +401,14 @@ export default function Ventures() {
               <p className="m-0 mb-3 text-xs font-semibold text-[#a4be2d]">03 / The collection</p>
               <Chars as="h2" id="collection-title" text="Each venture, its own brief." className="text-[clamp(34px,5vw,72px)] font-extrabold leading-[.98] tracking-[-.055em]" />
             </div>
-            <p className="m-0 max-w-[38ch] text-[15px] leading-[1.7] text-[#b9c7b2] lg:col-span-4">Moonbliss to Nothing Else, in chronological order. Hover, focus or tap a panel to open it.</p>
+              <p className="m-0 max-w-[38ch] text-[15px] leading-[1.7] text-[#b9c7b2] lg:col-span-4">{brands.length} brands in chronological order. Filter by sector or open a row to read its full brief.</p>
           </div>
-          <Gallery />
+          <Directory />
         </div>
       </section>
 
       {/* 04 Value: a timeline that draws itself as you scroll, with each stage tied to documented work */}
-      <section id="value" aria-labelledby="value-title" className="bg-[#F2F3EF] py-[clamp(48px,5.5vw,88px)] text-[#101310]">
+      <section id="value" aria-labelledby="value-title" className="scroll-mt-16 bg-[#F2F3EF] py-[clamp(48px,5.5vw,88px)] text-[#101310]">
         <div className={wrap}>
           <div className="grid items-end gap-x-6 gap-y-4 lg:grid-cols-12">
             <div className="lg:col-span-8">

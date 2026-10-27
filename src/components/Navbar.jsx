@@ -6,6 +6,7 @@ const links = [
   { to: '/', label: 'Home' },
   { to: '/about', label: 'About' },
   { to: '/ventures', label: 'Ventures' },
+  { to: '/founderverse', label: 'Founderverse' },
   { to: '/contact', label: 'Contact' },
 ]
 
@@ -58,7 +59,7 @@ export default function Navbar() {
       <header className={`sticky top-0 z-[100] border-b bg-[#f8f9f6]/95 backdrop-blur-md transition-[transform,background-color,border-color,box-shadow] duration-300 ${navVisible ? 'translate-y-0' : 'pointer-events-none -translate-y-full'} ${scrolled ? 'border-[#e7e9e2] shadow-[0_4px_20px_#10200810]' : 'border-transparent'}`}>
         <div className="relative mx-auto flex h-[80px] w-full max-w-[1760px] items-center gap-4 px-5 sm:px-8 xl:px-10 max-[768px]:h-16">
           <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-            <Link to="/" onClick={() => setMenuOpen(false)} aria-label="HU – Hashir Usman home" className="group grid size-12 shrink-0 animate-page-enter place-items-center rounded-full bg-[#a4be2d] text-[17px] font-extrabold tracking-[-1.5px] text-[#1e2618] no-underline shadow-[inset_0_1px_0_#ffffff80,0_4px_12px_#26320f1c] transition-transform duration-300 hover:rotate-[-8deg] hover:scale-105 max-[768px]:size-11">HU.</Link>
+            <Link to="/" onClick={() => setMenuOpen(false)} aria-label="Hashir Usman home" className="group grid size-16 shrink-0 animate-page-enter place-items-center transition-transform duration-300 hover:scale-105 max-[768px]:size-14"><img src="/logo.png" alt="" className="size-full object-contain" /></Link>
 
             <nav className="hidden animate-page-enter items-center gap-1.5 rounded-full border border-[#e2e5dc] bg-[#f0f0f3]/75 p-1.5 shadow-[0_12px_28px_-16px_#18181b55,0_4px_12px_-8px_#18181b2b] backdrop-blur-xl lg:flex" aria-label="Main navigation">
               {links.map((link) => <NavLink key={link.to} end={link.to === '/'} to={link.to} className={pillClass}>{({ isActive }) => <>

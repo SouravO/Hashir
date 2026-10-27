@@ -6,6 +6,7 @@ import Home from './pages/Home'
 import About from './pages/About'
 import Ventures from './pages/Ventures'
 import Contact from './pages/Contact'
+import Founderverse from './pages/Founderverse'
 
 function ScrollToRouteTarget() {
   const { pathname, hash } = useLocation()
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/ventures" element={<Ventures />} />
+          <Route path="/founderverse" element={<Founderverse />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/portfolio" element={<Navigate to="/ventures" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
