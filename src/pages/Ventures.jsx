@@ -26,10 +26,10 @@ const nameRow = `${ventures.map((v) => v.name).join('   \u2014   ')}   \u2014   
 
 // Each stage only restates decisions documented in the ventures above.
 const stages = [
-  { no: '01', title: 'Identify the right opportunity', text: 'Each engagement began with a specific opening: a wellness brand built from the ground up, a consumer goods venture with a sustainability focus.', refs: ['Moonbliss', 'sol.'], crop: { pos: '50% 50%', zoom: 1.05 }, tone: 'natural' },
-  { no: '02', title: 'Understand the customer and the market', text: 'Kesha was shaped around self-expression, colour, and community for modern urban women. Bare Logic needed the story of a science-backed startup made clear.', refs: ['Kesha', 'Bare Logic'], crop: { pos: '50% 50%', zoom: 1.5, tx: 8, ty: -4 }, tone: 'tint' },
-  { no: '03', title: 'Design the model and the positioning', text: 'Moonbliss was positioned around ritual and science, Bare Logic received an investor narrative, and Aii a connected venture model.', refs: ['Moonbliss', 'Bare Logic', 'Aii'], crop: { pos: '50% 50%', zoom: 1.7, tx: -8, ty: 6 }, tone: 'muted' },
-  { no: '04', title: 'Turn decisions into execution', text: 'sol. received a go-to-market plan and brand systems, Aii business systems and a growth strategy, Nothing Else a content ecosystem.', refs: ['sol.', 'Aii', 'Nothing Else'], crop: { pos: '50% 50%', zoom: 1.3, tx: 4, ty: 8 }, tone: 'accent' },
+  { no: '01', title: 'Identify the right opportunity', text: 'Each engagement began with a specific opening: a wellness brand built from the ground up, a consumer goods venture with a sustainability focus.', refs: ['Moonbliss', 'sol.'], image: '/ven1.png', crop: { pos: '50% 50%', zoom: 1.05 }, tone: 'natural' },
+  { no: '02', title: 'Understand the customer and the market', text: 'Kesha was shaped around self-expression, colour, and community for modern urban women. Bare Logic needed the story of a science-backed startup made clear.', refs: ['Kesha', 'Bare Logic'], image: '/ven2.png', crop: { pos: '50% 50%', zoom: 1.5, tx: 8, ty: -4 }, tone: 'tint' },
+  { no: '03', title: 'Design the model and the positioning', text: 'Moonbliss was positioned around ritual and science, Bare Logic received an investor narrative, and Aii a connected venture model.', refs: ['Moonbliss', 'Bare Logic', 'Aii'], image: '/ven3.png', crop: { pos: '50% 50%', zoom: 1.7, tx: -8, ty: 6 }, tone: 'muted' },
+  { no: '04', title: 'Turn decisions into execution', text: 'sol. received a go-to-market plan and brand systems, Aii business systems and a growth strategy, Nothing Else a content ecosystem.', refs: ['sol.', 'Aii', 'Nothing Else'], image: '/ven4.png', crop: { pos: '50% 50%', zoom: 1.3, tx: 4, ty: 8 }, tone: 'accent' },
 ]
 
 const TONES = {
@@ -139,14 +139,14 @@ function Scrub({ text, className = '' }) {
   )
 }
 
-function Cover({ crop, tone = 'natural', on = true, priority = false, alt = '', className = '', mobileHeader = false, children }) {
+function Cover({ crop, tone = 'natural', on = true, priority = false, alt = '', image = VENTURE_IMAGE, className = '', mobileHeader = false, children }) {
   const { pos, zoom = 1, tx = 0, ty = 0 } = crop
   const priorityProps = priority ? { [FETCH_PRIORITY_PROP]: 'high' } : {}
   return (
     <div className={`${mobileHeader ? 'absolute inset-x-0 top-0 h-[210px] lg:inset-0 lg:h-auto' : 'absolute inset-0'} overflow-hidden bg-[#153B2B] ${className}`}>
       <div className={`size-full transition-transform duration-[1400ms] ${ease} motion-reduce:transition-none`} style={{ transform: `translate(${tx}%,${ty}%) scale(${zoom})` }}>
         <img
-          src={VENTURE_IMAGE}
+          src={image}
           alt={alt}
           loading={priority ? 'eager' : 'lazy'}
           {...priorityProps}
@@ -249,7 +249,7 @@ export default function Ventures() {
           className="relative h-[clamp(360px,64svh,680px)] overflow-hidden bg-[#153B2B]"
         >
           <div style={{ transform: 'scale(calc(1.22 - .22 * var(--p, 1)))' }} className="absolute inset-0 will-change-transform">
-            <Cover crop={{ pos: '50% 30%', zoom: 1 }} tone="natural" priority alt={HERO_ALT} />
+            <Cover crop={{ pos: '50% 30%', zoom: 1 }} tone="natural" priority alt={HERO_ALT} image="/ventureshero.png" />
           </div>
           <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,#101310b3,#10131000_45%)]" />
           <div className="absolute inset-x-0 bottom-0 z-10 flex flex-wrap items-end justify-between gap-4 p-5 md:p-8">
@@ -285,7 +285,7 @@ export default function Ventures() {
           <div className="mt-8 grid gap-x-12 gap-y-10 lg:grid-cols-12">
             <div data-p="through" className="relative aspect-[4/5] overflow-hidden rounded-[28px] lg:col-span-5 lg:self-start">
               <div style={{ transform: 'translateY(calc((.5 - var(--p, .5)) * 14%))' }} className="absolute inset-x-0 -inset-y-[8%] will-change-transform">
-                <Cover crop={featured.crop} tone="natural" />
+                <Cover crop={featured.crop} tone="natural" image="/ventures1.png" />
               </div>
               <span className={`${pill} absolute bottom-4 left-4 border-white/40 bg-[#101310]/50 text-white`}>{featured.category}, {featured.year}</span>
             </div>
@@ -353,7 +353,7 @@ export default function Ventures() {
                   </div>
                   <span aria-hidden className="absolute left-0 top-0 z-10 grid size-7 place-items-center rounded-full bg-[#153B2B] text-[11px] font-bold text-[#a4be2d] lg:static lg:order-2 lg:mx-auto lg:size-12 lg:text-sm">{item.no}</span>
                   <div className={`${right ? 'lg:order-1 lg:pr-10' : 'lg:order-3 lg:pl-10'}`}>
-                    <div className="relative aspect-[16/10] overflow-hidden rounded-[24px]"><Cover crop={item.crop} tone={item.tone} /></div>
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-[24px]"><Cover crop={item.crop} tone={item.tone} image={item.image} /></div>
                   </div>
                 </li>
               )
