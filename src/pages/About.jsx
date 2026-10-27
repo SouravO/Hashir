@@ -67,10 +67,10 @@ const lenses = [
     id: 'assumption',
     image: '/slide1.png',
     no: '01',
-    title: 'I’ve got an idea.',
-    question: 'Nice. Let’s start with the idea.',
-    detail: 'We look at the problem it solves, who the customers could be, what the market and competitors look like, how the business model might work, and what needs validating first. You leave with clearer thinking and a few important questions to answer.',
-    caption: 'Start with the idea.',
+    title: 'Startup Idea Strategy Call',
+    question: "Let's talk ideas",
+    detail: "Got an idea you can't stop thinking about? Let's figure out what makes sense and what to test next.",
+    caption: '01 / Ideas',
     crop: { pos: '50% 25%', zoom: 1 },
     tone: 'natural',
     clip: '[clip-path:inset(0_0_0_0)]',
@@ -79,10 +79,10 @@ const lenses = [
     id: 'customer',
     image: '/slide2.png',
     no: '02',
-    title: 'I run a business.',
-    question: 'Tell me what’s happening in the business.',
-    detail: 'The business model, sales and growth, positioning, profitability, and whatever is getting in the way. The aim is a clearer view of the issues and the decisions worth exploring, with no unnecessary presentations.',
-    caption: 'Look at what’s really happening.',
+    title: 'Business Strategy Consultation',
+    question: 'Help me figure it out',
+    detail: "Something not working the way you expected? Let's find the gaps and figure out the next move.",
+    caption: '02 / Business',
     crop: { pos: '30% 30%', zoom: 1.7 },
     tone: 'muted',
     clip: '[clip-path:inset(6%_0_0_10%)]',
@@ -91,10 +91,10 @@ const lenses = [
     id: 'logic',
     image: '/slide3.png',
     no: '03',
-    title: 'I need more customers.',
-    question: 'Let’s look at who you’re trying to reach.',
-    detail: 'Brand positioning, customer segments, the product offer, pricing and channels, launch planning, and how interest turns into sales. A good product still needs people who understand why it matters.',
-    caption: 'Start with who it’s for.',
+    title: 'Brand & Growth Strategy',
+    question: "Let's talk growth",
+    detail: "Good product. Not enough traction? Let's get the positioning, marketing and growth direction right.",
+    caption: '03 / Growth',
     crop: { pos: '70% 60%', zoom: 2 },
     tone: 'tint',
     clip: '[clip-path:inset(0_12%_8%_0)]',
@@ -103,10 +103,10 @@ const lenses = [
     id: 'next',
     image: '/slide4.png',
     no: '04',
-    title: 'I’m preparing for growth.',
-    question: 'Building something big? Let’s get the direction right.',
-    detail: 'Where the business stands today, the risks and assumptions behind the plan, investor readiness, and the strategic decisions ahead. The conversation ends with immediate next steps.',
-    caption: 'Choose the next move.',
+    title: 'Business Systems & Scaling',
+    question: 'Fix the chaos',
+    detail: "Business growing faster than your systems? Let's get people, processes, and operations working together.",
+    caption: '04 / Systems',
     crop: { pos: '50% 15%', zoom: 1.4 },
     tone: 'accent',
     clip: '[clip-path:inset(8%_5%_0_5%)]',
@@ -476,10 +476,10 @@ export default function About() {
           <Lines
             as="h1"
             id="about-title"
-            lines={['Hi again.', 'I’m', <span key="v" className="text-[#a4be2d]">Hashir.</span>]}
+            lines={['Need a second brain?', 'Or someone to help', 'build the whole thing?']}
             delay={250}
             step={140}
-            className="text-[clamp(54px,10.5vw,176px)] font-extrabold leading-[.88] tracking-[-.06em]"
+            className="text-[clamp(38px,4.8vw,92px)] font-extrabold leading-[.92] tracking-[-.06em]"
           />
         </div>
 
@@ -492,7 +492,7 @@ export default function About() {
           </div>
           <div className="flex flex-col gap-6">
             <Reveal as="p" delay={700} className="max-w-[40ch] text-[15px] leading-[1.7] text-[#dfe6d8]">
-              I like building things. Brands. Businesses. Systems. Strategies. And occasionally, fixing problems nobody realised were connected.
+              Some problems need one good conversation. Others need research, planning, systems, execution and a little time.
             </Reveal>
             <Reveal delay={850}>
               <a href="#story" className={`group inline-flex min-h-11 items-center gap-4 text-sm font-medium text-white no-underline ${focus}`}>
@@ -687,13 +687,13 @@ export default function About() {
               <Lines
                 as="h2"
                 id="thinking-heading"
-                lines={['What brings', 'you here?']}
+                lines={['Got something on your mind?', "I've probably got a few questions."]}
                 delay={100}
                 className="mt-4 text-[clamp(36px,6vw,92px)] font-extrabold leading-[.98] tracking-[-.055em]"
               />
             </div>
             <Reveal as="p" delay={300} className="col-span-12 max-w-[34ch] text-[15px] leading-[1.7] text-[#b9c7b2] lg:col-span-4">
-              Every conversation starts somewhere. Choose what sounds like you.
+              An idea, a business challenge, or something that needs a fresh pair of eyes. Here's where we can start.
             </Reveal>
           </div>
           <Thinking />
