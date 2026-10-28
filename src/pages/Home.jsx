@@ -5,6 +5,14 @@ import { brands, brandImage } from '../data/brands'
 
 /* ---------- Editable content (taken from the HU. content blueprint) ---------- */
 const statement = 'I build businesses, and fix a few things along the way. I work with *startup founders*, *business owners*, and *teams* to turn ideas into plans, and plans into action.'
+const styledWords = (text) => {
+  const tokens = text.split(' ')
+  return tokens.map((token, index) => {
+    const start = tokens.slice(0, index + 1).findLastIndex((word) => word.startsWith('*'))
+    const end = tokens.slice(0, index).findLastIndex((word) => /\*\W*$/.test(word))
+    return [token.replaceAll('*', ''), start > end]
+  })
+}
 
 const expertise = [
   { title: 'Venture Architecture', desc: 'Making startup ideas more practical, testable, and ready to build.', tags: ['Idea validation', 'Business models', 'Venture strategy'] },
@@ -99,8 +107,7 @@ function CountUp({ to, suffix = '' }) {
   const [ref, seen] = useInView()
   const [n, setN] = useState(() => (calm() ? to : 0))
   useEffect(() => {
-    if (!seen) return undefined
-    if (calm()) { setN(to); return undefined }
+    if (!seen || calm()) return undefined
     let raf = 0
     let t0
     const step = (t) => {
@@ -977,7 +984,7 @@ export default function Home() {
     const t = setTimeout(() => setReady(true), 80)
     return () => clearTimeout(t)
   }, [])
-  const words = (() => { let on = false; return statement.split(' ').map((t) => { if (t.startsWith('*')) on = true; const hot = on; if (/\*\W*$/.test(t)) on = false; return [t.replaceAll('*', ''), hot] }) })()
+  const words = styledWords(statement)
   const line = (d) => ({ strokeDashoffset: ready ? 0 : 1, transition: `stroke-dashoffset 1800ms ${EASE} ${d}ms` })
 
   return (

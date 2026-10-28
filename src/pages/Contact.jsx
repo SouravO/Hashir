@@ -42,6 +42,8 @@ export default function Contact() {
   useEffect(() => {
     const slug = new URLSearchParams(search).get('about')
     const match = topics.find((item) => item.slug === slug)
+    // Keep the selected form topic in sync with links from other pages.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (match) setTopic(match.label)
   }, [search])
 

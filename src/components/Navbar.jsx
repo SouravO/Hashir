@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { ArrowUpRight, List, MapPin, X } from '@phosphor-icons/react'
+import { ArrowUpRight, List, X } from '@phosphor-icons/react'
+import BookingDialog from './BookingModal'
 
 const links = [
   { to: '/', label: 'Home' },
@@ -12,10 +13,12 @@ const links = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [bookingOpen, setBookingOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [navVisible, setNavVisible] = useState(true)
   const navRef = useRef(null)
   const buttonRef = useRef(null)
+  const bookingTriggerRef = useRef(null)
   const lastScrollY = useRef(0)
 
   useEffect(() => {
@@ -77,11 +80,12 @@ export default function Navbar() {
           </nav>
 
           <div className="ml-auto flex shrink-0 items-center gap-3 sm:gap-5">
-            <Link to="/contact" onClick={() => setMenuOpen(false)} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#a4be2d] bg-[#a4be2d] px-5 text-xs font-semibold text-[#1e2618] no-underline transition-[transform,background-color] duration-200 hover:scale-[1.02] hover:bg-[#b3cc35] active:scale-[.98] max-[420px]:min-h-10 max-[420px]:px-3 max-[420px]:text-[11px]">Let’s Cook.<ArrowUpRight size={15} aria-hidden /></Link>
+            <Link to="/contact" data-booking-trigger onClick={(event) => { event.preventDefault(); setMenuOpen(false); bookingTriggerRef.current = event.currentTarget; setBookingOpen(true) }} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#a4be2d] bg-[#a4be2d] px-5 text-xs font-semibold text-[#1e2618] no-underline transition-[transform,background-color] duration-200 hover:scale-[1.02] hover:bg-[#b3cc35] active:scale-[.98] max-[420px]:min-h-10 max-[420px]:px-3 max-[420px]:text-[11px]">Let’s Cook.<ArrowUpRight size={15} aria-hidden /></Link>
             <button ref={buttonRef} type="button" className="grid size-11 shrink-0 place-items-center rounded-full border border-[#e2e5dc] bg-white/70 text-[#171a17] transition-colors hover:border-[#b3c87c] hover:bg-[#eaf0db] lg:hidden max-[420px]:size-10" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="main-nav" onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X size={21} aria-hidden /> : <List size={21} aria-hidden />}</button>
           </div>
         </div>
       </header>
+      {bookingOpen && <BookingDialog onClose={() => setBookingOpen(false)} triggerRef={bookingTriggerRef} />}
     </>
   )
 }

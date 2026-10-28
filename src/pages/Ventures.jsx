@@ -207,6 +207,8 @@ function Directory() {
   useEffect(() => {
     if (!hash.startsWith('#brand-')) return
     const id = hash.slice('#brand-'.length)
+    // A deep link selects and opens the matching project in the directory.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (brands.some((b) => b.id === id)) { setFilter('All'); setOpen(id); reveal(id, 700, true) }
   }, [hash])
   useEffect(() => () => clearTimeout(timer.current), [])
