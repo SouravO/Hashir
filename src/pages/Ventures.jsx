@@ -8,20 +8,18 @@ const VENTURE_IMAGE = '/image.png'
 const HERO_ALT = 'Featured photograph for the Ventures page'
 // React 19 reads `fetchPriority`; React 18 only passes the lowercase attribute through without a warning.
 const FETCH_PRIORITY_PROP = Number.parseInt(version, 10) >= 19 ? 'fetchPriority' : 'fetchpriority'
-const NO_METRICS = 'No further outcome metrics are documented in the portfolio.'
+const NO_METRICS = 'No outcome metrics are published for this project.'
 
-// The featured case study. The full brand collection now lives in src/data/brands.js.
-const featured = { id: 'aii', name: 'Aii', category: 'Technology', year: '2023', url: null, crop: { pos: '50% 35%', zoom: 1.1 }, context: 'An AI-first technology company, taken on in 2023.', challenge: 'Create a business foundation for an AI-first technology company.', strategy: 'Connect the venture model, systems, and growth strategy.', execution: 'Architect the venture model, business systems, and growth strategy.', results: 'A venture model, business systems, and growth strategy.' }
-const years = [...brands.map((b) => Number(b.year)), Number(featured.year)]
-const span = `${Math.min(...years)}\u2013${Math.max(...years)}`
+// The featured build. The full collection lives in src/data/brands.js.
+const featured = { id: 'dayone', name: 'Dayone Venture Studio', category: 'Venture Building', url: null, crop: { pos: '50% 35%', zoom: 1.1 }, statement: 'Building startups, founders, and the systems behind them.', context: 'A startup studio where my work spans venture strategy, founder development, operational systems, and business execution.', role: 'Venture Leadership, Strategy, and Operations.' }
 const nameRow = `${brands.map((b) => b.name).join('   \u2014   ')}   \u2014   `
 
-// Each stage only restates decisions documented in the ventures above.
+// Each stage only points to projects documented in the collection above.
 const stages = [
-  { no: '01', title: 'Identify the right opportunity', text: 'Each engagement began with a specific opening: a wellness brand built from the ground up, a consumer goods venture with a sustainability focus.', refs: ['Moonbliss', 'sol.'], image: '/ven1.png', crop: { pos: '50% 50%', zoom: 1.05 }, tone: 'natural' },
-  { no: '02', title: 'Understand the customer and the market', text: 'Kesha was shaped around self-expression, colour, and community for modern urban women. Bare Logic needed the story of a science-backed startup made clear.', refs: ['Kesha', 'Bare Logic'], image: '/ven2.png', crop: { pos: '50% 50%', zoom: 1.5, tx: 8, ty: -4 }, tone: 'tint' },
-  { no: '03', title: 'Design the model and the positioning', text: 'Moonbliss was positioned around ritual and science, Bare Logic received an investor narrative, and Aii a connected venture model.', refs: ['Moonbliss', 'Bare Logic', 'Aii'], image: '/ven3.png', crop: { pos: '50% 50%', zoom: 1.7, tx: -8, ty: 6 }, tone: 'muted' },
-  { no: '04', title: 'Turn decisions into execution', text: 'sol. received a go-to-market plan and brand systems, Aii business systems and a growth strategy, Nothing Else a content ecosystem.', refs: ['sol.', 'Aii', 'Nothing Else'], image: '/ven4.png', crop: { pos: '50% 50%', zoom: 1.3, tx: 4, ty: 8 }, tone: 'accent' },
+  { no: '01', title: 'Start from scratch', text: 'Some projects began as ideas: a coffee business concept, a used-car marketplace, and a networking concept for founders and venture capital professionals.', refs: ['DE COFF', 'CarBroker', 'START-X'], image: '/ven1.png', crop: { pos: '50% 50%', zoom: 1.05 }, tone: 'natural' },
+  { no: '02', title: 'Find the right direction', text: 'Others needed a clear identity and positioning: a women-focused hostel brand, a premium fashion identity, and a hostel discovery platform.', refs: ['Hosther Hostels', 'Ezkaa', 'Oxtel'], image: '/ven2.png', crop: { pos: '50% 50%', zoom: 1.5, tx: 8, ty: -4 }, tone: 'tint' },
+  { no: '03', title: 'Build the venture', text: 'Some needed venture structure: Moonbliss across strategy, positioning, brand, and go-to-market, NO TWO across architecture and product strategy, and Dayone across strategy and operations.', refs: ['Moonbliss', 'NO TWO', 'Dayone Venture Studio'], image: '/ven3.png', crop: { pos: '50% 50%', zoom: 1.7, tx: -8, ty: 6 }, tone: 'muted' },
+  { no: '04', title: 'Make it run', text: 'The operation behind the brand: kitchen and dish SOPs for Zaati, operational SOPs and menu engineering for Hungry Potato, and scaling, valuation, and AI planning for Hand Revolution.', refs: ['Zaati', 'Hungry Potato', 'Hand Revolution'], image: '/ven4.png', crop: { pos: '50% 50%', zoom: 1.3, tx: 4, ty: 8 }, tone: 'accent' },
 ]
 
 const TONES = {
@@ -160,7 +158,7 @@ function VentureLink({ venture, className = '' }) {
   if (!venture.url) return null
   return (
     <a href={venture.url} target="_blank" rel="noreferrer" className={`group/link inline-flex min-h-11 items-center gap-2 self-start rounded-full bg-[#a4be2d] px-5 text-sm font-semibold text-[#101310] no-underline ${focus} ${className}`}>
-      Visit {venture.name}<ArrowRight size={16} weight="light" aria-hidden className="transition-transform duration-300 motion-safe:group-hover/link:translate-x-1" />
+      Explore the Build<ArrowRight size={16} weight="light" aria-hidden className="transition-transform duration-300 motion-safe:group-hover/link:translate-x-1" />
     </a>
   )
 }
@@ -177,8 +175,8 @@ function BrandArt({ b, alt = '', className = '', imgClass = '' }) {
   )
 }
 
-// The whole portfolio in one place: a logo wall for a quick overview, sector filters, and one expandable
-// row per brand holding its full brief. Works on every screen size, and #brand-<id> links open a brand directly.
+// The whole portfolio in one place: compact logos in each row and one expandable text panel per project.
+// Works on every screen size, and #brand-<id> links open a project directly.
 function Directory() {
   const { hash } = useLocation()
   const [filter, setFilter] = useState('All')
@@ -216,7 +214,7 @@ function Directory() {
   return (
     <>
       {/* Sector filters */}
-      <div role="group" aria-label="Filter brands by sector" className="mt-10 flex flex-wrap gap-2">
+      <div role="group" aria-label="Filter projects by sector" className="mt-10 flex flex-wrap gap-2">
         {sectorChips.map((g) => {
           const count = g === 'All' ? brands.length : brands.filter((b) => b.group === g).length
           const on = filter === g
@@ -228,7 +226,7 @@ function Directory() {
         })}
       </div>
 
-      {/* One row per brand, the open one shows its full brief */}
+      {/* One row per project, the open one shows what it is and the scope */}
       <ul className="m-0 mt-8 list-none border-b border-white/15 p-0">
         {list.map((b) => {
           const on = open === b.id
@@ -247,7 +245,7 @@ function Directory() {
                   >
                     <BrandArt b={b} className="size-14 shrink-0 rounded-xl sm:size-[72px]" imgClass={`transition-transform duration-700 ${ease} group-hover/row:scale-110`} />
                     <span className="min-w-0 flex-1">
-                      <span className="block text-xs font-semibold tabular-nums text-[#a4be2d]">{no}<span className="font-medium text-white/60"> · {b.category} · {b.year}</span></span>
+                      <span className="block text-xs font-semibold tabular-nums text-[#a4be2d]">{no}<span className="font-medium text-white/60"> · {b.category}</span></span>
                       <span className={`mt-1 block truncate text-[clamp(24px,3.6vw,48px)] font-extrabold leading-[1.05] tracking-[-.045em] transition-colors duration-300 ${on ? 'text-[#a4be2d]' : 'text-white group-hover/row:text-[#a4be2d]'}`}>{b.name}</span>
                     </span>
                     <span aria-hidden className={`grid size-9 shrink-0 place-items-center rounded-full border text-lg leading-none transition-[transform,background-color,border-color,color] duration-500 ${on ? 'rotate-45 border-[#a4be2d] bg-[#a4be2d] text-[#101310]' : 'border-white/40 text-white'}`}>+</span>
@@ -257,34 +255,18 @@ function Directory() {
                   <div className={`min-h-0 overflow-hidden transition-[opacity,visibility] duration-500 motion-reduce:transition-none ${on ? 'visible opacity-100 delay-150' : 'invisible opacity-0'}`}>
                     <div className="grid gap-6 pb-8 pt-2 lg:grid-cols-12 lg:gap-10 lg:pb-12">
                       <div className="lg:col-span-4">
-                        <BrandArt b={b} alt={`${b.name} brand artwork`} className="aspect-square w-40 rounded-2xl sm:w-52 lg:w-full" imgClass={`transition-transform duration-[1400ms] ${ease} ${on ? 'scale-100' : 'scale-110'}`} />
-                        <dl className="m-0 mt-6 grid grid-cols-2 gap-x-6 gap-y-4 text-[13px] leading-[1.5] text-[#cdd8c6]">
-                          {[['Sector', b.group], ['Category', b.category], ['Year', b.year]].map(([label, text]) => (
+                        <dl className="m-0 grid grid-cols-2 gap-x-6 gap-y-4 text-[13px] leading-[1.5] text-[#cdd8c6]">
+                          {[['Sector', b.group], ['Category', b.category]].map(([label, text]) => (
                             <div key={label}><dt className="mb-0.5 text-[11px] font-bold uppercase tracking-[.08em] text-[#a4be2d]">{label}</dt><dd className="m-0">{text}</dd></div>
                           ))}
-                          <div className="col-span-2 border-t border-white/20 pt-3"><dt className="mb-0.5 text-[11px] font-bold uppercase tracking-[.08em] text-[#a4be2d]">Built for</dt><dd className="m-0">{b.audience}</dd></div>
                         </dl>
                       </div>
                       <div className="lg:col-span-8">
                         <p className="m-0 max-w-[56ch] text-[clamp(18px,1.8vw,24px)] leading-[1.45] text-white">{b.short}</p>
-                        <ul className="m-0 mt-5 flex list-none flex-wrap gap-2 p-0">
-                          <li className={`${pill} border-[#a4be2d]/60 text-[#a4be2d]`}>{b.category}</li>
+                        <p className="m-0 mt-6 text-[11px] font-bold uppercase tracking-[.08em] text-[#a4be2d]">Scope</p>
+                        <ul className="m-0 mt-3 flex list-none flex-wrap gap-2 p-0">
                           {b.scope.map((s) => <li key={s} className={`${pill} border-white/25 text-white/80`}>{s}</li>)}
                         </ul>
-                        <p className="m-0 mt-6 max-w-[64ch] text-[15px] leading-[1.8] text-[#cdd8c6]">{b.overview}</p>
-                        <ol className="m-0 mt-8 grid list-none gap-3 p-0 md:grid-cols-3">
-                          {b.highlights.map((h, i) => (
-                            <li key={h} className="rounded-2xl border border-white/15 bg-white/[.04] p-4">
-                              <span className="text-xs font-bold tabular-nums text-[#a4be2d]">0{i + 1}</span>
-                              <p className="m-0 mt-2 text-[14px] leading-[1.55] text-white">{h}</p>
-                            </li>
-                          ))}
-                        </ol>
-                        <dl className="m-0 mt-8 grid gap-x-8 gap-y-5 text-[14px] leading-[1.65] text-[#cdd8c6] sm:grid-cols-2">
-                          {[['Challenge', b.challenge], ['Approach', b.strategy], ['Delivered', b.execution], ['Outcome', b.results]].map(([label, text]) => (
-                            <div key={label} className="border-t border-white/20 pt-3"><dt className="mb-1 text-[11px] font-bold uppercase tracking-[.08em] text-[#a4be2d]">{label}</dt><dd className="m-0">{text}</dd></div>
-                          ))}
-                        </dl>
                         <VentureLink venture={b} className="mt-6" />
                       </div>
                     </div>
@@ -304,7 +286,7 @@ export default function Ventures() {
   const { hash } = useLocation()
   useScrollVars(root)
   useReveal(root)
-  useEffect(() => { document.title = 'Ventures | Hashir Usman' }, [])
+  useEffect(() => { document.title = 'Startups & Businesses | Hashir Usman' }, [])
   // Section links such as /ventures#collection (brand links are handled inside Directory).
   useEffect(() => {
     if (!hash || hash.startsWith('#brand-')) return undefined
@@ -313,11 +295,9 @@ export default function Ventures() {
   }, [hash])
 
   const steps = [
-    ['Context', featured.context],
-    ['Challenge', featured.challenge],
-    ['Strategic approach', featured.strategy],
-    ['Execution', featured.execution],
-    ['Outcome', `${featured.results} ${NO_METRICS}`],
+    ['The venture', featured.context],
+    ['My role', featured.role],
+    ['Outcome', NO_METRICS],
   ]
 
   return (
@@ -325,9 +305,9 @@ export default function Ventures() {
       {/* 01 Hero: the image starts as an inset card and opens to full width as you scroll */}
       <section data-p="top" aria-labelledby="ventures-title" className="bg-[#101310] pb-6 text-white">
        
-        <div className={`${wrap} grid items-end gap-x-10 gap-y-5 pb-8 pt-3 lg:grid-cols-12`}>
-          <Chars as="h1" id="ventures-title" text="Ideas are only the beginning." delay={150} className="text-[clamp(44px,8.4vw,136px)] font-extrabold leading-[.92] tracking-[-.06em] lg:col-span-9" />
-          <p className="m-0 max-w-[40ch] text-[15px] leading-[1.7] text-[#dfe6d8] lg:col-span-3">A curated set of ventures and business projects, from first brand to venture model. Each one shows the challenge, the decisions made, and what was delivered.</p>
+        <div className={`${wrap} grid items-end gap-x-10 gap-y-5 pb-8 pt-6 lg:grid-cols-12`}>
+          <Chars as="h1" id="ventures-title" text="A few things I’ve had my hands in." delay={150} className="max-w-[13ch] text-[clamp(42px,6.2vw,104px)] font-extrabold leading-[.98] tracking-[-.055em] lg:col-span-8" />
+          <p className="m-0 max-w-[38ch] pb-2 text-[15px] leading-[1.7] text-[#dfe6d8] lg:col-span-4">Some started from scratch. Some needed a new direction. Others needed better operations, sales systems, or room to grow.</p>
         </div>
         <div
           style={{ marginInline: 'calc((1 - var(--p, 1)) * 4vw)', borderRadius: 'calc((1 - var(--p, 1)) * 36px)' }}
@@ -338,15 +318,15 @@ export default function Ventures() {
           </div>
           <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,#101310b3,#10131000_45%)]" />
           <div className="absolute inset-x-0 bottom-0 z-10 flex flex-wrap items-end justify-between gap-4 p-5 md:p-8">
-            <span className={`${pill} border-white/40 bg-[#101310]/40 text-white`}>Selected ventures and case studies</span>
+            <span className={`${pill} border-white/40 bg-[#101310]/40 text-white`}>Startups & businesses</span>
             <a href="#featured" className={`group inline-flex min-h-11 items-center gap-3 rounded-full bg-[#a4be2d] px-5 text-sm font-semibold text-[#101310] no-underline ${focus} focus-visible:outline-white`}>
-              See the featured case<ArrowDown size={16} weight="light" aria-hidden className="transition-transform duration-300 motion-safe:group-hover:translate-y-1" />
+              Explore the Build<ArrowDown size={16} weight="light" aria-hidden className="transition-transform duration-300 motion-safe:group-hover:translate-y-1" />
             </a>
           </div>
         </div>
         <nav aria-label="Ventures index" className={`${wrap} mt-5`}>
           <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
-            {[['#featured', `Featured case: ${featured.name}`, featured.year], ['#collection', `All ${brands.length} brands`, span], ['#value', 'How the work creates value', '']].map(([href, label, meta]) => (
+            {[['#featured', `Featured build: ${featured.name}`, ''], ['#collection', `All ${brands.length} startups & businesses`, ''], ['#value', 'How the work creates value', '']].map(([href, label, meta]) => (
               <li key={href}>
                 <a href={href} className={`inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 px-4 text-sm text-white/85 no-underline transition-colors hover:border-[#a4be2d] hover:text-[#a4be2d] ${focus}`}>
                   {meta ? <span className="text-xs tabular-nums text-[#a4be2d]">{meta}</span> : null}{label}
@@ -361,20 +341,20 @@ export default function Ventures() {
       <section id="featured" aria-labelledby="featured-title" className="scroll-mt-16 overflow-hidden bg-[#F2F3EF] py-[clamp(48px,5.5vw,88px)] text-[#101310]">
         <div className={wrap}>
           <div className="flex items-center justify-between gap-4 text-xs font-semibold text-[#617319]">
-            <span>02 / Featured venture</span>
-            <span className="flex gap-2"><span className={`${pill} border-[#617319]/40`}>{featured.category}</span><span className={`${pill} border-[#617319]/40`}>{featured.year}</span></span>
+            <span>02 / Featured build</span>
+            <span className="flex gap-2"><span className={`${pill} border-[#617319]/40`}>{featured.category}</span></span>
           </div>
-          <h2 id="featured-title" className="sr-only">{featured.name} featured venture</h2>
+          <h2 id="featured-title" className="sr-only">{featured.name} featured build</h2>
           <div className="mt-8 grid gap-x-12 gap-y-10 lg:grid-cols-12">
             <div data-p="through" className="relative aspect-[4/5] overflow-hidden rounded-[28px] lg:col-span-5 lg:self-start">
               <div style={{ transform: 'translateY(calc((.5 - var(--p, .5)) * 14%))' }} className="absolute inset-x-0 -inset-y-[8%] will-change-transform">
                 <Cover crop={featured.crop} tone="natural" image="/ventures1.png" />
               </div>
-              <span className={`${pill} absolute bottom-4 left-4 border-white/40 bg-[#101310]/50 text-white`}>{featured.category}, {featured.year}</span>
+              <span className={`${pill} absolute bottom-4 left-4 border-white/40 bg-[#101310]/50 text-white`}>{featured.name}</span>
             </div>
             <div className="lg:col-span-7">
-              <p className="m-0 mb-3 text-xs font-semibold text-[#617319]">The challenge</p>
-              <Scrub text={featured.challenge} className="m-0 text-[clamp(28px,3.4vw,52px)] font-extrabold leading-[1.05] tracking-[-.05em]" />
+              <p className="m-0 mb-3 text-xs font-semibold text-[#617319]">{featured.name}</p>
+              <Scrub text={featured.statement} className="m-0 text-[clamp(28px,3.4vw,52px)] font-extrabold leading-[1.05] tracking-[-.05em]" />
               <ol data-p="read" className="relative m-0 mt-10 list-none p-0 pl-9">
                 <span aria-hidden className="absolute left-[6px] top-1 h-[calc(100%-8px)] w-px bg-[#101310]/15" />
                 <span aria-hidden style={{ transform: 'scaleY(var(--p, 1))' }} className="absolute left-[6px] top-1 h-[calc(100%-8px)] w-px origin-top bg-[#617319]" />
@@ -393,15 +373,15 @@ export default function Ventures() {
         </div>
       </section>
 
-      {/* 03 Collection: every brand, with a logo wall, sector filters and an expandable full brief per brand */}
+      {/* 03 Collection: every project, with sector filters and an expandable row per project */}
       <section id="collection" aria-labelledby="collection-title" className="scroll-mt-16 bg-[#153B2B] py-[clamp(44px,5vw,80px)] text-white">
         <div className={wrap}>
           <div className="grid items-end gap-x-6 gap-y-4 lg:grid-cols-12">
             <div className="lg:col-span-8">
               <p className="m-0 mb-3 text-xs font-semibold text-[#a4be2d]">03 / The collection</p>
-              <Chars as="h2" id="collection-title" text="Each venture, its own brief." className="text-[clamp(34px,5vw,72px)] font-extrabold leading-[.98] tracking-[-.055em]" />
+              <Chars as="h2" id="collection-title" text="Here’s a little look around." className="text-[clamp(34px,5vw,72px)] font-extrabold leading-[.98] tracking-[-.055em]" />
             </div>
-              <p className="m-0 max-w-[38ch] text-[15px] leading-[1.7] text-[#b9c7b2] lg:col-span-4">{brands.length} brands in chronological order. Filter by sector or open a row to read its full brief.</p>
+              <p className="m-0 max-w-[38ch] text-[15px] leading-[1.7] text-[#b9c7b2] lg:col-span-4">{brands.length} startups and businesses. Filter by sector or open a row to see what I worked on.</p>
           </div>
           <Directory />
         </div>
@@ -415,7 +395,7 @@ export default function Ventures() {
               <p className="m-0 mb-3 text-xs font-semibold text-[#617319]">04 / How the work creates value</p>
               <Chars as="h2" id="value-title" text="From opportunity to something that runs." className="text-[clamp(34px,5vw,72px)] font-extrabold leading-[.98] tracking-[-.055em]" />
             </div>
-            <p className="m-0 max-w-[38ch] border-l-2 border-[#a4be2d] pl-4 text-[14px] leading-[1.65] text-[#4f5a4d] lg:col-span-4">The decisions below are the ones documented in the ventures above. They are not a fixed process or a promise of results.</p>
+            <p className="m-0 max-w-[38ch] border-l-2 border-[#a4be2d] pl-4 text-[14px] leading-[1.65] text-[#4f5a4d] lg:col-span-4">Each stage points to projects in the collection above. It is not a fixed process or a promise of results.</p>
           </div>
           <ol data-p="read" className="relative m-0 mt-10 list-none p-0">
             <span aria-hidden className="absolute left-[13px] top-0 h-full w-px bg-[#101310]/15 lg:left-1/2" />
@@ -451,11 +431,11 @@ export default function Ventures() {
         <div className={`${wrap} grid items-center gap-x-12 gap-y-8 py-[clamp(28px,4vw,56px)] lg:grid-cols-12`}>
           <div className="lg:col-span-7">
             <p className="m-0 mb-4 text-xs font-semibold text-[#a4be2d]">05 / The next conversation</p>
-            <Chars as="h2" id="close-title" text="Let’s build what comes next." className="text-[clamp(40px,6.4vw,100px)] font-extrabold leading-[.95] tracking-[-.055em]" />
-            <p className="mt-6 max-w-[46ch] text-[16px] leading-[1.7] text-[#dfe6d8]">For founders, business leaders and operators exploring a new venture, shaping a business model, or working through a strategic challenge.</p>
+            <Chars as="h2" id="close-title" text="Let’s put that brain to work." className="text-[clamp(40px,6.4vw,100px)] font-extrabold leading-[.95] tracking-[-.055em]" />
+            <p className="mt-6 max-w-[46ch] text-[16px] leading-[1.7] text-[#dfe6d8]">A focused one-to-one conversation about your idea, your business, or the thing that’s keeping you stuck. No complicated process. Just a proper conversation about what matters.</p>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
               <Link to="/contact" className={`group inline-flex min-h-14 items-center gap-4 rounded-full bg-[#a4be2d] px-7 text-[15px] font-semibold text-[#101310] no-underline transition-colors duration-300 hover:bg-white ${focus} focus-visible:outline-white`}>
-                Start a conversation<ArrowRight size={20} weight="light" aria-hidden className="transition-transform duration-300 motion-safe:group-hover:translate-x-1.5" />
+                Book Some Thinking Time<ArrowRight size={20} weight="light" aria-hidden className="transition-transform duration-300 motion-safe:group-hover:translate-x-1.5" />
               </Link>
               {[['/about', 'About Hashir'], ['/', 'Back to home']].map(([to, label]) => (
                 <Link key={to} to={to} className={`inline-flex min-h-11 items-center border-b border-white/40 pb-1 text-[15px] text-white no-underline transition-colors duration-300 hover:border-[#a4be2d] hover:text-[#a4be2d] ${focus}`}>{label}</Link>
@@ -468,7 +448,7 @@ export default function Ventures() {
             </div>
           </div>
         </div>
-        <div aria-hidden style={{ transform: 'translateX(calc((var(--p, .5) - .5) * 45vw))' }} className={`-ml-[30vw] select-none whitespace-nowrap text-[clamp(48px,9vw,140px)] font-extrabold leading-[1] tracking-[-.05em] will-change-transform ${stroke}`}>Start a conversation   —   Start a conversation   —   Start a conversation   —   Start a conversation</div>
+        <div aria-hidden style={{ transform: 'translateX(calc((var(--p, .5) - .5) * 45vw))' }} className={`-ml-[30vw] select-none whitespace-nowrap text-[clamp(48px,9vw,140px)] font-extrabold leading-[1] tracking-[-.05em] will-change-transform ${stroke}`}>Book Some Thinking Time   —   Book Some Thinking Time   —   Book Some Thinking Time   —   Book Some Thinking Time</div>
       </section>
     </main>
   )

@@ -6,7 +6,7 @@ const links = [
   { to: '/', label: 'Home' },
   { to: '/about', label: 'About' },
   { to: '/ventures', label: 'Ventures' },
-  { to: '/founderverse', label: 'Founderverse' },
+  { to: '/founderverse', label: 'Founderverse', featured: true },
   { to: '/contact', label: 'Contact' },
 ]
 
@@ -62,19 +62,22 @@ export default function Navbar() {
             <Link to="/" onClick={() => setMenuOpen(false)} aria-label="Hashir Usman home" className="group grid size-16 shrink-0 animate-page-enter place-items-center transition-transform duration-300 hover:scale-105 max-[768px]:size-14"><img src="/logo.png" alt="" className="size-full object-contain" /></Link>
 
             <nav className="hidden animate-page-enter items-center gap-1.5 rounded-full border border-[#e2e5dc] bg-[#f0f0f3]/75 p-1.5 shadow-[0_12px_28px_-16px_#18181b55,0_4px_12px_-8px_#18181b2b] backdrop-blur-xl lg:flex" aria-label="Main navigation">
-              {links.map((link) => <NavLink key={link.to} end={link.to === '/'} to={link.to} className={pillClass}>{({ isActive }) => <>
+              {links.map((link) => <NavLink key={link.to} end={link.to === '/'} to={link.to} className={({ isActive }) => link.featured
+                ? `group relative inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[#a4be2d]/50 bg-[#20251a] px-4 pb-1 pt-0 text-[13px] font-semibold text-[#d9ec83] no-underline shadow-[inset_0_1px_0_#ffffff1a,0_2px_8px_#10200818] transition-[background-color,border-color,transform] duration-200 hover:-translate-y-px hover:border-[#a4be2d] hover:bg-[#2a321b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7c9318] focus-visible:ring-offset-2 ${isActive ? 'border-[#a4be2d] bg-[#a4be2d] text-[#1e2618]' : ''}`
+                : pillClass({ isActive })}>{({ isActive }) => <>
                 <span className="relative z-10">{link.label}</span>
+                {link.featured && <span aria-hidden className={`size-1.5 rounded-full bg-current ${isActive ? '' : 'animate-pulse'}`} />}
                 <span aria-hidden className={`absolute bottom-[5px] left-1/2 size-1 -translate-x-1/2 rounded-full bg-current transition-[opacity,transform] duration-300 ${isActive ? 'scale-100 opacity-100' : 'scale-50 opacity-0 group-hover:scale-100 group-hover:opacity-60'}`} />
               </>}</NavLink>)}
             </nav>
           </div>
 
           <nav ref={navRef} id="main-nav" className={`${menuOpen ? 'flex' : 'hidden'} absolute left-4 right-4 top-[calc(100%+8px)] z-50 flex-col rounded-2xl border border-[#e2e5dc] bg-[#f8f9f6] p-2 shadow-[0_16px_38px_#1020081a] animate-menu-drop lg:hidden sm:left-8 sm:right-8`} aria-label="Main navigation">
-            {links.map((link) => <NavLink key={link.to} end={link.to === '/'} to={link.to} onClick={() => setMenuOpen(false)} className={({ isActive }) => `rounded-xl px-4 py-3.5 text-sm font-medium no-underline transition-colors ${isActive ? 'bg-[#eaf0db] text-[#34420f]' : 'text-[#636a5e] hover:bg-[#eef0e9] hover:text-[#171a17]'}`}>{link.label}</NavLink>)}
+            {links.map((link) => <NavLink key={link.to} end={link.to === '/'} to={link.to} onClick={() => setMenuOpen(false)} className={({ isActive }) => `rounded-xl px-4 py-3.5 text-sm no-underline transition-colors ${link.featured ? `font-semibold ${isActive ? 'bg-[#a4be2d] text-[#1e2618]' : 'bg-[#edf2dd] text-[#34420f] hover:bg-[#e4eccb]'}` : `font-medium ${isActive ? 'bg-[#eaf0db] text-[#34420f]' : 'text-[#636a5e] hover:bg-[#eef0e9] hover:text-[#171a17]'}`}`}>{link.label}{link.featured && <span aria-hidden className="ml-2 inline-block size-1.5 rounded-full bg-[#7c9318] align-middle" />}</NavLink>)}
           </nav>
 
           <div className="ml-auto flex shrink-0 items-center gap-3 sm:gap-5">
-            <Link to="/contact" onClick={() => setMenuOpen(false)} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#a4be2d] bg-[#a4be2d] px-5 text-xs font-semibold text-[#1e2618] no-underline transition-[transform,background-color] duration-200 hover:scale-[1.02] hover:bg-[#b3cc35] active:scale-[.98] max-[420px]:min-h-10 max-[420px]:px-3 max-[420px]:text-[11px]">Let’s cook<ArrowUpRight size={15} aria-hidden /></Link>
+            <Link to="/contact" onClick={() => setMenuOpen(false)} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#a4be2d] bg-[#a4be2d] px-5 text-xs font-semibold text-[#1e2618] no-underline transition-[transform,background-color] duration-200 hover:scale-[1.02] hover:bg-[#b3cc35] active:scale-[.98] max-[420px]:min-h-10 max-[420px]:px-3 max-[420px]:text-[11px]">Let’s Cook.<ArrowUpRight size={15} aria-hidden /></Link>
             <button ref={buttonRef} type="button" className="grid size-11 shrink-0 place-items-center rounded-full border border-[#e2e5dc] bg-white/70 text-[#171a17] transition-colors hover:border-[#b3c87c] hover:bg-[#eaf0db] lg:hidden max-[420px]:size-10" aria-label={menuOpen ? 'Close menu' : 'Open menu'} aria-expanded={menuOpen} aria-controls="main-nav" onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X size={21} aria-hidden /> : <List size={21} aria-hidden />}</button>
           </div>
         </div>

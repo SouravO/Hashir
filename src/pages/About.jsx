@@ -484,7 +484,7 @@ export default function About() {
         </div>
 
         <aside className="relative flex flex-col gap-6 bg-[#153B2B] px-[18px] pb-8 pt-8 lg:col-span-4 lg:justify-between lg:px-7 lg:pb-[92px] lg:pt-28">
-          <div className="relative w-[62%] max-w-[280px] self-end lg:w-[78%]">
+          <div className="relative w-[72%] max-w-[340px] self-end lg:w-[88%]">
             <Reveal aria-hidden v="zoom" delay={900} className="absolute inset-0">
               <span className="absolute inset-0 translate-x-3 translate-y-3 border border-[#a4be2d]" />
             </Reveal>
@@ -526,7 +526,7 @@ export default function About() {
                 id="story-heading"
                 lines={['Big ideas are fun.', <Hl key="h">Making them work</Hl>, 'is my thing.']}
                 delay={100}
-                className="mt-4 text-[clamp(36px,6vw,92px)] font-extrabold leading-[.98] tracking-[-.055em] text-[#101310]"
+                className="mt-4 text-[clamp(34px,5.4vw,82px)] font-extrabold leading-[.98] tracking-[-.055em] text-[#101310]"
               />
             </div>
             <Reveal as="p" delay={300} className="col-span-12 max-w-[30ch] border-l-2 border-[#a4be2d] pl-4 text-[13px] leading-[1.65] text-[#4f5a4d] lg:col-span-3">
@@ -732,13 +732,13 @@ export default function About() {
               </Reveal>
               <Reveal delay={950} className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-4">
                 <div className="min-w-[200px] flex-1">
-                  <LinkBlock to="/contact">Book a conversation</LinkBlock>
+                  <LinkBlock to="/contact">Start With a Call</LinkBlock>
                 </div>
                 <Link
                   to="/ventures"
                   className={`group inline-flex min-h-11 items-center gap-2 border-b border-white/40 pb-1 text-[15px] text-white no-underline transition-colors duration-300 hover:border-[#a4be2d] hover:text-[#a4be2d] focus-visible:border-[#a4be2d] ${focus}`}
                 >
-                  See what I’ve built
+                  See My Work
                   <ArrowRight size={16} weight="light" aria-hidden className="transition-transform duration-300 motion-safe:group-hover:translate-x-1 motion-safe:group-focus-visible:translate-x-1" />
                 </Link>
               </Reveal>
