@@ -19,7 +19,7 @@ const BOOKING = {
   durationMin: 30,
   disabled: import.meta.env.VITE_BOOKING_ENABLED !== 'true',
   endpoint: '/api/book-consultation',
-  windowDays: 90, /* how far ahead visitors can book */
+  windowDays: 7, /* rolling booking window */
   minNoticeMin: 120, /* same-day slots closer than this are hidden */
   timeoutMs: 15000,
 }
@@ -27,7 +27,7 @@ const BOOKING = {
 /* Website schedule. Pending and approved Supabase requests reserve these slots. */
 const BOOKING_SCHEDULE = {
   note: 'Times are shown in India Standard Time. Requests are confirmed after admin approval.',
-  openWeekdays: [1, 2, 3, 4, 5], /* Mon to Fri; 0 = Sunday */
+  openWeekdays: [0, 1, 2, 3, 4, 5, 6], /* All days; 0 = Sunday */
   blockedDates: [], /* e.g. ['2026-12-25'] */
 }
 

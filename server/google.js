@@ -2,7 +2,7 @@
 const OWNER_EMAIL = 'hashirusman120@gmail.com'
 export const BOOKING_TIMEZONE = 'Asia/Kolkata'
 export const BOOKING_SLOTS = ['10:00', '11:30', '14:00', '15:30', '16:00', '17:00']
-export const BOOKING_WINDOW_DAYS = 90
+export const BOOKING_WINDOW_DAYS = 7
 export const MIN_NOTICE_MINUTES = 120
 
 export async function getGoogleAccessToken() {
@@ -27,8 +27,6 @@ export function isAllowedBookingSlot(date, time, now = Date.now()) {
   if (!BOOKING_SLOTS.includes(time) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return false
   const parsed = new Date(`${date}T00:00:00.000Z`)
   if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) return false
-  const weekday = parsed.getUTCDay()
-  if (weekday === 0 || weekday === 6) return false
   const start = new Date(`${date}T${time}:00+05:30`).getTime()
   return start >= now + MIN_NOTICE_MINUTES * 60_000 && start <= now + BOOKING_WINDOW_DAYS * 24 * 60 * 60_000
 }
