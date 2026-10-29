@@ -1,7 +1,8 @@
 import { version, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { ArrowDown, ArrowRight } from '@phosphor-icons/react'
 import { Link, useLocation } from 'react-router-dom'
-import { brands, brandImage, groups } from '../data/brands'
+import { brands, groups } from '../data/brands'
+import BrandArtwork from '../components/BrandArtwork'
 
 // One image for every placement. Swap this (or give a venture its own `image`) when real photos exist.
 const VENTURE_IMAGE = '/image.png'
@@ -163,18 +164,6 @@ function VentureLink({ venture, className = '' }) {
   )
 }
 
-// Brand artwork from /public/ventures with a text fallback, so a missing file never shows a broken-image icon.
-function BrandArt({ b, alt = '', className = '', imgClass = '' }) {
-  const [bad, setBad] = useState(false)
-  return (
-    <div className={`relative overflow-hidden bg-[#f2f3ef] ${className}`}>
-      {bad
-        ? <span className="absolute inset-0 grid place-items-center p-2 text-center text-xs font-bold text-[#171a1b]/60">{b.name}</span>
-        : <img src={brandImage(b.file)} alt={alt} loading="lazy" decoding="async" draggable={false} onError={() => setBad(true)} className={`absolute inset-0 size-full object-cover ${imgClass}`} />}
-    </div>
-  )
-}
-
 // The whole portfolio in one place: compact logos in each row and one expandable text panel per project.
 // Works on every screen size, and #brand-<id> links open a project directly.
 function Directory() {
@@ -245,7 +234,7 @@ function Directory() {
                     onClick={() => toggle(b.id)}
                     className={`group/row flex w-full items-center gap-4 py-4 text-left sm:gap-6 sm:py-5 ${focus}`}
                   >
-                    <BrandArt b={b} className="size-14 shrink-0 rounded-xl sm:size-[72px]" imgClass={`transition-transform duration-700 ${ease} group-hover/row:scale-110`} />
+                    <BrandArtwork b={b} alt={`${b.name} brand artwork`} className="size-14 shrink-0 rounded-xl sm:size-[72px]" imgClass={`transition-transform duration-700 ${ease} group-hover/row:scale-110`} />
                     <span className="min-w-0 flex-1">
                       <span className="block text-xs font-semibold tabular-nums text-[#a4be2d]">{no}<span className="font-medium text-white/60"> · {b.category}</span></span>
                       <span className={`mt-1 block truncate text-[clamp(24px,3.6vw,48px)] font-extrabold leading-[1.05] tracking-[-.045em] transition-colors duration-300 ${on ? 'text-[#a4be2d]' : 'text-white group-hover/row:text-[#a4be2d]'}`}>{b.name}</span>

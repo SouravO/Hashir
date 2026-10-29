@@ -6,8 +6,8 @@
 //
 // Images live in /public/ventures/. `file` must match the file name exactly (including capital letters),
 // because production servers are case-sensitive even though macOS is not.
-// Dayone, START-X, Oxtel, Admos, Xyklon and Hand Revolution have no image yet: add the files below
-// (or change `file`) and they appear. Until then the cards show the project name.
+// START-X, Oxtel, Admos, Xyklon and Hand Revolution do not have source images yet; their cards
+// use a designed text treatment until those image files are added.
 // Add a real link in `url` and a "Visit" button appears on the Ventures page.
 
 export const BRAND_DIR = '/ventures/'
@@ -18,11 +18,11 @@ export const groups = ['Food & Drink', 'Retail & Lifestyle', 'Beauty & Wellness'
 
 // Same order as the blueprint. `group` drives the filter chips, `category` is the label shown on each card.
 export const brands = [
-  { id: 'ezkaa', name: 'Ezkaa by Fousiya Shameer', file: 'ezka.png', category: 'Fashion / Branding', group: 'Retail & Lifestyle', url: null,
+  { id: 'ezkaa', name: 'Ezkaa by Fousiya Shameer', file: 'ezka.jpeg', category: 'Fashion / Branding', group: 'Retail & Lifestyle', url: null,
     short: 'A premium fashion identity developed through brand direction, visual identity, and packaging concepts.',
     scope: ['Branding', 'Identity', 'Packaging'] },
 
-  { id: 'dayone', name: 'Dayone Venture Studio', file: 'dayone.png', category: 'Venture Building', group: 'Business & Tech', url: null,
+  { id: 'dayone', name: 'Dayone Venture Studio', file: 'davone.png', category: 'Venture Building', group: 'Business & Tech', url: null,
     short: 'A startup studio where my work spans venture strategy, founder development, operational systems, and business execution.',
     scope: ['Venture Leadership', 'Strategy', 'Operations'] },
 
@@ -90,13 +90,29 @@ export const brands = [
     short: 'A used-car marketplace idea exploring a more structured experience through inspections, information, and buyer confidence.',
     scope: ['Marketplace Concept', 'Business Strategy'] },
 
-  { id: 'curry-bag', name: 'Curry Bag', file: 'CURRY-BAG.png', category: 'Food / Business Setup', group: 'Food & Drink', url: null,
+  { id: 'curry-bag', name: 'Curry Bag', file: 'curry-bag.jpeg', category: 'Food / Business Setup', group: 'Food & Drink', url: null,
     short: 'A food business developed across branding, business setup, legal coordination, website planning, and founder preparation.',
     scope: ['Venture Setup', 'Branding', 'Founder Support'] },
 
-  { id: 'suite-spot', name: 'Suite Spot', file: 'SUITE-SPOT.png', category: 'HR Services / UK', group: 'Business & Tech', url: null,
+  { id: 'suite-spot', name: 'Suite Spot', file: 'suite-spot.jpeg', category: 'HR Services / UK', group: 'Business & Tech', url: null,
     short: 'A people-services business supported through business development, revenue strategy, marketing, and client relationship systems.',
     scope: ['Business Development', 'Revenue', 'Client SOPs'] },
+
+  { id: 'beyond-the-business', name: 'Beyond the Business', file: 'beyondthebussiness.jpeg', category: 'Management Consultancy / Digital Marketing', group: 'Business & Tech', url: null,
+    short: 'A management consultancy supporting businesses through management guidance and digital marketing.',
+    scope: ['Management Consultancy', 'Digital Marketing'] },
+
+  { id: 'nk-reactives', name: 'NK Reactives', file: 'nk-reactives.jpeg', category: 'Creative Direction', group: 'Business & Tech', url: null,
+    short: 'A creative venture shaped through creative direction.',
+    scope: ['Creative Direction'] },
+
+  { id: 'celebrations', name: 'Celebrations', file: 'celebrations-e.jpeg', category: 'Events / Corporate', group: 'Hospitality', url: null,
+    short: 'An events business focused on event coordination and corporate events.',
+    scope: ['Event Coordination', 'Corporate Events'] },
+
+  { id: 'hyzo', name: 'Hyzo', file: 'hyzo.jpeg', category: 'Venture Concept', group: 'Business & Tech', url: null,
+    short: 'An early-stage venture concept developed from an idea through concept building.',
+    scope: ['Idea Development', 'Concept Building'] },
 
   { id: 'oxtel', name: 'Oxtel', file: 'oxtel.png', category: 'Accommodation Technology', group: 'Hospitality', url: null,
     short: 'A hostel discovery platform for students and working professionals, supported through brand identity and visual direction.',

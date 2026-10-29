@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUpRight } from '@phosphor-icons/react'
+import { ArrowUpRight, ChartLineUp, Compass, Gear, SquaresFour } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
-import { brands, brandImage } from '../data/brands'
+import { brands } from '../data/brands'
+import BrandArtwork from '../components/BrandArtwork'
 
 /* ---------- Editable content (taken from the HU. content blueprint) ---------- */
 const statement = 'I build businesses, and fix a few things along the way. I work with *startup founders*, *business owners*, and *teams* to turn ideas into plans, and plans into action.'
@@ -132,11 +133,12 @@ const Arrow = () => <ArrowUpRight size={18} aria-hidden className="transition-tr
    0.95 - 1.95  BUSINESS     The two-storey podium is framed, then the steel frame of the tower rises floor by floor
                              (slabs, columns, bracing), finishing with the stepped upper section.
    1.50 - 2.60  LAUNCH       Glass curtain wall follows the frame up the front and side faces.
-   2.60 - 3.00  GROWTH       Crisp roof edges and rooftop plant room, entrance with canopy, trees, windows light up. Finished building.
+   2.60 - 3.00  GROWTH       Crisp roof edges and rooftop plant room, entrance with canopy, trees, windows light up,
+                             and the green HU. flag is raised on the roof. Finished building.
 
    Shape: a tall glass office tower seen from a corner, so the front face, the shaded side face and the roofs are all visible.
    A wide podium at the base, a 12-floor main tower, and a narrower 4-floor upper section that steps back at the top.
-   Every roof has a solid edge band (parapet). No antenna, no mast.
+   Every roof has a solid edge band (parapet). No antenna, no mast. The only thing above the plant room is the flagpole.
    Everything is placed with pt(X, Y, Z): X across, Y up, Z depth into the scene.
 
    Layout: on desktop (lg+) the visual is a sticky column beside the stages. On phones and tablets it is a
@@ -162,6 +164,8 @@ const pileLines = PILES.map((x) => `M${x} 350V374`).join('')
 const pt = (X, Y, Z) => `${(X + K * Z).toFixed(1)} ${(GROUND - Y - L * Z).toFixed(1)}`
 const poly = (...p) => `M${p.join('L')}Z`
 const DARK = '#171a1b'
+/* Flagpole standing on the rooftop plant room: screen position of its base, pole height, and flag size. */
+const FLAG = { x: UPPER.x0 + 44 + K * (UPPER.z0 + 22), y: GROUND - (UPPER_TOP + 9) - L * (UPPER.z0 + 22), pole: 24, w: 28, h: 15 }
 
 /* One block of floors with a front face and a shaded right face.
    skel(i) grows the frame of floor i (0 to 1), wall(i) fills it with glass, lit lights the windows. */
@@ -275,8 +279,12 @@ function Building({ s }) {
   const door = up((s - 2.65) / 0.2)
   const trees = up((s - 2.75) / 0.2)
   const lit = up((s - 2.7) / 0.3)
+  const flagP = up((s - 2.75) / 0.2)
   const capIdx = s < 0.35 ? 0 : s < 0.95 ? 1 : s < 1.95 ? 2 : s < 2.6 ? 3 : s < 2.95 ? 4 : 5
   const doorX = PODIUM.x0 + PODIUM.w / 2
+  const poleTop = FLAG.y - FLAG.pole
+  const flagTop = poleTop + 2
+  const flagPath = `M${FLAG.x} ${flagTop}C${FLAG.x + FLAG.w * 0.3} ${flagTop - 2.5} ${FLAG.x + FLAG.w * 0.65} ${flagTop + 2.5} ${FLAG.x + FLAG.w} ${flagTop}V${flagTop + FLAG.h}C${FLAG.x + FLAG.w * 0.65} ${flagTop + FLAG.h + 2.5} ${FLAG.x + FLAG.w * 0.3} ${flagTop + FLAG.h - 2.5} ${FLAG.x} ${flagTop + FLAG.h}Z`
   return (
     <svg viewBox="0 0 400 400" className="h-full w-full" fill="none" stroke="#f8f9f6" strokeWidth="1" aria-hidden>
       <path d="M12 36V12H36M364 12H388V36" strokeOpacity=".5" />
@@ -303,6 +311,16 @@ function Building({ s }) {
       {/* GROWTH: crisp roof edge and rooftop plant room */}
       <Roof x0={UPPER.x0} w={UPPER.w} z0={UPPER.z0} d={UPPER.d} y={UPPER_TOP} v={cap} />
       <Box x0={UPPER.x0 + 22} w={44} z0={UPPER.z0 + 10} d={24} y={UPPER_TOP} h={9} v={crown} />
+
+      {/* GROWTH: flagpole on the plant room with the green HU. flag */}
+      <g style={fade(flagP)}>
+        <path d={`M${FLAG.x} ${FLAG.y}V${poleTop}`} strokeWidth="1.4" />
+        <circle cx={FLAG.x} cy={poleTop - 1.5} r="1.6" fill="#a4be2d" stroke="none" />
+      </g>
+      <g style={grow(`${FLAG.x}px ${flagTop + FLAG.h / 2}px`, 'scaleX', flagP)}>
+        <path d={flagPath} fill="#a4be2d" stroke="none" />
+        <text x={FLAG.x + FLAG.w / 2} y={flagTop + FLAG.h / 2 + 3} textAnchor="middle" fontSize="8.5" fontWeight="800" fill={DARK} stroke="none">HU.</text>
+      </g>
 
       {/* GROWTH: entrance with canopy */}
       <g style={fade(door)}>
@@ -420,18 +438,6 @@ const MARQUEE_CSS = `
 `
 const ventureCount = brands.filter((b) => b.scope.some((s) => s.startsWith('Venture'))).length
 
-/* Brand artwork with a text fallback, so a missing file never shows a broken-image icon. */
-function BrandArt({ b, alt = '', className = '', imgClass = '' }) {
-  const [bad, setBad] = useState(false)
-  return (
-    <div className={`relative overflow-hidden bg-[#f2f3ef] ${className}`}>
-      {bad
-        ? <span className="absolute inset-0 grid place-items-center p-3 text-center text-sm font-bold text-[#171a1b]/60">{b.name}</span>
-        : <img src={brandImage(b.file)} alt={alt} loading="lazy" decoding="async" draggable={false} onError={() => setBad(true)} className={`absolute inset-0 size-full object-cover ${imgClass}`} />}
-    </div>
-  )
-}
-
 function BrandCard({ b, dup }) {
   return (
     <li aria-hidden={dup || undefined} className={`w-[220px] shrink-0 sm:w-[260px] lg:w-[280px] ${dup ? 'bm-dup' : ''}`}>
@@ -440,7 +446,7 @@ function BrandCard({ b, dup }) {
         tabIndex={dup ? -1 : undefined}
         className="group/card flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[.04] text-[#f8f9f6] no-underline transition-[transform,border-color,background-color] duration-500 hover:-translate-y-1.5 hover:border-[#a4be2d]/60 hover:bg-white/[.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a4be2d]"
       >
-        <BrandArt b={b} alt={dup ? '' : `${b.name} brand artwork`} className="aspect-square" imgClass="transition-transform duration-[1200ms] ease-out group-hover/card:scale-[1.06]" />
+        <BrandArtwork b={b} alt={dup ? '' : `${b.name} brand artwork`} className="aspect-square" imgClass="transition-transform duration-[1200ms] ease-out group-hover/card:scale-[1.06]" />
         <div className="flex flex-1 flex-col p-4 sm:p-5">
           <div className="flex items-baseline justify-between gap-3">
             <h3 className="m-0 text-lg font-bold tracking-[-.03em]">{b.name}</h3>
@@ -503,301 +509,25 @@ function Portfolio() {
   )
 }
 
-/* ---------- Core expertise: dark tech cards with particles + animated icons ----------
-   Visual only. Each card is a dark panel with a drifting dot-particle field that lights up and parts around the cursor,
-   a soft lime glow and a lit border that follow the pointer, and an icon that comes alive on hover:
-     Venture Architecture  layers that float apart (building up a structure)
-     Business Strategy     compass whose needle swings to a bearing
-     Brand & Growth        bars that grow with a rising arrow
-     Systems & Scaling     meshed gears that turn
-   On touch devices the card in view plays the same animation. Motion is switched off for reduced-motion visitors. */
-const gearPath = (ro, ri, n, hole) => {
-  const s = (Math.PI * 2) / n
-  const pt = (r, a) => `${(r * Math.cos(a)).toFixed(1)} ${(r * Math.sin(a)).toFixed(1)}`
-  let d = ''
-  for (let k = 0; k < n; k += 1) {
-    const a = k * s
-    d += `${k ? 'L' : 'M'}${pt(ri, a - 0.32 * s)}L${pt(ro, a - 0.2 * s)}L${pt(ro, a + 0.2 * s)}L${pt(ri, a + 0.32 * s)}`
-  }
-  return `${d}ZM${hole} 0a${hole} ${hole} 0 1 0 ${-2 * hole} 0a${hole} ${hole} 0 1 0 ${2 * hole} 0Z`
-}
-const GEAR_A = gearPath(26, 20, 8, 8)
-const GEAR_B = gearPath(15, 11.5, 6, 4)
-const COMPASS_TICKS = Array.from({ length: 12 }, (_, k) => {
-  const a = (k * Math.PI) / 6
-  return [48 + 26 * Math.cos(a), 48 + 26 * Math.sin(a), 48 + 29.5 * Math.cos(a), 48 + 29.5 * Math.sin(a)]
-})
-
-const Grad = ({ id }) => (
-  <defs>
-    <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stopColor="#e6f29a" />
-      <stop offset="1" stopColor="#7c9318" />
-    </linearGradient>
-  </defs>
-)
-
-function IconLayers({ id }) {
-  const rh = (cy) => `M48 ${cy - 16}L82 ${cy}L48 ${cy + 16}L14 ${cy}Z`
-  return (
-    <svg viewBox="0 0 96 96" className="tk-float tk-run size-full" aria-hidden>
-      <Grad id={id} />
-      <g stroke="#0e1112" strokeWidth="2" strokeLinejoin="round">
-        <path className="tk-ly tk-ly-3" d={rh(64)} fill={`url(#${id})`} fillOpacity=".5" />
-        <path className="tk-ly tk-ly-2" d={rh(50)} fill={`url(#${id})`} fillOpacity=".78" />
-        <g className="tk-ly tk-ly-1">
-          <path d={rh(36)} fill={`url(#${id})`} />
-          <path d="M48 28L66 36L48 44L30 36Z" fill="#0e1112" fillOpacity=".28" stroke="none" />
-        </g>
-      </g>
-    </svg>
-  )
-}
-
-function IconCompass({ id }) {
-  return (
-    <svg viewBox="0 0 96 96" className="size-full" aria-hidden>
-      <Grad id={id} />
-      <circle cx="48" cy="48" r="38" fill={`url(#${id})`} />
-      <circle cx="48" cy="48" r="31" fill="#0e1112" />
-      <g className="tk-ticks tk-run" stroke="#a4be2d" strokeOpacity=".65" strokeWidth="2" strokeLinecap="round">
-        {COMPASS_TICKS.map(([x1, y1, x2, y2], k) => <line key={k} x1={x1.toFixed(1)} y1={y1.toFixed(1)} x2={x2.toFixed(1)} y2={y2.toFixed(1)} />)}
-      </g>
-      <g className="tk-needle">
-        <path d="M48 24L55 48H41Z" fill={`url(#${id})`} />
-        <path d="M48 72L55 48H41Z" fill="#a4be2d" fillOpacity=".35" />
-      </g>
-      <circle cx="48" cy="48" r="3" fill="#0e1112" stroke="#d3e66b" strokeWidth="1.5" />
-    </svg>
-  )
-}
-
-function IconGrowth({ id }) {
-  return (
-    <svg viewBox="0 0 96 96" className="size-full" aria-hidden>
-      <Grad id={id} />
-      <g fill={`url(#${id})`}>
-        <rect className="tk-bar tk-bar-1" x="14" y="58" width="16" height="24" rx="3" />
-        <rect className="tk-bar tk-bar-2" x="40" y="44" width="16" height="38" rx="3" />
-        <rect className="tk-bar tk-bar-3" x="66" y="30" width="16" height="52" rx="3" />
-      </g>
-      <g className="tk-arrow">
-        <g className="tk-nudge tk-run" fill="none" stroke="#e6f29a" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 42L34 26L48 34L74 10" />
-          <path d="M58 10H74V26" />
-        </g>
-      </g>
-    </svg>
-  )
-}
-
-function IconGears({ id }) {
-  return (
-    <svg viewBox="0 0 96 96" className="size-full" aria-hidden>
-      <Grad id={id} />
-      <g transform="translate(38 56)">
-        <path className="tk-gear-a tk-run" d={GEAR_A} fill={`url(#${id})`} fillRule="evenodd" stroke="#0e1112" strokeWidth="1.5" strokeLinejoin="round" />
-      </g>
-      <g transform="translate(68 32)">
-        <path className="tk-gear-b tk-run" d={GEAR_B} fill={`url(#${id})`} fillOpacity=".85" fillRule="evenodd" stroke="#0e1112" strokeWidth="1.5" strokeLinejoin="round" />
-      </g>
-    </svg>
-  )
-}
-
-const ICONS = [IconLayers, IconCompass, IconGrowth, IconGears]
-
-const TECH_CSS = `
-.tk-sec-grid{background-image:linear-gradient(rgba(23,26,27,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(23,26,27,.045) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 45%,#000 20%,transparent 100%);mask-image:radial-gradient(ellipse 80% 70% at 50% 45%,#000 20%,transparent 100%)}
-
-/* card shell */
-.tk-card{--mx:50%;--my:50%;background:linear-gradient(160deg,#181c1d 0%,#0d1011 100%);border:1px solid rgba(255,255,255,.08);box-shadow:0 24px 50px -34px rgba(8,12,6,.7);transition:transform .5s cubic-bezier(.16,1,.3,1),border-color .5s ease,box-shadow .5s ease}
-.tk-card:is(:hover,[data-on="true"]){transform:translateY(-3px);border-color:rgba(164,190,45,.4);box-shadow:0 36px 70px -34px rgba(8,12,6,.8),0 0 44px -18px rgba(164,190,45,.4)}
-
-/* light that follows the cursor */
-.tk-corner{background:radial-gradient(120% 90% at 0% 0%,rgba(164,190,45,.3),transparent 55%)}
-.tk-glow{background:radial-gradient(340px circle at var(--mx) var(--my),rgba(164,190,45,.2),transparent 65%)}
-.tk-edge{padding:1px;border-radius:inherit;background:radial-gradient(260px circle at var(--mx) var(--my),rgba(190,214,64,.95),transparent 70%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
-.tk-corner,.tk-glow,.tk-edge{opacity:0;transition:opacity .6s ease}
-.tk-card:is(:hover,[data-on="true"]) :is(.tk-corner,.tk-glow,.tk-edge){opacity:1}
-
-/* icon holder */
-.tk-icon{position:relative;display:grid;width:104px;height:104px;place-items:center}
-.tk-orbit{position:absolute;inset:0;opacity:.45;transition:opacity .5s ease;animation:tk-rot 16s linear infinite}
-.tk-art{display:block;width:84px;height:84px;opacity:.72;filter:saturate(.8) drop-shadow(0 0 0 rgba(164,190,45,0));transition:opacity .5s ease,filter .6s ease,transform .6s cubic-bezier(.16,1,.3,1)}
-.tk-card:is(:hover,[data-on="true"]) .tk-art{opacity:1;filter:saturate(1.1) drop-shadow(0 0 14px rgba(164,190,45,.6));transform:scale(1.06)}
-.tk-card:is(:hover,[data-on="true"]) .tk-orbit{opacity:1}
-
-/* looping motion (paused until the card is active, so nothing snaps back on leave) */
-@keyframes tk-rot{to{transform:rotate(360deg)}}
-@keyframes tk-rot-rev{to{transform:rotate(-360deg)}}
-@keyframes tk-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-@keyframes tk-nudge{0%,100%{transform:translate(0,0)}50%{transform:translate(3px,-3px)}}
-.tk-ticks,.tk-gear-a,.tk-gear-b,.tk-nudge,.tk-ly{transform-box:fill-box;transform-origin:center}
-.tk-ticks{animation:tk-rot 24s linear infinite}
-.tk-gear-a{animation:tk-rot 14s linear infinite}
-.tk-gear-b{animation:tk-rot-rev 10.5s linear infinite}
-.tk-float{animation:tk-bob 3.2s ease-in-out infinite}
-.tk-nudge{animation:tk-nudge 1.8s ease-in-out infinite}
-.tk-run,.tk-orbit{animation-play-state:paused}
-.tk-card:is(:hover,[data-on="true"]) :is(.tk-run,.tk-orbit){animation-play-state:running}
-
-/* state changes */
-.tk-ly{transition:transform .8s cubic-bezier(.34,1.56,.64,1)}
-.tk-card:is(:hover,[data-on="true"]) .tk-ly-1{transform:translateY(-10px)}
-.tk-card:is(:hover,[data-on="true"]) .tk-ly-3{transform:translateY(10px)}
-.tk-needle{transform-box:fill-box;transform-origin:center;transition:transform 1.1s cubic-bezier(.34,1.56,.64,1)}
-.tk-card:is(:hover,[data-on="true"]) .tk-needle{transform:rotate(50deg)}
-.tk-bar{transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(.6);transition:transform .9s cubic-bezier(.34,1.56,.64,1)}
-.tk-bar-2{transition-delay:.08s}
-.tk-bar-3{transition-delay:.16s}
-.tk-card:is(:hover,[data-on="true"]) .tk-bar{transform:scaleY(1)}
-.tk-arrow{transition:transform .9s cubic-bezier(.34,1.56,.64,1)}
-.tk-card:is(:hover,[data-on="true"]) .tk-arrow{transform:translate(4px,-4px)}
-
-/* text bits */
-.tk-badge{border:1px solid rgba(255,255,255,.14);color:#a4be2d;transition:border-color .5s ease,background-color .5s ease}
-.tk-card:is(:hover,[data-on="true"]) .tk-badge{border-color:rgba(164,190,45,.55);background-color:rgba(164,190,45,.1)}
-.tk-tag{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#cfd5c5;transition:border-color .5s ease,background-color .5s ease,color .5s ease}
-.tk-card:is(:hover,[data-on="true"]) .tk-tag{border-color:rgba(164,190,45,.45);background:rgba(164,190,45,.08);color:#e4eccd}
-.tk-line{transform:scaleX(.12);transform-origin:left;transition:transform .9s cubic-bezier(.16,1,.3,1)}
-.tk-card:is(:hover,[data-on="true"]) .tk-line{transform:scaleX(1)}
-
-@media (prefers-reduced-motion:reduce){
-  .tk-orbit,.tk-ticks,.tk-gear-a,.tk-gear-b,.tk-float,.tk-nudge{animation:none}
-  .tk-card,.tk-ly,.tk-needle,.tk-bar,.tk-arrow,.tk-art,.tk-line{transition-duration:.01ms}
-}
-`
-
-/* Dot particles: a grid of dots that drift and twinkle, then light up and part around the cursor. Only runs while on screen. */
-function ParticleField({ pointer }) {
-  const ref = useRef(null)
-  useEffect(() => {
-    const c = ref.current
-    const ctx = c?.getContext('2d')
-    if (!c || !ctx) return undefined
-    const still = calm()
-    const GAP = 16
-    const R = 130
-    const t0 = performance.now()
-    let w = 0
-    let h = 0
-    let dots = []
-    let raf = 0
-    let live = false
-    let last = 0
-    const build = () => {
-      const r = c.getBoundingClientRect()
-      w = r.width
-      h = r.height
-      const dpr = Math.min(2, window.devicePixelRatio || 1)
-      c.width = Math.round(w * dpr)
-      c.height = Math.round(h * dpr)
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      dots = []
-      for (let y = GAP / 2; y < h; y += GAP) for (let x = GAP / 2; x < w; x += GAP) dots.push({ x, y, p: Math.random() * 6.283, s: 0.5 + Math.random() })
-    }
-    const paint = (tm) => {
-      ctx.clearRect(0, 0, w, h)
-      const P = pointer.current
-      let color = ''
-      for (let i = 0; i < dots.length; i += 1) {
-        const d = dots[i]
-        let a = 0.1 + 0.07 * Math.sin(tm * d.s + d.p)
-        let x = d.x + Math.sin(tm * 0.5 + d.p) * 1.2
-        let y = d.y + Math.cos(tm * 0.4 + d.p) * 1.2
-        let size = 1.6
-        let hot = false
-        if (P.on) {
-          const dx = x - P.x
-          const dy = y - P.y
-          const dist = Math.hypot(dx, dy)
-          if (dist < R) {
-            const k = 1 - dist / R
-            a += k * 0.8
-            size += k * 1.6
-            hot = true
-            if (dist > 0.01) { x += (dx / dist) * k * 7; y += (dy / dist) * k * 7 }
-          }
-        }
-        const col = hot ? '#b8d23c' : '#d6dfc8'
-        if (col !== color) { ctx.fillStyle = col; color = col }
-        ctx.globalAlpha = Math.min(1, a)
-        ctx.fillRect(x - size / 2, y - size / 2, size, size)
-      }
-      ctx.globalAlpha = 1
-    }
-    const frame = (now) => {
-      raf = 0
-      if (live && !still) raf = requestAnimationFrame(frame)
-      if (now - last < 32) return
-      last = now
-      paint((now - t0) / 1000)
-    }
-    const io = new IntersectionObserver(([en]) => {
-      live = en.isIntersecting
-      if (!live) return
-      if (still) paint(0)
-      else if (!raf) raf = requestAnimationFrame(frame)
-    })
-    const ro = new ResizeObserver(() => { build(); if (still && live) paint(0) })
-    build()
-    io.observe(c)
-    ro.observe(c)
-    return () => { live = false; cancelAnimationFrame(raf); io.disconnect(); ro.disconnect() }
-  }, [pointer])
-  return <canvas ref={ref} aria-hidden className="pointer-events-none absolute inset-0 -z-10 size-full" />
-}
+const EXPERTISE_ICONS = [SquaresFour, Compass, ChartLineUp, Gear]
 
 function TechCard({ e, i }) {
-  const ref = useRef(null)
-  const pointer = useRef({ x: 0, y: 0, on: false })
-  const Icon = ICONS[i]
-  const move = (ev) => {
-    const el = ref.current
-    if (!el) return
-    const r = el.getBoundingClientRect()
-    const x = ev.clientX - r.left
-    const y = ev.clientY - r.top
-    pointer.current.x = x
-    pointer.current.y = y
-    pointer.current.on = true
-    el.style.setProperty('--mx', `${x}px`)
-    el.style.setProperty('--my', `${y}px`)
-  }
-  const leave = () => { pointer.current.on = false }
-  /* touch screens have no hover: the card that is mostly in view plays its animation */
-  useEffect(() => {
-    const el = ref.current
-    if (!el || !window.matchMedia('(hover: none)').matches) return undefined
-    const io = new IntersectionObserver(([en]) => el.setAttribute('data-on', en.intersectionRatio > 0.6 ? 'true' : 'false'), { threshold: [0, 0.6] })
-    io.observe(el)
-    return () => io.disconnect()
-  }, [])
+  const Icon = EXPERTISE_ICONS[i]
   return (
-    <article ref={ref} onPointerMove={move} onPointerLeave={leave} className="tk-card group relative isolate flex h-full min-h-[380px] w-full flex-col overflow-hidden rounded-[20px] p-7 sm:p-9">
-      <span aria-hidden className="tk-corner absolute inset-0 -z-10" />
-      <span aria-hidden className="tk-glow absolute inset-0 -z-10" />
-      <ParticleField pointer={pointer} />
-      <span aria-hidden className="tk-edge pointer-events-none absolute inset-0" />
-
-      <div className="relative flex items-start justify-between">
-        <span className="tk-icon">
-          <svg viewBox="0 0 104 104" className="tk-orbit" fill="none" aria-hidden><circle cx="52" cy="52" r="50" stroke="rgba(164,190,45,.55)" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="110 205" /></svg>
-          <span className="tk-art"><Icon id={`tki-${i}`} /></span>
+    <article className="group flex h-full min-h-[320px] flex-col rounded-[22px] border border-white/10 bg-[#171a1b] p-7 transition-colors duration-300 hover:border-[#a4be2d]/45 hover:bg-[#1c211d] sm:min-h-[340px] sm:p-9">
+      <div className="flex items-start justify-between">
+        <span className="grid size-14 place-items-center rounded-2xl bg-[#a4be2d]/10 text-[#b8d23c]">
+          <Icon size={30} weight="light" aria-hidden />
         </span>
-        <span className="tk-badge grid size-10 place-items-center rounded-full text-xs font-bold tabular-nums">0{i + 1}</span>
+        <span className="grid size-9 place-items-center rounded-full border border-white/15 text-xs font-semibold tabular-nums text-[#a4be2d]">0{i + 1}</span>
       </div>
-
-      <div className="relative mt-auto pt-10">
-        <h3 className="max-w-[420px] text-[clamp(24px,2.4vw,34px)] font-bold leading-[1.1] tracking-[-.035em] text-white">{e.title}</h3>
-        <p className="mt-4 max-w-[420px] text-[15px] leading-[1.6] text-[#a5ac9b]">{e.desc}</p>
-        <ul className="mt-7 flex flex-wrap gap-2 border-t border-white/10 pt-6 text-[11px]">
-          {e.tags.map((t) => <li key={t} className="tk-tag rounded-full px-3 py-1.5">{t}</li>)}
+      <div className="mt-auto pt-9">
+        <h3 className="text-[clamp(24px,2.4vw,34px)] font-bold leading-[1.1] tracking-[-.035em] text-white">{e.title}</h3>
+        <p className="mt-3 max-w-[44ch] text-[15px] leading-[1.65] text-[#b7beb0]">{e.desc}</p>
+        <ul className="mt-6 flex flex-wrap gap-2 border-t border-white/10 pt-5 text-[11px]">
+          {e.tags.map((tag) => <li key={tag} className="rounded-full border border-white/15 px-3 py-1.5 text-[#d2d8cb]">{tag}</li>)}
         </ul>
       </div>
-
-      <span aria-hidden className="tk-line absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-[#7c9318] to-[#c5d96a]" />
     </article>
   )
 }
@@ -1037,12 +767,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Core expertise: dark tech cards, particles + animated icons */}
-      <section id="services" aria-labelledby="expertise-heading" className="relative isolate overflow-hidden py-24 sm:py-36">
-        <style>{TECH_CSS}</style>
-        <div aria-hidden className="tk-sec-grid pointer-events-none absolute inset-0 -z-10" />
+      {/* 3. Core expertise */}
+      <section id="services" aria-labelledby="expertise-heading" className="bg-[#f2f3ef] py-20 sm:py-28">
         <div className={wrap}>
-          <header className="mb-14 grid gap-8 lg:grid-cols-12 lg:items-end">
+          <header className="mb-12 grid gap-8 lg:grid-cols-12 lg:items-end">
             <div className="lg:col-span-8">
               <Reveal className={eyebrow}>The bigger picture</Reveal>
               <Heading id="expertise-heading" lines={['Four things I spend a lot', 'of time thinking about.']} className={h2cls} />
@@ -1050,9 +778,9 @@ export default function Home() {
             <Reveal delay={200} className="lg:col-span-4"><p className="max-w-[380px] text-[15px] leading-[1.65] text-[#72766f]">From that first crazy idea to a business that’s ready for its next big move.</p></Reveal>
           </header>
           <div className="grid gap-4 md:grid-cols-2 lg:gap-6">
-            {expertise.map((e, i) => (
-              <Reveal key={e.title} delay={(i % 2) * 120} className="h-full">
-                <TechCard e={e} i={i} />
+            {expertise.map((item, index) => (
+              <Reveal key={item.title} delay={(index % 2) * 100} className="h-full">
+                <TechCard e={item} i={index} />
               </Reveal>
             ))}
           </div>
