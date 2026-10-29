@@ -1,5 +1,5 @@
 /* global process, Buffer */
-const OWNER_EMAIL = 'connect@hashirusman.online'
+const OWNER_EMAIL = 'hashirusman120@gmail.com'
 export const BOOKING_TIMEZONE = 'Asia/Kolkata'
 export const BOOKING_SLOTS = ['10:00', '11:30', '14:00', '15:30', '16:00', '17:00']
 export const BOOKING_WINDOW_DAYS = 90
@@ -125,9 +125,29 @@ export async function createMeetInvite(accessToken, appointment) {
 
 const base64Url = (value) => Buffer.from(value).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 
+async function sendGmail(accessToken, recipient, subject, body) {
+  const encodedSubject = `=?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`
+  const raw = [
+    `To: ${recipient}`,
+    `From: ${OWNER_EMAIL}`,
+    `Reply-To: ${OWNER_EMAIL}`,
+    `Subject: ${encodedSubject}`,
+    'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset="UTF-8"',
+    'Content-Transfer-Encoding: 8bit',
+    '',
+    body,
+  ].join('\r\n')
+  const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ raw: base64Url(raw) }),
+  })
+  if (!response.ok) throw new Error('The email could not be sent.')
+}
+
 export async function notifyOwner(accessToken, appointment, meetingUrl, inviteSent) {
   const subject = `New consultation request from ${appointment.name}`
-  const encodedSubject = `=?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`
   const body = [
     'A consultation request was submitted.',
     '',
@@ -143,20 +163,26 @@ export async function notifyOwner(accessToken, appointment, meetingUrl, inviteSe
     'This is a request pending admin confirmation. Review it at /admin.',
     appointment.message ? `\nNote: ${appointment.message}` : '',
   ].filter(Boolean).join('\r\n')
-  const raw = [
-    `To: ${OWNER_EMAIL}`,
-    `From: ${OWNER_EMAIL}`,
-    `Subject: ${encodedSubject}`,
-    'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset="UTF-8"',
-    'Content-Transfer-Encoding: 8bit',
+  await sendGmail(accessToken, OWNER_EMAIL, subject, body)
+}
+
+export async function notifyCustomer(accessToken, appointment, status) {
+  const approved = status === 'confirmed'
+  const subject = approved ? 'Your appointment request was approved' : 'Your appointment request was cancelled'
+  const body = [
+    `Hi ${appointment.name},`,
     '',
-    body,
+    approved
+      ? 'Your appointment request has been approved.'
+      : 'Your appointment request has been cancelled by the admin.',
+    '',
+    `Date: ${appointment.appointment_date}`,
+    `Time: ${appointment.appointment_time} (${appointment.timezone})`,
+    `Duration: ${appointment.duration_minutes} minutes`,
+    '',
+    approved
+      ? 'We look forward to speaking with you. Reply to this email if you have any questions.'
+      : 'Please reply to this email if you would like to request another time.',
   ].join('\r\n')
-  const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ raw: base64Url(raw) }),
-  })
-  if (!response.ok) throw new Error('The owner notification could not be sent.')
+  await sendGmail(accessToken, appointment.email, subject, body)
 }

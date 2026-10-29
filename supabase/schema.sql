@@ -11,12 +11,13 @@ create table if not exists public.appointments (
   timezone text not null default 'Asia/Kolkata',
   duration_minutes integer not null default 30 check (duration_minutes between 10 and 180),
   message text check (message is null or char_length(message) <= 1000),
-  availability_source text not null default 'demo' check (availability_source in ('demo', 'live')),
+  availability_source text not null default 'website' check (availability_source in ('website', 'live')),
   status text not null default 'pending' check (status in ('pending', 'confirmed', 'cancelled')),
   google_event_id text unique,
   meeting_url text,
   client_invite_sent boolean not null default false,
   owner_notified boolean not null default false,
+  customer_notified boolean not null default false,
   delivery_note text,
   created_at timestamptz not null default now()
 );
@@ -27,11 +28,20 @@ alter table public.appointments add column if not exists google_event_id text;
 alter table public.appointments add column if not exists meeting_url text;
 alter table public.appointments add column if not exists client_invite_sent boolean not null default false;
 alter table public.appointments add column if not exists owner_notified boolean not null default false;
+alter table public.appointments add column if not exists customer_notified boolean not null default false;
 alter table public.appointments add column if not exists delivery_note text;
+alter table public.appointments drop constraint if exists appointments_availability_source_check;
+update public.appointments set availability_source = 'website' where availability_source = 'demo';
+alter table public.appointments alter column availability_source set default 'website';
+alter table public.appointments add constraint appointments_availability_source_check check (availability_source in ('website', 'live'));
 update public.appointments set request_id = gen_random_uuid() where request_id is null;
 alter table public.appointments alter column request_id set not null;
 create unique index if not exists appointments_request_id_key on public.appointments (request_id);
 create unique index if not exists appointments_google_event_id_key on public.appointments (google_event_id) where google_event_id is not null;
+-- Reserve a slot while its request is pending or approved; cancellation releases it.
+create unique index if not exists appointments_active_slot_key
+  on public.appointments (appointment_date, appointment_time)
+  where status in ('pending', 'confirmed');
 
 alter table public.appointments enable row level security;
 

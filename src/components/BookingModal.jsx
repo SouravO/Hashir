@@ -4,7 +4,7 @@ import { ArrowUpRight, CaretLeft, CaretRight, CheckCircle, CircleNotch, X as Clo
 
 /* ---------- Consultation booking modal ----------
    Opens from any element marked `data-booking-trigger` (the "Let's cook ↗" CTA) without leaving the page.
-   The dialog supports demo slots or live Google Calendar availability, with booking requests sent to the server API.
+   Website slot availability and requests are handled by the server API; Google Calendar availability is optional.
 
    INTEGRATION POINTS for the real calendar (search for "INTEGRATION POINT"):
      1. loadSlots()      -> replace with a call to a backend route that reads real free/busy data.
@@ -17,20 +17,18 @@ import { ArrowUpRight, CaretLeft, CaretRight, CheckCircle, CircleNotch, X as Clo
 const BOOKING = {
   timezone: 'Asia/Kolkata', /* INTEGRATION POINT: set to the owner's calendar timezone */
   durationMin: 30,
-  demoMode: import.meta.env.VITE_BOOKING_ENABLED !== 'true',
-  liveAvailability: import.meta.env.VITE_LIVE_AVAILABILITY_ENABLED === 'true',
+  disabled: import.meta.env.VITE_BOOKING_ENABLED !== 'true',
   endpoint: '/api/book-consultation',
   windowDays: 90, /* how far ahead visitors can book */
   minNoticeMin: 120, /* same-day slots closer than this are hidden */
   timeoutMs: 15000,
 }
 
-/* DEMO AVAILABILITY. Illustrative only. Delete this object (and loadSlots/isDateOpen below) once real availability exists. */
-const BOOKING_DEMO = {
-  note: 'Illustrative availability only. It has not been synchronized with the owner’s calendar.',
+/* Website schedule. Pending and approved Supabase requests reserve these slots. */
+const BOOKING_SCHEDULE = {
+  note: 'Times are shown in India Standard Time. Requests are confirmed after admin approval.',
   openWeekdays: [1, 2, 3, 4, 5], /* Mon to Fri; 0 = Sunday */
   blockedDates: [], /* e.g. ['2026-12-25'] */
-  slotTimes: ['10:00', '11:30', '14:00', '15:30', '16:00', '17:00'], /* 24h, in BOOKING.timezone */
 }
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -55,38 +53,26 @@ const ZONE_NAME = (() => {
   try { return new Intl.DateTimeFormat('en-IN', { timeZone: BOOKING.timezone, timeZoneName: 'long' }).formatToParts(new Date()).find((p) => p.type === 'timeZoneName')?.value || BOOKING.timezone } catch { return BOOKING.timezone }
 })()
 
-/* INTEGRATION POINT 2: day-level availability. Demo rule: open weekdays inside the booking window. */
+/* Day-level schedule: weekdays inside the booking window. */
 function isDateOpen(key, now) {
   if (key < now.key || key > addDaysKey(now.key, BOOKING.windowDays)) return false
-  if (BOOKING_DEMO.blockedDates.includes(key)) return false
-  return BOOKING_DEMO.openWeekdays.includes(keyWeekday(key))
+  if (BOOKING_SCHEDULE.blockedDates.includes(key)) return false
+  return BOOKING_SCHEDULE.openWeekdays.includes(keyWeekday(key))
 }
 
-/* Deterministic "already taken" pattern so the disabled slot state is visible in demo mode. Not real bookings. */
-const demoTaken = (key, time) => { let h = 0; for (const c of key + time) h = (h * 31 + c.charCodeAt(0)) % 997; return h % 5 === 0 }
-
-/* Demo slots remain active unless VITE_LIVE_AVAILABILITY_ENABLED is enabled. */
+/* Slot availability always comes from the server so pending and approved requests stay reserved. */
 async function loadSlots(key) {
-  if (BOOKING.liveAvailability) {
-    const response = await fetch(`/api/availability?date=${encodeURIComponent(key)}`)
-    const data = await response.json().catch(() => null)
-    if (!response.ok || data?.source !== 'live' || !Array.isArray(data?.slots)) {
-      throw new Error(data?.message || 'Live availability is not available.')
-    }
-    return data
+  const response = await fetch(`/api/availability?date=${encodeURIComponent(key)}`)
+  const data = await response.json().catch(() => null)
+  if (!response.ok || !['website', 'live'].includes(data?.source) || !Array.isArray(data?.slots)) {
+    throw new Error(data?.message || 'Availability is not available.')
   }
-  const now = zoneNow(BOOKING.timezone)
-  const slots = BOOKING_DEMO.slotTimes.map((t) => {
-    const [h, m] = t.split(':').map(Number)
-    const tooSoon = key === now.key && h * 60 + m < now.minutes + BOOKING.minNoticeMin
-    return { time: t, label: fmtTime(t), available: !tooSoon && !demoTaken(key, t) }
-  })
-  return { source: 'demo', slots }
+  return data
 }
 
 /* INTEGRATION POINT 3: submit the request. Resolves { ok: true } only when the backend confirms it received the request. */
 async function submitBooking(payload) {
-  if (BOOKING.demoMode) {
+  if (BOOKING.disabled) {
     return { ok: false, kind: 'unavailable' }
   }
   const ctl = new AbortController()
@@ -117,7 +103,7 @@ export default function BookingDialog({ onClose, triggerRef }) {
   const [view, setView] = useState(() => { const { y, m } = parseKey(zoneNow(BOOKING.timezone).key); return { y, m } })
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
-  const [avail, setAvail] = useState({ key: '', status: 'idle', slots: [], source: 'demo' })
+  const [avail, setAvail] = useState({ key: '', status: 'idle', slots: [], source: 'website' })
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [errors, setErrors] = useState({})
@@ -182,7 +168,7 @@ export default function BookingDialog({ onClose, triggerRef }) {
     let live = true
     loadSlots(date)
       .then((r) => { if (live) setAvail({ key: date, status: 'ready', slots: r.slots, source: r.source }) })
-      .catch(() => { if (live) setAvail({ key: date, status: 'error', slots: [], source: BOOKING.liveAvailability ? 'live' : 'demo' }) })
+      .catch(() => { if (live) setAvail({ key: date, status: 'error', slots: [], source: 'website' }) })
     return () => { live = false }
   }, [date])
 
@@ -206,7 +192,7 @@ export default function BookingDialog({ onClose, triggerRef }) {
 
   const loadingSlots = Boolean(date) && avail.key !== date
   const slots = avail.key === date ? avail.slots : []
-  const demo = avail.source === 'demo'
+  const websiteSlots = avail.source === 'website'
 
   const pickDate = (key) => {
     requestIdRef.current = null
@@ -263,7 +249,7 @@ export default function BookingDialog({ onClose, triggerRef }) {
   const closeFromUi = () => { if (!submittingRef.current) onClose() }
 
   const errorCopy = status.state === 'error' && (status.kind === 'unavailable'
-    ? ['Demo mode: nothing was saved', 'Availability is illustrative. Booking requests are disabled until the Supabase project and server endpoint are configured and verified. No appointment was created. Your selection is still in place.']
+    ? ['Booking is unavailable', 'The booking service could not be reached. No appointment was created. Your selection is still in place.']
     : status.kind === 'invalid'
       ? ['Check your details', status.message]
       : ['We couldn’t send your request', `${status.message || 'Something went wrong on our side.'} Nothing was confirmed.`])
@@ -304,11 +290,10 @@ export default function BookingDialog({ onClose, triggerRef }) {
                     </div>
                   ))}
                 </dl>
-                <p className="mx-auto mt-6 max-w-[420px] text-[15px] leading-[1.6] text-[#3d433b]">{demo ? 'These times are illustrative and no Meet invite was created. Please wait for the owner to review your request.' : 'The owner will review your request. If approved, Google Calendar will email your Meet invitation to you for this date and time.'}</p>
+                <p className="mx-auto mt-6 max-w-[420px] text-[15px] leading-[1.6] text-[#3d433b]">Your request is pending admin approval. No calendar invitation was sent.</p>
                 <p className="mx-auto mt-2 max-w-[420px] text-[13px] leading-[1.55] text-[#72766f]">
-                  {status.data?.ownerNotified ? 'The request notification was emailed to connect@hashirusman.online.' : 'The request was saved, but the owner notification email was not sent.'}
+                  {status.data?.ownerNotified ? 'The request notification was emailed to hashirusman120@gmail.com.' : 'The request was saved, but the owner notification email was not sent.'}
                 </p>
-                {demo && <p className="mx-auto mt-3 max-w-[420px] text-[13px] leading-[1.55] text-[#72766f]">The times shown were illustrative and weren’t checked against a live calendar.</p>}
                 <button type="button" onClick={onClose} className="mt-8 inline-flex h-12 items-center justify-center rounded-xl bg-[#153B2B] px-8 text-[15px] font-semibold text-white transition-colors duration-200 hover:bg-[#101310] active:scale-[.98]">Close</button>
               </div>
             ) : (
@@ -355,7 +340,7 @@ export default function BookingDialog({ onClose, triggerRef }) {
                         )
                       })}
                     </div>
-                    <p className="m-0 mt-4 px-1 text-[13px] leading-[1.5] text-[#72766f]">{BOOKING_DEMO.note}</p>
+                    <p className="m-0 mt-4 px-1 text-[13px] leading-[1.5] text-[#72766f]">{BOOKING_SCHEDULE.note}</p>
                   </div>
                   {errors.date && <p id="bk-err-date" role="alert" className={bkErr}>{errors.date}</p>}
                 </section>
@@ -363,7 +348,7 @@ export default function BookingDialog({ onClose, triggerRef }) {
                 <section ref={timeRef} aria-labelledby="bk-h-time" className="scroll-mt-4">
                   <div className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-1">
                     <h3 id="bk-h-time" className="m-0 text-[19px] font-bold tracking-[-.02em]">02 — Pick your time</h3>
-                    {demo && <span className="rounded-full border border-[#7c9318]/50 bg-[#A4BE2D]/15 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[.08em] text-[#4d5c0f]">Demo times</span>}
+                    {websiteSlots && <span className="rounded-full border border-[#7c9318]/50 bg-[#A4BE2D]/15 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[.08em] text-[#4d5c0f]">Website slots</span>}
                   </div>
                   {!date ? (
                     <p className="m-0 rounded-xl border border-dashed border-[#c4c9b9] px-5 py-6 text-center text-[15px] text-[#72766f]">Choose a date above to see times.</p>
@@ -415,14 +400,20 @@ export default function BookingDialog({ onClose, triggerRef }) {
 
                 <div>
                   {date && time && <p aria-live="polite" className="m-0 mb-3 text-center text-sm text-[#3d433b]">{BOOKING.durationMin}-minute consultation · {fmtDate(date)} · {fmtTime(time)}</p>}
+                  {BOOKING.disabled && (
+                    <div role="status" className="mb-3 rounded-xl border border-[#e5b5ab] bg-[#fbefec] px-5 py-4">
+                      <p className="m-0 text-[15px] font-semibold text-[#8a2b1d]">Booking is not connected yet</p>
+                      <p className="m-0 mt-1 text-sm leading-[1.55] text-[#8a2b1d]/90">These slots are examples. Connect the server booking settings and redeploy to accept requests.</p>
+                    </div>
+                  )}
                   {errorCopy && (
                     <div role="alert" className="mb-3 rounded-xl border border-[#e5b5ab] bg-[#fbefec] px-5 py-4">
                       <p className="m-0 text-[15px] font-semibold text-[#8a2b1d]">{errorCopy[0]}</p>
                       <p className="m-0 mt-1 text-sm leading-[1.55] text-[#8a2b1d]/90">{errorCopy[1]}</p>
                     </div>
                   )}
-                  <button type="submit" disabled={submitting} aria-busy={submitting || undefined} className="group inline-flex h-16 w-full items-center justify-center gap-3 rounded-xl bg-[#A4BE2D] text-lg font-bold text-[#101310] transition-[transform,background-color] duration-200 hover:bg-[#b3cc35] active:scale-[.99] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-[#A4BE2D]">
-                    {submitting ? (<><CircleNotch size={20} aria-hidden className="animate-spin motion-reduce:animate-none" />Saving request…</>) : (<>Send request <ArrowUpRight size={18} weight="bold" aria-hidden className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></>)}
+                  <button type="submit" disabled={submitting || BOOKING.disabled} aria-busy={submitting || undefined} className="group inline-flex h-16 w-full items-center justify-center gap-3 rounded-xl bg-[#A4BE2D] text-lg font-bold text-[#101310] transition-[transform,background-color] duration-200 hover:bg-[#b3cc35] active:scale-[.99] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-[#A4BE2D]">
+                    {submitting ? (<><CircleNotch size={20} aria-hidden className="animate-spin motion-reduce:animate-none" />Saving request…</>) : BOOKING.disabled ? <>Booking unavailable</> : (<>Send request <ArrowUpRight size={18} weight="bold" aria-hidden className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></>)}
                   </button>
                 </div>
               </form>

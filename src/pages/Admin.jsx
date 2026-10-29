@@ -68,7 +68,7 @@ export default function Admin() {
     setError('')
     const { data, error: queryError } = await supabase
       .from('appointments')
-      .select('id,name,email,appointment_date,appointment_time,timezone,duration_minutes,message,availability_source,status,meeting_url,client_invite_sent,owner_notified,delivery_note,created_at')
+      .select('id,name,email,appointment_date,appointment_time,timezone,duration_minutes,message,availability_source,status,meeting_url,client_invite_sent,owner_notified,customer_notified,delivery_note,created_at')
       .order('created_at', { ascending: false })
     if (queryError) {
       setError('Could not load appointments. Check the Supabase schema and admin role policies.')
@@ -98,22 +98,6 @@ export default function Admin() {
     setPassword('')
   }
 
-  const updateStatus = async (id, status) => {
-    if (!supabase || !isAdmin) return
-    setUpdatingId(id)
-    setError('')
-    const { error: updateError } = await supabase
-      .from('appointments')
-      .update({ status })
-      .eq('id', id)
-    if (updateError) {
-      setError('Could not update this request. Check the admin update policy in Supabase.')
-    } else {
-      setAppointments((items) => items.map((item) => item.id === id ? { ...item, status } : item))
-    }
-    setUpdatingId('')
-  }
-
   const approveAppointment = async (appointment) => {
     if (!supabase || !isAdmin) return
     setApprovingId(appointment.id)
@@ -129,12 +113,36 @@ export default function Admin() {
       const result = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(result.message || 'Could not approve this request.')
       setAppointments((items) => items.map((item) => item.id === appointment.id
-        ? { ...item, status: 'confirmed', meeting_url: result.meetingUrl, client_invite_sent: result.clientInviteSent, delivery_note: null }
+        ? { ...item, status: 'confirmed', meeting_url: null, client_invite_sent: false, customer_notified: result.customerNotified, delivery_note: result.deliveryNote }
         : item))
     } catch (approvalError) {
       setError(approvalError.message || 'Could not approve this request.')
     } finally {
       setApprovingId('')
+    }
+  }
+
+  const cancelAppointment = async (appointment) => {
+    if (!supabase || !isAdmin) return
+    setUpdatingId(appointment.id)
+    setError('')
+    try {
+      const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError || !currentSession?.access_token) throw new Error('Your admin session expired. Sign in again.')
+      const response = await fetch('/api/cancel-appointment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentSession.access_token}` },
+        body: JSON.stringify({ appointmentId: appointment.id }),
+      })
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(result.message || 'Could not cancel this request.')
+      setAppointments((items) => items.map((item) => item.id === appointment.id
+        ? { ...item, status: 'cancelled', customer_notified: result.customerNotified, delivery_note: result.deliveryNote }
+        : item))
+    } catch (cancelError) {
+      setError(cancelError.message || 'Could not cancel this request.')
+    } finally {
+      setUpdatingId('')
     }
   }
 
@@ -161,7 +169,7 @@ export default function Admin() {
 
         {!supabaseConfigured ? (
           <section className="rounded-2xl border border-amber-300 bg-amber-50 p-6 text-sm leading-6 text-amber-950">
-            Add <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code> to the app environment, then restart the site to enable admin sign-in.
+            Add <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> to the app environment, then restart the site to enable admin sign-in.
           </section>
         ) : authLoading ? (
           <p role="status" className="rounded-2xl border border-[#d4dbc8] bg-white p-6 text-sm text-[#62695e]">Checking admin session…</p>
@@ -208,37 +216,34 @@ export default function Admin() {
                       <div className="flex flex-wrap items-center gap-2">
                         <h2 className="m-0 text-lg font-bold">{appointment.name}</h2>
                         <span className={`rounded-full border px-2.5 py-1 text-[11px] font-bold uppercase tracking-[.06em] ${statusStyle[appointment.status] || statusStyle.pending}`}>{appointment.status}</span>
-                        {appointment.availability_source === 'demo' && <span className="rounded-full border border-[#d4dbc8] bg-[#f8f9f6] px-2.5 py-1 text-[11px] font-semibold text-[#62695e]">Demo availability</span>}
+                        {appointment.availability_source === 'website' && <span className="rounded-full border border-[#d4dbc8] bg-[#f8f9f6] px-2.5 py-1 text-[11px] font-semibold text-[#62695e]">Website slot</span>}
                       </div>
                       <a href={`mailto:${appointment.email}`} className="mt-1 inline-block break-all text-sm text-[#526313] underline">{appointment.email}</a>
                       <p className="mb-0 mt-3 text-sm font-semibold text-[#153b2b]">{dateLabel(appointment.appointment_date)} · {timeLabel(appointment.appointment_time)} ({appointment.timezone}) · {appointment.duration_minutes} min</p>
                       {appointment.message && <p className="mb-0 mt-3 whitespace-pre-wrap text-sm leading-6 text-[#4c5448]">{appointment.message}</p>}
                       {appointment.meeting_url && <a href={appointment.meeting_url} target="_blank" rel="noreferrer" className="mt-3 inline-block text-sm font-semibold text-[#526313] underline">Open Google Meet</a>}
-                      <p className="mb-0 mt-3 text-xs text-[#62695e]">Client calendar invite: {appointment.client_invite_sent ? 'sent' : 'not sent'} · Owner email: {appointment.owner_notified ? 'sent' : 'not sent'}</p>
+                      <p className="mb-0 mt-3 text-xs text-[#62695e]">Admin email: {appointment.owner_notified ? 'sent' : 'not sent'} · Customer status email: {appointment.customer_notified ? 'sent' : 'not sent'}</p>
                       {appointment.delivery_note && <p className="mb-0 mt-2 text-xs leading-5 text-[#8a2b1d]">{appointment.delivery_note}</p>}
                       <p className="mb-0 mt-3 text-xs text-[#7a8074]">Received {createdLabel(appointment.created_at)}</p>
                     </div>
                     <div className="grid gap-2 lg:w-52">
-                      {appointment.status === 'pending' && appointment.availability_source === 'live' && (
+                      {appointment.status === 'pending' && (
                         <button type="button" onClick={() => approveAppointment(appointment)} disabled={approvingId === appointment.id} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#a4be2d] px-4 text-sm font-bold text-[#171a17] transition-colors hover:bg-[#b3cc35] disabled:opacity-60">
-                          {approvingId === appointment.id ? 'Sending invite…' : 'Approve & Send Invite'}
+                          {approvingId === appointment.id ? 'Approving…' : 'Approve request'}
                         </button>
                       )}
-                      {appointment.status === 'pending' && appointment.availability_source === 'demo' && <p className="m-0 rounded-xl bg-[#f8f9f6] p-3 text-xs leading-5 text-[#62695e]">Demo slot only. A real available time is required before approval.</p>}
-                      <label className="grid gap-1 text-xs font-semibold text-[#62695e]">Request status
-                      <select value={appointment.status} disabled={updatingId === appointment.id || appointment.status === 'confirmed'} onChange={(event) => updateStatus(appointment.id, event.target.value)} className="h-11 rounded-xl border border-[#d4dbc8] bg-white px-3 text-sm font-semibold text-[#171a17] disabled:opacity-60">
-                        <option value="pending">Pending</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
-                      <span className="sr-only" aria-live="polite">{updatingId === appointment.id ? 'Saving status' : ''}</span>
-                      </label>
+                      {appointment.status !== 'cancelled' && (
+                        <button type="button" onClick={() => cancelAppointment(appointment)} disabled={updatingId === appointment.id} className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#e5b5ab] px-4 text-sm font-semibold text-[#8a2b1d] transition-colors hover:bg-[#fbefec] disabled:opacity-60">
+                          {updatingId === appointment.id ? 'Saving…' : appointment.status === 'pending' ? 'Reject request' : 'Cancel appointment'}
+                        </button>
+                      )}
                     </div>
                   </li>
                 ))}
               </ul>
             )}
             <div className="flex items-center gap-2 border-t border-[#edf0e7] bg-[#f8f9f6] px-5 py-3 text-xs text-[#62695e] sm:px-6">
-              <Check size={15} aria-hidden /> Approval rechecks the live slot and sends the client a Google Calendar invite with the Meet link.
+              <Check size={15} aria-hidden /> Pending and approved requests reserve their slot. Cancelling a request makes it available again.
             </div>
           </section>
         )}

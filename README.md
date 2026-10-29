@@ -9,6 +9,8 @@ npm install
 npm run dev
 ```
 
+`npm run dev` starts the site and a local adapter for the `/api/*` booking functions, so you can test without access to the hosted Vercel project. Add the server environment variables below to `.env.local` first. Production still uses the Vercel function files in `api/`.
+
 ## Check and build
 
 ```sh
@@ -33,14 +35,16 @@ Venture wordmarks are typographic recreations. Case study outcomes only include 
 
 ## Appointment requests and admin
 
-The consultation modal posts appointment requests to `/api/book-consultation`, which stores them in Supabase with `pending` status and emails the owner for review. The admin dashboard is at `/admin`; it uses Supabase Auth and only users whose Supabase `app_metadata.role` is `admin` can read or update appointment status. For a live request, **Approve & Send Invite** rechecks the selected slot, creates the Google Meet event, sends the client a Calendar invitation, and then marks the request confirmed. Demo requests cannot be approved as real appointments. The database policy also prevents admins from setting `confirmed` directly.
+The consultation modal loads slots from `/api/availability` and posts requests to `/api/book-consultation`. Pending and approved requests reserve their date and time in Supabase; cancelling a request frees the slot. A unique database index prevents two customers from reserving the same slot at once. The admin dashboard is at `/admin`; only signed-in users whose Supabase `app_metadata.role` is `admin` can view requests. Admins can approve or cancel requests. Gmail sends the admin a booking email and sends the customer an approval or cancellation email; calendar invites are not part of this flow.
 
-To configure Supabase:
+To configure customer booking and admin email notifications:
 
 1. Create a Supabase project and run [`supabase/schema.sql`](supabase/schema.sql) in its SQL editor.
 2. Create an admin user in Supabase Authentication. In that user's **app metadata**, set `{ "role": "admin" }`, then sign in at `/admin`. Do not put this role in user-editable metadata.
-3. Copy `.env.example` to `.env.local` for local development. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for the admin UI. Set `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` in the server environment (Vercel); never expose the service role key in a `VITE_` variable. The server anon key is used only to validate the admin's Supabase Auth token.
-4. In Google Cloud, enable the Google Calendar API and Gmail API. Create OAuth credentials for the `connect@hashirusman.online` Google account and grant `https://www.googleapis.com/auth/calendar.events`, `https://www.googleapis.com/auth/calendar.freebusy`, and `https://www.googleapis.com/auth/gmail.send`. Obtain an offline refresh token for that account. Store `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REFRESH_TOKEN` only in server-side environment settings.
-5. Keep `VITE_BOOKING_ENABLED`, `VITE_LIVE_AVAILABILITY_ENABLED`, `BOOKING_ENABLED`, and `MEET_INVITES_ENABLED` false until Supabase inserts, Google live availability, owner email, and client Meet invites have all been verified. Set `VITE_BOOKING_ENABLED`, `VITE_LIVE_AVAILABILITY_ENABLED`, and `BOOKING_ENABLED` to `true` to accept requests on live slots. Set `MEET_INVITES_ENABLED` to `true` only when ready to enable the admin approval action and send invitations. Vercel needs the server settings in its project environment, followed by a redeploy.
+3. For local development, put the Supabase settings in `.env.local`: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`. The service role/secret key must stay server-side and must never use a `VITE_` name. When hosting later, copy the server-only values to the hosting provider's environment settings.
+4. To email booking details and status updates, enable the Gmail API in Google Cloud. Create OAuth credentials, authorize the `hashirusman120@gmail.com` Gmail account for `https://www.googleapis.com/auth/gmail.send`, and obtain an offline refresh token. Store `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REFRESH_TOKEN` only in server-side environment settings. Never use the Gmail account password as an app secret.
+5. Set `VITE_BOOKING_ENABLED=true` and `BOOKING_ENABLED=true` to enable customer requests. Leave `VITE_LIVE_AVAILABILITY_ENABLED=false` to use the configured website schedule without Google Calendar.
 
-The calendar shows illustrative weekday slots until `VITE_LIVE_AVAILABILITY_ENABLED` is enabled. Live slots are checked against the owner's Google Calendar, then rechecked on submission and again during approval. Demo requests are marked `availability_source = 'demo'`; they can be saved and emailed to the owner after booking is enabled, but they cannot be approved and do not create a calendar event or Meet link. A live request does not create an event until the owner approves it. The approval endpoint creates the event with `sendUpdates=all` and conference data enabled, then stores the Meet link and confirmed status. Cancellation does not send a follow-up email automatically.
+For the first end-to-end check, configure Supabase, set `BOOKING_ENABLED=true` and `VITE_BOOKING_ENABLED=true`, leave `VITE_LIVE_AVAILABILITY_ENABLED=false`, and configure Gmail OAuth. Run the updated `supabase/schema.sql`, then submit a request and confirm it appears in `appointments` and an email reaches the admin. Approve or cancel it from `/admin` and confirm the customer receives the status email. Never put `SUPABASE_SERVICE_ROLE_KEY` or Google OAuth secrets in a `VITE_` variable or commit them.
+
+With `VITE_LIVE_AVAILABILITY_ENABLED=false`, the weekday schedule is checked against pending and approved Supabase requests. With it enabled, availability also checks Google Calendar. Booking approval does not create a calendar event. Cancellation makes the Supabase slot available again.

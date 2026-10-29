@@ -52,7 +52,10 @@ export default function Footer() {
       <div className="border-t border-[#3a4639]">
         <div className="mx-auto flex w-full max-w-[1600px] flex-col items-center justify-between gap-4 px-6 py-5 text-xs text-[#9eac99] sm:px-8 md:flex-row xl:px-10">
           <span>© {new Date().getFullYear()} Hashir Usman. All rights reserved.</span>
-          <span className="text-center text-[#b8c4b4] md:text-right">Build with clarity. Scale with intention. Made with ideas and a little chaos.</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center md:justify-end">
+            <Link to="/privacy" className="text-[#b8c4b4] underline-offset-4 hover:underline">Privacy Policy</Link>
+            <span className="text-[#b8c4b4]">Build with clarity. Scale with intention. Made with ideas and a little chaos.</span>
+          </div>
         </div>
       </div>
     </footer>
