@@ -158,7 +158,11 @@ async function sendGmail(accessToken, recipient, subject, body, replyTo = OWNER_
     headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ raw: base64Url(raw) }),
   })
-  if (!response.ok) throw new Error('The email could not be sent.')
+  if (!response.ok) {
+    const result = await response.json().catch(() => null)
+    const detail = result?.error?.message || `HTTP ${response.status}`
+    throw new Error(`Gmail API rejected the message: ${detail}`)
+  }
 }
 
 export async function notifyOpportunityApplication(accessToken, application) {
@@ -178,9 +182,10 @@ export async function notifyOpportunityApplication(accessToken, application) {
 }
 
 export async function notifyOwner(accessToken, appointment, meetingUrl, inviteSent) {
-  const subject = `New consultation request from ${appointment.name}`
+  const isPending = appointment.status === 'pending'
+  const subject = `${isPending ? 'New consultation request' : 'Appointment update'} from ${appointment.name}`
   const body = [
-    'A consultation request was submitted.',
+    isPending ? 'A consultation request was submitted.' : 'An appointment request has been approved.',
     '',
     `Name: ${appointment.name}`,
     `Email: ${appointment.email}`,
@@ -191,7 +196,7 @@ export async function notifyOwner(accessToken, appointment, meetingUrl, inviteSe
     `Client calendar invitation: ${inviteSent ? 'sent' : 'not sent (the owner must approve this request first)'}`,
     `Google Meet: ${meetingUrl || 'not created'}`,
     '',
-    'This is a request pending admin confirmation. Review it at /admin.',
+    isPending ? 'This request is pending admin confirmation. Review it at /admin.' : 'The appointment has been approved.',
     appointment.message ? `\nNote: ${appointment.message}` : '',
   ].filter(Boolean).join('\r\n')
   await sendGmail(accessToken, OWNER_EMAIL, subject, body)

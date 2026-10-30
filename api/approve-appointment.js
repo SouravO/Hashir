@@ -77,7 +77,7 @@ export default async function handler(req, res) {
       customerNotified = true
     } catch (notificationError) {
       console.error('Approval email failed:', notificationError.message)
-      deliveryNotes.push('Request approved, but the customer confirmation email could not be sent.')
+      deliveryNotes.push(`Request approved, but the customer confirmation email could not be sent: ${notificationError.message}`)
     }
   }
   if (calendarEnabled && !calendarInvite && !deliveryNotes.some((note) => note.includes('calendar invite'))) {

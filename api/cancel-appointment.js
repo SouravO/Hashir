@@ -75,7 +75,7 @@ export default async function handler(req, res) {
       customerNotified = true
     } catch (notificationError) {
       console.error('Cancellation email failed:', notificationError.message)
-      deliveryNotes.push('Request cancelled, but the customer cancellation email could not be sent.')
+      deliveryNotes.push(`Request cancelled, but the customer cancellation email could not be sent: ${notificationError.message}`)
     }
   }
   const deliveryNote = deliveryNotes.join(' ') || 'Calendar event cancelled and customer notified.'

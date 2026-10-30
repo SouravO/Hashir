@@ -157,7 +157,7 @@ export default async function handler(req, res) {
       if (error) deliveryNotes.push('The owner email was sent, but its delivery status could not be saved.')
     } catch (error) {
       console.error('Owner notification failed:', error.message)
-      deliveryNotes.push('The request was saved, but the owner notification could not be sent.')
+      deliveryNotes.push(`The request was saved, but the owner notification could not be sent: ${error.message}`)
     }
   }
 

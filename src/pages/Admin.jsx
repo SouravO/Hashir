@@ -31,6 +31,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(false)
   const [updatingId, setUpdatingId] = useState('')
   const [approvingId, setApprovingId] = useState('')
+  const [retryingId, setRetryingId] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -146,6 +147,32 @@ export default function Admin() {
     }
   }
 
+  const retryAppointmentEmails = async (appointment) => {
+    if (!supabase || !isAdmin) return
+    setRetryingId(appointment.id)
+    setError('')
+    try {
+      const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError || !currentSession?.access_token) throw new Error('Your admin session expired. Sign in again.')
+      const response = await fetch('/api/retry-appointment-emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentSession.access_token}` },
+        body: JSON.stringify({ appointmentId: appointment.id }),
+      })
+      const result = await response.json().catch(() => ({}))
+      if (typeof result.ownerNotified === 'boolean' || typeof result.customerNotified === 'boolean') {
+        setAppointments((items) => items.map((item) => item.id === appointment.id
+          ? { ...item, owner_notified: result.ownerNotified ?? item.owner_notified, customer_notified: result.customerNotified ?? item.customer_notified, delivery_note: result.deliveryNote || null }
+          : item))
+      }
+      if (!response.ok) throw new Error(result.deliveryNote || result.message || 'Email retry failed.')
+    } catch (retryError) {
+      setError(retryError.message || 'Email retry failed.')
+    } finally {
+      setRetryingId('')
+    }
+  }
+
   return (
     <main id="main" className="min-h-[70vh] bg-[#f2f3ef] px-5 py-10 text-[#171a17] sm:px-8 sm:py-14">
       <div className="mx-auto w-full max-w-[1120px]">
@@ -235,6 +262,11 @@ export default function Admin() {
                       {appointment.status !== 'cancelled' && (
                         <button type="button" onClick={() => cancelAppointment(appointment)} disabled={updatingId === appointment.id} className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#e5b5ab] px-4 text-sm font-semibold text-[#8a2b1d] transition-colors hover:bg-[#fbefec] disabled:opacity-60">
                           {updatingId === appointment.id ? 'Saving…' : appointment.status === 'pending' ? 'Reject request' : 'Cancel appointment'}
+                        </button>
+                      )}
+                      {appointment.status !== 'cancelled' && (!appointment.owner_notified || (appointment.status === 'confirmed' && !appointment.customer_notified)) && (
+                        <button type="button" onClick={() => retryAppointmentEmails(appointment)} disabled={retryingId === appointment.id} className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#d4dbc8] bg-white px-4 text-sm font-semibold text-[#34420f] transition-colors hover:bg-[#f1f5e7] disabled:opacity-60">
+                          {retryingId === appointment.id ? 'Retrying email…' : 'Retry failed email(s)'}
                         </button>
                       )}
                     </div>
