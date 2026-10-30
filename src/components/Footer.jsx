@@ -2,11 +2,10 @@ import { Link } from 'react-router-dom'
 import { ArrowUpRight, EnvelopeSimple, InstagramLogo, LinkedinLogo, MapPin, Phone, XLogo, YoutubeLogo } from '@phosphor-icons/react'
 
 const email = 'connect@hashirusman.online'
-// Work With Me and Opportunities do not have their own pages yet, so they open the Contact form with the matching topic.
 const groups = [
   { title: 'Explore', links: [['My Work', '/ventures'], ['About', '/about'], ['Founderverse', '/founderverse']] },
   { title: 'Work With Me', links: [['Strategy Calls', '/contact?about=strategy-call'], ['Business Consulting', '/contact?about=consulting'], ['Startup Building', '/contact?about=startup-idea'], ['Valuation', '/contact?about=valuation'], ['Funding', '/contact?about=funding'], ['Co-Build', '/contact?about=co-build']] },
-  { title: 'Opportunities', links: [['We’re Hiring', '/contact?about=other'], ['Internships', '/contact?about=other'], ['Become a Co-Founder', '/contact?about=other']] },
+  { title: 'Opportunities', links: [['We’re Hiring', '/opportunities#hiring'], ['Internships', '/opportunities#internships'], ['Become a Co-Founder', '/opportunities#co-founder']] },
 ]
 const socials = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/', Icon: LinkedinLogo },

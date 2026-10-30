@@ -6,12 +6,14 @@ import bookConsultation from './api/book-consultation.js'
 import availability from './api/availability.js'
 import approveAppointment from './api/approve-appointment.js'
 import cancelAppointment from './api/cancel-appointment.js'
+import submitOpportunity from './api/submit-opportunity.js'
 
 const localApiHandlers = {
   '/api/book-consultation': bookConsultation,
   '/api/availability': availability,
   '/api/approve-appointment': approveAppointment,
   '/api/cancel-appointment': cancelAppointment,
+  '/api/submit-opportunity': submitOpportunity,
 }
 
 function localApi() {

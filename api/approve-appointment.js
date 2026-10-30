@@ -1,6 +1,6 @@
 /* global process */
 import { createClient } from '@supabase/supabase-js'
-import { getGoogleAccessToken, notifyCustomer } from '../server/google.js'
+import { createMeetInvite, getGoogleAccessToken, notifyCustomer } from '../server/google.js'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     .update({ status: 'confirmed' })
     .eq('id', appointmentId)
     .eq('status', 'pending')
-    .select('id,status,name,email,appointment_date,appointment_time,timezone,duration_minutes')
+    .select('id,status,name,email,appointment_date,appointment_time,timezone,duration_minutes,google_event_id,meeting_url')
     .maybeSingle()
 
   if (error) {
@@ -38,23 +38,71 @@ export default async function handler(req, res) {
   }
   if (!data) return res.status(409).json({ message: 'This request is no longer pending.' })
 
+  const deliveryNotes = []
+  const calendarEnabled = process.env.MEET_INVITES_ENABLED === 'true'
+  let accessToken = null
+  let calendarInvite = null
   let customerNotified = false
-  let deliveryNote
   try {
-    const accessToken = await getGoogleAccessToken()
-    await notifyCustomer(accessToken, data, 'confirmed')
-    customerNotified = true
-    deliveryNote = 'Approval email sent to the customer.'
+    accessToken = await getGoogleAccessToken()
   } catch (notificationError) {
-    console.error('Approval email failed:', notificationError.message)
-    deliveryNote = 'Request approved, but the customer email could not be sent. Check the Gmail OAuth settings.'
+    console.error('Google authorization failed:', notificationError.message)
+    deliveryNotes.push('Google authorization failed; calendar invite and customer email could not be sent.')
   }
+
+  if (accessToken && calendarEnabled) {
+    try {
+      calendarInvite = await createMeetInvite(accessToken, data)
+    } catch (calendarError) {
+      console.error('Calendar invite failed:', calendarError.message)
+      deliveryNotes.push('Request approved, but the calendar invite could not be created. Check Google Calendar API access and OAuth scopes.')
+    }
+  } else if (!calendarEnabled) {
+    deliveryNotes.push('Request approved and email confirmation sent; calendar invitations are disabled.')
+  }
+
+  if (calendarEnabled && !calendarInvite) {
+    const { error: rollbackError } = await db
+      .from('appointments')
+      .update({ status: 'pending' })
+      .eq('id', appointmentId)
+      .eq('status', 'confirmed')
+    if (rollbackError) console.error('Approval rollback failed:', rollbackError.message)
+    return res.status(503).json({ message: 'Could not create the Google Calendar invitation. The request remains pending; check Calendar API access and OAuth scopes.' })
+  }
+
+  if (accessToken) {
+    try {
+      await notifyCustomer(accessToken, data, 'confirmed', calendarInvite?.meetingUrl, Boolean(calendarInvite?.inviteSent))
+      customerNotified = true
+    } catch (notificationError) {
+      console.error('Approval email failed:', notificationError.message)
+      deliveryNotes.push('Request approved, but the customer confirmation email could not be sent.')
+    }
+  }
+  if (calendarEnabled && !calendarInvite && !deliveryNotes.some((note) => note.includes('calendar invite'))) {
+    deliveryNotes.push('Calendar invitation was not sent.')
+  }
+  const deliveryNote = deliveryNotes.join(' ') || 'Calendar invite and approval email sent to the customer.'
 
   const { error: notificationUpdateError } = await db
     .from('appointments')
-    .update({ customer_notified: customerNotified, delivery_note: deliveryNote })
+    .update({
+      google_event_id: calendarInvite?.eventId || null,
+      meeting_url: calendarInvite?.meetingUrl || null,
+      client_invite_sent: Boolean(calendarInvite?.inviteSent),
+      customer_notified: customerNotified,
+      delivery_note: deliveryNote,
+    })
     .eq('id', appointmentId)
   if (notificationUpdateError) console.error('Approval email status could not be saved:', notificationUpdateError.message)
 
-  return res.status(200).json({ ok: true, status: data.status, customerNotified, deliveryNote, clientInviteSent: false, meetingUrl: null })
+  return res.status(200).json({
+    ok: true,
+    status: data.status,
+    customerNotified,
+    deliveryNote,
+    clientInviteSent: Boolean(calendarInvite?.inviteSent),
+    meetingUrl: calendarInvite?.meetingUrl || null,
+  })
 }

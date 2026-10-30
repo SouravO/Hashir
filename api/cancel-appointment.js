@@ -1,6 +1,6 @@
 /* global process */
 import { createClient } from '@supabase/supabase-js'
-import { getGoogleAccessToken, notifyCustomer } from '../server/google.js'
+import { deleteCalendarEvent, getGoogleAccessToken, notifyCustomer } from '../server/google.js'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     .update({ status: 'cancelled' })
     .eq('id', appointmentId)
     .in('status', ['pending', 'confirmed'])
-    .select('id,status,name,email,appointment_date,appointment_time,timezone,duration_minutes')
+    .select('id,status,name,email,appointment_date,appointment_time,timezone,duration_minutes,google_event_id')
     .maybeSingle()
 
   if (error) {
@@ -38,23 +38,57 @@ export default async function handler(req, res) {
   }
   if (!data) return res.status(409).json({ message: 'This request is already cancelled or no longer available.' })
 
+  const deliveryNotes = []
   let customerNotified = false
-  let deliveryNote
+  let accessToken = null
+  let calendarEventRemoved = false
   try {
-    const accessToken = await getGoogleAccessToken()
-    await notifyCustomer(accessToken, data, 'cancelled')
-    customerNotified = true
-    deliveryNote = 'Cancellation email sent to the customer.'
-  } catch (notificationError) {
-    console.error('Cancellation email failed:', notificationError.message)
-    deliveryNote = 'Request cancelled, but the customer email could not be sent. Check the Gmail OAuth settings.'
+    accessToken = await getGoogleAccessToken()
+  } catch (googleError) {
+    console.error('Google authorization failed:', googleError.message)
+    deliveryNotes.push('Google authorization failed; calendar cancellation and customer email could not be sent.')
   }
+
+  if (accessToken && data.google_event_id) {
+    try {
+      await deleteCalendarEvent(accessToken, data.google_event_id)
+      calendarEventRemoved = true
+    } catch (calendarError) {
+      console.error('Calendar event cancellation failed:', calendarError.message)
+      deliveryNotes.push('Request cancelled, but the calendar event could not be removed. Check Google Calendar access.')
+    }
+  }
+
+  if (data.google_event_id && !calendarEventRemoved) {
+    const { error: rollbackError } = await db
+      .from('appointments')
+      .update({ status: 'confirmed' })
+      .eq('id', appointmentId)
+      .eq('status', 'cancelled')
+    if (rollbackError) console.error('Cancellation rollback failed:', rollbackError.message)
+    return res.status(503).json({ message: 'Could not remove the Google Calendar event. The appointment remains confirmed; check Calendar API access and try again.' })
+  }
+
+  if (accessToken) {
+    try {
+      await notifyCustomer(accessToken, data, 'cancelled', null, Boolean(data.google_event_id))
+      customerNotified = true
+    } catch (notificationError) {
+      console.error('Cancellation email failed:', notificationError.message)
+      deliveryNotes.push('Request cancelled, but the customer cancellation email could not be sent.')
+    }
+  }
+  const deliveryNote = deliveryNotes.join(' ') || 'Calendar event cancelled and customer notified.'
 
   const { error: notificationUpdateError } = await db
     .from('appointments')
-    .update({ customer_notified: customerNotified, delivery_note: deliveryNote })
+    .update({
+      ...(calendarEventRemoved ? { google_event_id: null, meeting_url: null } : {}),
+      customer_notified: customerNotified,
+      delivery_note: deliveryNote,
+    })
     .eq('id', appointmentId)
   if (notificationUpdateError) console.error('Cancellation email status could not be saved:', notificationUpdateError.message)
 
-  return res.status(200).json({ ok: true, status: data.status, customerNotified, deliveryNote })
+  return res.status(200).json({ ok: true, status: data.status, customerNotified, deliveryNote, calendarEventRemoved })
 }

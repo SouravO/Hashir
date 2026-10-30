@@ -86,6 +86,13 @@ export async function createMeetInvite(accessToken, appointment) {
     start: { dateTime: localDateTime(appointment.appointment_date, appointment.appointment_time), timeZone: appointment.timezone },
     end: { dateTime: endLocalDateTime(appointment.appointment_date, appointment.appointment_time, appointment.duration_minutes), timeZone: appointment.timezone },
     attendees: [{ email: appointment.email }],
+    reminders: {
+      useDefault: false,
+      overrides: [
+        { method: 'email', minutes: 60 },
+        { method: 'popup', minutes: 10 },
+      ],
+    },
     conferenceData: {
       createRequest: {
         requestId: conferenceRequestId,
@@ -121,14 +128,24 @@ export async function createMeetInvite(accessToken, appointment) {
   return { eventId, meetingUrl, inviteSent: true }
 }
 
+export async function deleteCalendarEvent(accessToken, eventId) {
+  const response = await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${encodeURIComponent(eventId)}?sendUpdates=all`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!response.ok && response.status !== 404 && response.status !== 410) {
+    throw new Error('Google Calendar could not cancel the event.')
+  }
+}
+
 const base64Url = (value) => Buffer.from(value).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
 
-async function sendGmail(accessToken, recipient, subject, body) {
+async function sendGmail(accessToken, recipient, subject, body, replyTo = OWNER_EMAIL) {
   const encodedSubject = `=?UTF-8?B?${Buffer.from(subject).toString('base64')}?=`
   const raw = [
     `To: ${recipient}`,
     `From: ${OWNER_EMAIL}`,
-    `Reply-To: ${OWNER_EMAIL}`,
+    `Reply-To: ${replyTo}`,
     `Subject: ${encodedSubject}`,
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset="UTF-8"',
@@ -142,6 +159,22 @@ async function sendGmail(accessToken, recipient, subject, body) {
     body: JSON.stringify({ raw: base64Url(raw) }),
   })
   if (!response.ok) throw new Error('The email could not be sent.')
+}
+
+export async function notifyOpportunityApplication(accessToken, application) {
+  const subject = `Opportunity application: ${application.role} — ${application.name}`
+  const body = [
+    'A new opportunity application was submitted.',
+    '',
+    `Opportunity: ${application.role}`,
+    `Name: ${application.name}`,
+    `Email: ${application.email}`,
+    `LinkedIn / portfolio: ${application.linkedin || 'Not provided'}`,
+    '',
+    'About the applicant:',
+    application.message,
+  ].join('\r\n')
+  await sendGmail(accessToken, 'connect@hashirusman.online', subject, body, application.email)
 }
 
 export async function notifyOwner(accessToken, appointment, meetingUrl, inviteSent) {
@@ -164,7 +197,7 @@ export async function notifyOwner(accessToken, appointment, meetingUrl, inviteSe
   await sendGmail(accessToken, OWNER_EMAIL, subject, body)
 }
 
-export async function notifyCustomer(accessToken, appointment, status) {
+export async function notifyCustomer(accessToken, appointment, status, meetingUrl = null, calendarInviteSent = false) {
   const approved = status === 'confirmed'
   const subject = approved ? 'Your appointment request was approved' : 'Your appointment request was cancelled'
   const body = [
@@ -177,10 +210,15 @@ export async function notifyCustomer(accessToken, appointment, status) {
     `Date: ${appointment.appointment_date}`,
     `Time: ${appointment.appointment_time} (${appointment.timezone})`,
     `Duration: ${appointment.duration_minutes} minutes`,
+    ...(approved && meetingUrl ? [`Google Meet: ${meetingUrl}`] : []),
     '',
     approved
-      ? 'We look forward to speaking with you. Reply to this email if you have any questions.'
-      : 'Please reply to this email if you would like to request another time.',
+      ? calendarInviteSent
+        ? `A Google Calendar invitation is on its way.${meetingUrl ? ' Use the Google Meet link above to join.' : ''} Reply to this email if you have any questions.`
+        : 'Your appointment is confirmed. Reply to this email if you have any questions.'
+      : calendarInviteSent
+        ? 'The calendar invitation for this appointment has been cancelled. Please reply to this email if you would like to request another time.'
+        : 'This appointment request has been cancelled. Please reply to this email if you have any questions.',
   ].join('\r\n')
   await sendGmail(accessToken, appointment.email, subject, body)
 }

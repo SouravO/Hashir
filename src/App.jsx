@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useLayoutEffect } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -9,16 +9,20 @@ import Contact from './pages/Contact'
 import Founderverse from './pages/Founderverse'
 import Admin from './pages/Admin'
 import Privacy from './pages/Privacy'
+import Opportunities from './pages/Opportunities'
 
 function ScrollToRouteTarget() {
   const { pathname, hash } = useLocation()
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (hash) {
-      document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView({ behavior: 'instant' })
+      window.scrollTo(0, 0)
+      document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView({ block: 'start' })
       return
     }
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    window.scrollTo(0, 0)
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
   }, [pathname, hash])
 
   return null
@@ -37,6 +41,7 @@ export default function App() {
           <Route path="/about" element={<About />} />
           <Route path="/ventures" element={<Ventures />} />
           <Route path="/founderverse" element={<Founderverse />} />
+          <Route path="/opportunities" element={<Opportunities />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/admin" element={<Admin />} />

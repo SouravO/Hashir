@@ -8,6 +8,7 @@ const links = [
   { to: '/about', label: 'About' },
   { to: '/ventures', label: 'Ventures' },
   { to: '/founderverse', label: 'Founderverse', featured: true },
+  { to: '/opportunities', label: 'Opportunities' },
   { to: '/contact', label: 'Contact' },
 ]
 

@@ -4,15 +4,9 @@ import { ArrowUpRight, CaretLeft, CaretRight, CheckCircle, CircleNotch, X as Clo
 
 /* ---------- Consultation booking modal ----------
    Opens from any element marked `data-booking-trigger` (the "Let's cook ↗" CTA) without leaving the page.
-   Website slot availability and requests are handled by the server API; Google Calendar availability is optional.
-
-   INTEGRATION POINTS for the real calendar (search for "INTEGRATION POINT"):
-     1. loadSlots()      -> replace with a call to a backend route that reads real free/busy data.
-     2. isDateOpen()     -> replace with a month-level availability map from the same backend route.
-     3. submitBooking()  -> keep POSTing to /api/book-consultation, or point BOOKING.endpoint at the route that
-                            reserves the slot (e.g. Google Calendar events.insert from a server, using a service
-                            account or OAuth token kept in server-side env vars, never in VITE_ variables).
-   Google Calendar creates the unique Meet event and sends the client invite; Gmail API sends the owner notification. */
+   The server checks Google Calendar free/busy when enabled and reserves each request in Supabase.
+   Requests stay pending until an admin approves them. Approval creates a Google Calendar/Meet event,
+   sends the invite and confirmation email, and cancellation removes the event and emails the customer. */
 
 const BOOKING = {
   timezone: 'Asia/Kolkata', /* INTEGRATION POINT: set to the owner's calendar timezone */

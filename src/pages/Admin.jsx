@@ -113,7 +113,7 @@ export default function Admin() {
       const result = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(result.message || 'Could not approve this request.')
       setAppointments((items) => items.map((item) => item.id === appointment.id
-        ? { ...item, status: 'confirmed', meeting_url: null, client_invite_sent: false, customer_notified: result.customerNotified, delivery_note: result.deliveryNote }
+        ? { ...item, status: 'confirmed', meeting_url: result.meetingUrl || null, client_invite_sent: result.clientInviteSent, customer_notified: result.customerNotified, delivery_note: result.deliveryNote }
         : item))
     } catch (approvalError) {
       setError(approvalError.message || 'Could not approve this request.')
@@ -137,7 +137,7 @@ export default function Admin() {
       const result = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(result.message || 'Could not cancel this request.')
       setAppointments((items) => items.map((item) => item.id === appointment.id
-        ? { ...item, status: 'cancelled', customer_notified: result.customerNotified, delivery_note: result.deliveryNote }
+        ? { ...item, status: 'cancelled', ...(result.calendarEventRemoved ? { meeting_url: null, client_invite_sent: false } : {}), customer_notified: result.customerNotified, delivery_note: result.deliveryNote }
         : item))
     } catch (cancelError) {
       setError(cancelError.message || 'Could not cancel this request.')
@@ -222,7 +222,7 @@ export default function Admin() {
                       <p className="mb-0 mt-3 text-sm font-semibold text-[#153b2b]">{dateLabel(appointment.appointment_date)} · {timeLabel(appointment.appointment_time)} ({appointment.timezone}) · {appointment.duration_minutes} min</p>
                       {appointment.message && <p className="mb-0 mt-3 whitespace-pre-wrap text-sm leading-6 text-[#4c5448]">{appointment.message}</p>}
                       {appointment.meeting_url && <a href={appointment.meeting_url} target="_blank" rel="noreferrer" className="mt-3 inline-block text-sm font-semibold text-[#526313] underline">Open Google Meet</a>}
-                      <p className="mb-0 mt-3 text-xs text-[#62695e]">Admin email: {appointment.owner_notified ? 'sent' : 'not sent'} · Customer status email: {appointment.customer_notified ? 'sent' : 'not sent'}</p>
+                      <p className="mb-0 mt-3 text-xs text-[#62695e]">Admin email: {appointment.owner_notified ? 'sent' : 'not sent'} · Calendar invite: {appointment.client_invite_sent ? 'sent' : 'not sent'} · Customer email: {appointment.customer_notified ? 'sent' : 'not sent'}</p>
                       {appointment.delivery_note && <p className="mb-0 mt-2 text-xs leading-5 text-[#8a2b1d]">{appointment.delivery_note}</p>}
                       <p className="mb-0 mt-3 text-xs text-[#7a8074]">Received {createdLabel(appointment.created_at)}</p>
                     </div>

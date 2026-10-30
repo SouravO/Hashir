@@ -10,7 +10,6 @@ import {
   Flask,
   InstagramLogo,
   LinkedinLogo,
-  MagnifyingGlass,
   Play,
   RocketLaunch,
   Sparkle,
@@ -80,11 +79,8 @@ const CSS = `
 
 function Logo({ className = '' }) {
   return (
-    <Link to="/" aria-label="Founderverse home" className={`inline-flex flex-col items-center border-[3px] border-[#1e2618] bg-white px-1.5 py-1 leading-none text-[#1e2618] no-underline ${className} ${focus}`}>
-      <span className="self-stretch border-b-2 border-[#1e2618] pb-0.5 text-center text-[8px] font-black tracking-[.35em]">THE</span>
-      <span className="-skew-x-6 pt-0.5 text-[11px] font-black tracking-[-.02em]">FOUNDER</span>
-      <span className="bg-[#1e2618] px-1.5 text-[34px] font-black tracking-[-.06em] text-white">EV</span>
-      <span className="self-stretch border-t-2 border-[#1e2618] pt-0.5 text-center text-[8px] font-black tracking-[.35em]">ERSE</span>
+    <Link to="/" aria-label="Founderverse home" className={`inline-flex items-center justify-center no-underline ${className} ${focus}`}>
+      <img src="/fv-logo.png" alt="Founderverse" className="h-[108px] w-[90px] object-contain" />
     </Link>
   )
 }
@@ -463,16 +459,6 @@ export default function Founderverse() {
       <header className="bg-[#f4f4f2]">
         <div className={`${wrap} flex items-center justify-between gap-6 pb-4 pt-14`}>
           <Logo />
-         
-          <div className="flex items-center gap-5">
-            <button type="button" aria-label="Search" className={`hidden border-0 bg-transparent text-black sm:block ${focus}`}>
-              <MagnifyingGlass size={22} />
-            </button>
-            <Link to="/contact" className={`inline-flex h-11 items-center gap-2 rounded-full bg-[#1e2618] px-6 text-sm font-semibold text-white no-underline transition hover:bg-[#a4be2d] hover:text-[#1e2618] ${focus}`}>
-              Enter Founderverse
-              <ArrowRight size={16} weight="bold" aria-hidden />
-            </Link>
-          </div>
         </div>
       </header>
 
