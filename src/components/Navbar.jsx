@@ -67,12 +67,12 @@ export default function Navbar() {
 
             <nav className="hidden animate-page-enter items-center gap-1.5 rounded-full border border-[#e2e5dc] bg-[#f0f0f3]/75 p-1.5 shadow-[0_12px_28px_-16px_#18181b55,0_4px_12px_-8px_#18181b2b] backdrop-blur-xl lg:flex" aria-label="Main navigation">
               {links.map((link) => <NavLink key={link.to} end={link.to === '/'} to={link.to} className={({ isActive }) => link.featured
-                ? `group relative inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[#c5a65e]/75 bg-[linear-gradient(135deg,#17372a_0%,#101b16_100%)] px-4 pb-1 pt-0 text-[13px] font-semibold tracking-[.015em] text-[#f3e5bd] no-underline shadow-[inset_0_1px_0_#ffffff24,0_3px_12px_#10200825] transition-[background-color,border-color,box-shadow,transform] duration-200 hover:-translate-y-px hover:border-[#e0c47c] hover:shadow-[inset_0_1px_0_#ffffff30,0_5px_18px_#8d743a30] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c5a65e] focus-visible:ring-offset-2 ${isActive ? 'border-[#e0c47c] bg-[#a4be2d] text-[#1e2618]' : ''}`
+                ? `group relative inline-flex min-h-10 items-center justify-center gap-2 rounded-full border px-4 pb-1 pt-0 text-[13px] font-semibold tracking-[.015em] no-underline shadow-[inset_0_1px_0_#ffffff24,0_3px_12px_#10200825] transition-[background-color,border-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c5a65e] focus-visible:ring-offset-2 ${isActive ? 'border-[#e0c47c] bg-[#a4be2d] text-[#1e2618]' : 'border-[#c5a65e]/75 bg-[linear-gradient(135deg,#17372a_0%,#101b16_100%)] text-[#f3e5bd] hover:border-[#e0c47c] hover:shadow-[inset_0_1px_0_#ffffff30,0_5px_18px_#8d743a30]'}`
                 : pillClass({ isActive })}>{({ isActive }) => <>
                 {link.featured && <Crown size={14} weight="fill" className={`relative z-10 ${isActive ? 'text-[#1e2618]' : 'text-[#d2b66d]'}`} aria-hidden />}
                 <span className="relative z-10">{link.label}</span>
                 {link.featured && <span aria-hidden className={`size-1.5 rounded-full ${isActive ? 'bg-[#1e2618]' : 'bg-[#d2b66d] shadow-[0_0_8px_#d2b66d99]'}`} />}
-                <span aria-hidden className={`absolute bottom-[5px] left-1/2 size-1 -translate-x-1/2 rounded-full bg-current transition-[opacity,transform] duration-300 ${isActive ? 'scale-100 opacity-100' : 'scale-50 opacity-0 group-hover:scale-100 group-hover:opacity-60'}`} />
+                {!link.featured && <span aria-hidden className={`absolute bottom-[5px] left-1/2 size-1 -translate-x-1/2 rounded-full bg-current transition-[opacity,transform] duration-300 ${isActive ? 'scale-100 opacity-100' : 'scale-50 opacity-0 group-hover:scale-100 group-hover:opacity-60'}`} />}
               </>}</NavLink>)}
             </nav>
           </div>

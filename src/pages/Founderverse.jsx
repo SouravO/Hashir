@@ -60,9 +60,9 @@ const h2 = 'text-[clamp(30px,4.4vw,62px)] font-extrabold leading-[1.04] tracking
 const num = (s) => parseInt(s.replace(/\D/g, ''), 10)
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,600;1,9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 .fv-root{font-family:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
-.fv-serif{font-family:'Fraunces',Georgia,'Times New Roman',serif;font-style:italic;font-weight:600;letter-spacing:-.02em}
+.fv-accent{font-family:inherit;font-style:normal;font-weight:inherit;letter-spacing:inherit}
 @keyframes fv-caret{50%{opacity:0}}
 .fv-caret{animation:fv-caret 1s steps(1) infinite}
 @keyframes fv-orbit{to{transform:rotate(360deg)}}
@@ -170,7 +170,7 @@ function Seal() {
         <defs><path id="fv-seal" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0" /></defs>
         <text fill="currentColor" fontSize="14" fontWeight="800"><textPath href="#fv-seal" textLength="496" lengthAdjust="spacing">Founder Versa · 10 books · Founder Versa · 10 books ·</textPath></text>
       </svg>
-      <span className="fv-serif text-[34px] leading-none sm:text-[40px]">10</span>
+      <span className="fv-accent text-[34px] leading-none sm:text-[40px]">10</span>
     </div>
   )
 }
@@ -258,7 +258,7 @@ function BookFan() {
 function Before() {
   const reduce = useReducedMotion()
   return (
-    <span className="fv-serif relative inline-block text-[#a4be2d]">
+    <span className="fv-accent relative inline-block text-[#a4be2d]">
       before
       <svg aria-hidden viewBox="0 0 200 12" preserveAspectRatio="none" className="absolute inset-x-[2%] -bottom-[.02em] h-[.14em] w-[96%] overflow-visible">
         <motion.path d="M2 8 C 45 2, 120 1, 198 6" fill="none" stroke="#a4be2d" strokeWidth="3.5" strokeLinecap="round" initial={reduce ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.9, delay: 1, ease: EASE }} />
@@ -416,7 +416,7 @@ function Problem() {
       <section aria-labelledby="problem-title" className="bg-[#F2F3EF] pb-20 pt-20 text-[#101310] sm:pb-28 sm:pt-28">
         <div className={wrap}>
           <div className="grid items-end gap-x-12 gap-y-5 lg:grid-cols-12">
-            <Lines as="h2" id="problem-title" lines={['Learning on the job', <span key="p" className="fv-serif text-[#617319]">is the expensive way.</span>]} delay={100} className={`lg:col-span-8 ${h2}`} />
+            <Lines as="h2" id="problem-title" lines={['Learning on the job', <span key="p" className="not-italic text-[#617319]">is the expensive way.</span>]} delay={100} className={`lg:col-span-8 ${h2}`} />
             <Reveal as="p" delay={250} className="m-0 text-[17px] font-medium leading-[1.6] text-[#4a4f47] lg:col-span-4">Four mistakes founders pay for. Each one has a fix.</Reveal>
           </div>
 
@@ -433,7 +433,7 @@ function Problem() {
                         <span className="text-sm font-bold tabular-nums text-white/50">{i + 1} / {costs.length}</span>
                       </div>
                       <h3 className="m-0 mt-8 text-[clamp(30px,4vw,58px)] font-extrabold leading-[1.02] tracking-[-.04em]">
-                        {item.a}<br /><span className="fv-serif text-[#a4be2d]">{item.b}</span>
+                        {item.a}<br /><span className="not-italic text-[#a4be2d]">{item.b}</span>
                       </h3>
                     </div>
                     <div className="flex flex-col justify-between gap-8 md:col-span-5 md:border-l md:border-white/15 md:pl-10">
@@ -451,7 +451,7 @@ function Problem() {
             <StackCard i={n - 1} n={n} p={p} tone="bg-[#a4be2d] !border-[#a4be2d]">
               <div className="grid items-end gap-8 text-[#101310] md:grid-cols-12 md:gap-12">
                 <h3 className="m-0 text-[clamp(30px,4vw,58px)] font-extrabold leading-[1.02] tracking-[-.04em] md:col-span-8">
-                  Ten books.<br /><span className="fv-serif">Every part of building a business.</span>
+                  Ten books.<br /><span className="fv-accent">Every part of building a business.</span>
                 </h3>
                 <div className="md:col-span-4 md:justify-self-end"><Cta to="#collection" tone="dark" track="cta-problem">See the collection</Cta></div>
               </div>
@@ -475,7 +475,7 @@ function BookCard({ b, n }) {
         <span aria-hidden className="pointer-events-none absolute inset-0 z-20 rounded-[6px] bg-[linear-gradient(115deg,transparent_30%,rgba(255,255,255,.2)_48%,transparent_62%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </div>
       <div className="mt-7 flex items-start gap-4">
-        <span aria-hidden className="fv-serif text-[34px] leading-[.9] text-[#a4be2d]">{String(n + 1).padStart(2, '0')}</span>
+        <span aria-hidden className="fv-accent text-[34px] leading-[.9] text-[#a4be2d]">{String(n + 1).padStart(2, '0')}</span>
         <span aria-hidden className="mt-0.5 h-11 w-px shrink-0 bg-white/20" />
         <div className="min-w-0">
           <h3 className="m-0 text-[clamp(16px,1.4vw,19px)] font-extrabold leading-[1.2] tracking-[-.02em]">{b.title}</h3>
@@ -514,7 +514,7 @@ function Collection() {
         <div aria-hidden className="absolute -left-40 top-0 size-[520px] rounded-full bg-[#153B2B]/80 blur-[120px]" />
         <motion.div ref={track} style={{ x }} className="relative flex w-max items-center gap-6 pl-5 pr-[12vw] pt-6 sm:gap-8 sm:pl-12 xl:pl-[max(3rem,calc((100vw-1200px)/2+2.5rem))]">
           <div className="w-[80vw] shrink-0 pr-4 sm:w-[500px]">
-            <Lines as="h2" id="collection-title" lines={['Ten books.', <span key="c" className="fv-serif text-[#a4be2d]">Every part of building a business.</span>]} delay={100} className={h2} />
+            <Lines as="h2" id="collection-title" lines={['Ten books.', <span key="c" className="fv-accent text-[#a4be2d]">Every part of building a business.</span>]} delay={100} className={h2} />
             <p className="m-0 mt-8 inline-flex items-center gap-3 text-base font-bold text-white/80">Keep scrolling <motion.span aria-hidden animate={{ x: [0, 10, 0] }} transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}><ArrowRight size={20} /></motion.span></p>
           </div>
           {books.map((b, n) => <BookCard key={b.title} b={b} n={n} />)}
@@ -560,7 +560,7 @@ function Offer() {
       <span aria-hidden className="pointer-events-none absolute -right-[8%] -top-[12%] -z-10 size-[60vw] max-h-[720px] max-w-[720px] rounded-full bg-[#bfd85a]" />
       <div className={`${wrap} grid items-center gap-x-10 gap-y-12 lg:grid-cols-12`}>
         <div className="lg:col-span-7">
-          <Lines as="h2" id="pricing-title" lines={['Own the', <span key="p" className="fv-serif">playbook.</span>]} delay={100} className={h2} />
+          <Lines as="h2" id="pricing-title" lines={['Own the', <span key="p" className="fv-accent">playbook.</span>]} delay={100} className={h2} />
 
           {formats.length > 1 && (
             <div role="tablist" aria-label="Format" className="relative mt-9 inline-flex rounded-full bg-[#101310] p-1.5">
@@ -680,7 +680,7 @@ function Closing() {
   return (
     <section aria-labelledby="faq-title" className="bg-[#101310] py-20 text-white sm:py-28">
       <div className={`${wrap} grid gap-x-16 gap-y-10 lg:grid-cols-12`}>
-        <div className="lg:col-span-4"><Lines as="h2" id="faq-title" lines={['Quick', <span key="a" className="fv-serif text-[#a4be2d]">answers.</span>]} delay={100} className={h2} /></div>
+        <div className="lg:col-span-4"><Lines as="h2" id="faq-title" lines={['Quick', <span key="a" className="fv-accent text-[#a4be2d]">answers.</span>]} delay={100} className={h2} /></div>
         <div className="lg:col-span-8">
           <div className="border-b border-white/15">
             {faqs.map((item, n) => <FaqItem key={item.q} item={item} index={n} open={open === n} onToggle={() => setOpen(open === n ? -1 : n)} />)}
