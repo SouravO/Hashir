@@ -381,7 +381,7 @@ function Framework() {
   }, [])
   const jump = (i) => refs.current[i]?.scrollIntoView({ behavior: calm() ? 'auto' : 'smooth', block: 'center' })
   return (
-    <section id="framework" className="bg-[#f2f3ef] py-24 sm:py-36" aria-labelledby="framework-title">
+    <section id="framework" className="bg-[#f2f3ef] pb-24 pt-8 sm:py-36" aria-labelledby="framework-title">
       <div className={wrap}>
         <header className="mb-14 max-w-3xl sm:mb-20">
           <Reveal className={eyebrow}>From idea to actual business</Reveal>
@@ -697,18 +697,18 @@ export default function Home() {
       <section id="home" aria-labelledby="hero-title" className="relative flex min-h-[calc(100svh-72px)] flex-col max-[768px]:min-h-[calc(100svh-64px)]">
         <div className="mx-auto flex w-full max-w-[1720px] flex-1 flex-col px-5 py-10 sm:px-8 sm:py-12 lg:px-12 xl:px-16 2xl:px-20">
           <div className="grid flex-1 items-center gap-8 lg:grid-cols-12 lg:gap-12 xl:gap-16">
-            <div className="lg:col-span-7">
+            <div className="contents lg:col-span-7 lg:block">
               <div style={rise(ready)}>
                 <h1 id="hero-title" className="text-[clamp(60px,7.8vw,138px)] font-extrabold leading-[.88] tracking-[-.075em]">Hashir Usman</h1>
               </div>
               <Heading tag="h2" on={ready} delay={120} className="mt-7 text-[clamp(40px,5vw,88px)] font-extrabold leading-[.94] tracking-[-.065em]" lines={['Is your business growing?', <span className="text-[#7c9318]">Or just getting busier?</span>]} />
-              <p className="mt-6 max-w-[600px] text-base leading-[1.6] text-[#2f332e] sm:text-lg xl:text-xl" style={rise(ready, 500)}>Startup architect. Venture builder. Business consultant. I help people start businesses, fix what’s not working, and build systems that make growth a little less chaotic.</p>
-              <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3" style={rise(ready, 620)}>
+              <p className="order-1 mt-6 max-w-[600px] text-base leading-[1.6] text-[#2f332e] sm:text-lg xl:text-xl lg:order-none" style={rise(ready, 500)}>Startup architect. Venture builder. Business consultant. I help people start businesses, fix what’s not working, and build systems that make growth a little less chaotic.</p>
+              <div className="order-3 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 lg:order-none" style={rise(ready, 620)}>
                 <Link to="/contact" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4be2d] bg-[#a4be2d] px-6 text-[13px] font-semibold text-[#1e2618] transition-colors duration-300 hover:border-[#b3cc35] hover:bg-[#b3cc35] active:scale-[.97]">Book a Strategy Call <Arrow /></Link>
                 <Link to="/ventures" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4aaa0] px-6 text-[13px] font-semibold transition-colors duration-300 hover:border-[#171a1b] hover:bg-[#171a1b] hover:text-white active:scale-[.97]">See My Work <Arrow /></Link>
               </div>
             </div>
-            <div className="lg:col-span-5">
+            <div className="order-2 lg:order-none lg:col-span-5">
               <div className="relative mx-auto aspect-[4/5] w-full max-w-[520px] lg:ml-auto lg:max-h-[min(72svh,820px)] lg:max-w-none" style={{ clipPath: ready ? 'inset(0 0 0 0)' : 'inset(100% 0 0 0)', transition: `clip-path 1500ms ${EASE} 200ms` }}>
                 <div className={`absolute inset-0 left-[10%] top-[8%] rounded-tl-[20px] bg-[#adca2d] ${dotted}`} aria-hidden />
                 <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full" fill="none" stroke="#171a1b" aria-hidden>
@@ -742,7 +742,7 @@ export default function Home() {
       </section>
 
       {/* 3. Core expertise */}
-      <section id="services" aria-labelledby="expertise-heading" className="bg-[#f2f3ef] py-20 sm:py-28">
+      <section id="services" aria-labelledby="expertise-heading" className="bg-[#f2f3ef] pb-0 pt-20 sm:py-28">
         <div className={wrap}>
           <header className="mb-12 grid gap-8 lg:grid-cols-12 lg:items-end">
             <div className="lg:col-span-8">

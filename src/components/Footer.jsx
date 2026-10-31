@@ -4,7 +4,6 @@ import { ArrowUpRight, EnvelopeSimple, InstagramLogo, LinkedinLogo, MapPin, Phon
 const email = 'connect@hashirusman.online'
 const groups = [
   { title: 'Explore', links: [['My Work', '/ventures'], ['About', '/about'], ['Founderverse', '/founderverse']] },
-  { title: 'Work With Me', links: [['Strategy Calls', '/contact?about=strategy-call'], ['Business Consulting', '/contact?about=consulting'], ['Startup Building', '/contact?about=startup-idea'], ['Valuation', '/contact?about=valuation'], ['Funding', '/contact?about=funding'], ['Co-Build', '/contact?about=co-build']] },
   { title: 'Opportunities', links: [['We’re Hiring', '/opportunities#hiring'], ['Internships', '/opportunities#internships'], ['Become a Co-Founder', '/opportunities#co-founder']] },
 ]
 const socials = [
@@ -27,7 +26,7 @@ export default function Footer() {
         </section>
 
         {groups.map(({ title, links }) => (
-          <nav key={title} className="lg:col-span-2 lg:border-l lg:border-[#445040] lg:pl-7 xl:pl-8" aria-label={title}>
+          <nav key={title} className="lg:col-span-3 lg:border-l lg:border-[#445040] lg:pl-7 xl:pl-8" aria-label={title}>
             <h2 className="mb-6 text-xs font-semibold uppercase tracking-[.16em] text-[#a4be2d]">{title}</h2>
             <ul className="m-0 flex list-none flex-col items-start gap-4 p-0">
               {links.map(([label, to]) => <li key={label}><Link to={to} className="text-sm text-[#d4ddd0] no-underline transition-colors hover:text-[#c5d96a] sm:text-[15px]">{label}</Link></li>)}

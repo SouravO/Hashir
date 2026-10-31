@@ -1,5 +1,5 @@
 import { version, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowDown, ArrowRight } from '@phosphor-icons/react'
+import { ArrowRight } from '@phosphor-icons/react'
 import { Link, useLocation } from 'react-router-dom'
 import { brands, groups } from '../data/brands'
 import BrandArtwork from '../components/BrandArtwork'
@@ -310,9 +310,6 @@ export default function Ventures() {
           <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,#101310b3,#10131000_45%)]" />
           <div className="absolute inset-x-0 bottom-0 z-10 flex flex-wrap items-end justify-between gap-4 p-5 md:p-8">
             <span className={`${pill} border-white/40 bg-[#101310]/40 text-white`}>Startups & businesses</span>
-            <a href="#featured" className={`group inline-flex min-h-11 items-center gap-3 rounded-full bg-[#a4be2d] px-5 text-sm font-semibold text-[#101310] no-underline ${focus} focus-visible:outline-white`}>
-              Explore the Build<ArrowDown size={16} weight="light" aria-hidden className="transition-transform duration-300 motion-safe:group-hover:translate-y-1" />
-            </a>
           </div>
         </div>
         <nav aria-label="Ventures index" className={`${wrap} mt-5`}>

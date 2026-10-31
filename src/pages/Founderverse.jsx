@@ -280,7 +280,6 @@ function Hero() {
             10 practical startup books to help you make more informed decisions and avoid common entrepreneurial mistakes.
           </Reveal>
           <Reveal delay={600} className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
-            <Cta to="#pricing" track="cta-hero">Get the Founder Versa Collection</Cta>
             <p className="m-0 text-sm font-medium text-[#cdd8c6]">
               From <span className="text-base font-bold text-white">{DIGITAL_AVAILABLE ? PRICE.digital : PRICE.physical}</span>
             </p>
@@ -420,9 +419,6 @@ function Problem() {
           <Reveal as="p" className="m-0 max-w-[32ch] text-[clamp(20px,2.2vw,28px)] font-bold leading-[1.3] tracking-[-.025em]">
             Start learning before these questions become expensive problems.
           </Reveal>
-          <Reveal delay={120}>
-            <Cta to="#collection" tone="dark" track="cta-problem">Explore the 10-Book Collection</Cta>
-          </Reveal>
         </div>
       </div>
     </section>
@@ -543,9 +539,6 @@ function Collection() {
             </Reveal>
           ))}
         </ul>
-        <Reveal className="mt-12 flex justify-center">
-          <Cta to="#pricing" track="cta-collection">Get All 10 Books</Cta>
-        </Reveal>
       </div>
     </section>
   )
@@ -686,9 +679,6 @@ function FinalCard() {
       </h2>
       <Reveal as="p" delay={200} className={`mx-auto mt-7 max-w-[34ch] text-white ${lead}`}>
         For those who want to build, not just dream.
-      </Reveal>
-      <Reveal delay={300} className="mt-9 flex justify-center">
-        <Cta to="#pricing" track="cta-final">Start Your Founder Journey</Cta>
       </Reveal>
     </div>
   )
