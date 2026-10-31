@@ -15,7 +15,7 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="mt-2 rounded-t-2xl bg-[#202b20] text-[#e3e8df]" aria-label="About and contact Hashir">
+    <footer className="bg-[#202b20] text-[#e3e8df]" aria-label="About and contact Hashir">
       <div className="mx-auto grid w-full max-w-[1600px] gap-9 px-6 py-12 sm:px-8 sm:py-14 md:grid-cols-2 lg:grid-cols-12 lg:items-start lg:gap-8 xl:px-10 xl:py-16">
         <section className="md:col-span-2 lg:col-span-3 lg:pr-6" aria-labelledby="footer-about-title">
           <p className="mb-5 text-xs font-semibold uppercase tracking-[.18em] text-[#a4be2d]">Startup Architect. Venture Builder. Business Consultant.</p>

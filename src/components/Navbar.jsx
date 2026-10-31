@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { ArrowUpRight, List, X } from '@phosphor-icons/react'
+import { ArrowUpRight, Crown, List, X } from '@phosphor-icons/react'
 import BookingDialog from './BookingModal'
 
 const links = [
@@ -67,17 +67,18 @@ export default function Navbar() {
 
             <nav className="hidden animate-page-enter items-center gap-1.5 rounded-full border border-[#e2e5dc] bg-[#f0f0f3]/75 p-1.5 shadow-[0_12px_28px_-16px_#18181b55,0_4px_12px_-8px_#18181b2b] backdrop-blur-xl lg:flex" aria-label="Main navigation">
               {links.map((link) => <NavLink key={link.to} end={link.to === '/'} to={link.to} className={({ isActive }) => link.featured
-                ? `group relative inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[#a4be2d]/50 bg-[#20251a] px-4 pb-1 pt-0 text-[13px] font-semibold text-[#d9ec83] no-underline shadow-[inset_0_1px_0_#ffffff1a,0_2px_8px_#10200818] transition-[background-color,border-color,transform] duration-200 hover:-translate-y-px hover:border-[#a4be2d] hover:bg-[#2a321b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7c9318] focus-visible:ring-offset-2 ${isActive ? 'border-[#a4be2d] bg-[#a4be2d] text-[#1e2618]' : ''}`
+                ? `group relative inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-[#c5a65e]/75 bg-[linear-gradient(135deg,#17372a_0%,#101b16_100%)] px-4 pb-1 pt-0 text-[13px] font-semibold tracking-[.015em] text-[#f3e5bd] no-underline shadow-[inset_0_1px_0_#ffffff24,0_3px_12px_#10200825] transition-[background-color,border-color,box-shadow,transform] duration-200 hover:-translate-y-px hover:border-[#e0c47c] hover:shadow-[inset_0_1px_0_#ffffff30,0_5px_18px_#8d743a30] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c5a65e] focus-visible:ring-offset-2 ${isActive ? 'border-[#e0c47c] bg-[#a4be2d] text-[#1e2618]' : ''}`
                 : pillClass({ isActive })}>{({ isActive }) => <>
+                {link.featured && <Crown size={14} weight="fill" className={`relative z-10 ${isActive ? 'text-[#1e2618]' : 'text-[#d2b66d]'}`} aria-hidden />}
                 <span className="relative z-10">{link.label}</span>
-                {link.featured && <span aria-hidden className={`size-1.5 rounded-full bg-current ${isActive ? '' : 'animate-pulse'}`} />}
+                {link.featured && <span aria-hidden className={`size-1.5 rounded-full ${isActive ? 'bg-[#1e2618]' : 'bg-[#d2b66d] shadow-[0_0_8px_#d2b66d99]'}`} />}
                 <span aria-hidden className={`absolute bottom-[5px] left-1/2 size-1 -translate-x-1/2 rounded-full bg-current transition-[opacity,transform] duration-300 ${isActive ? 'scale-100 opacity-100' : 'scale-50 opacity-0 group-hover:scale-100 group-hover:opacity-60'}`} />
               </>}</NavLink>)}
             </nav>
           </div>
 
           <nav ref={navRef} id="main-nav" className={`${menuOpen ? 'flex' : 'hidden'} absolute left-4 right-4 top-[calc(100%+8px)] z-50 flex-col rounded-2xl border border-[#e2e5dc] bg-[#f8f9f6] p-2 shadow-[0_16px_38px_#1020081a] animate-menu-drop lg:hidden sm:left-8 sm:right-8`} aria-label="Main navigation">
-            {links.map((link) => <NavLink key={link.to} end={link.to === '/'} to={link.to} onClick={() => setMenuOpen(false)} className={({ isActive }) => `rounded-xl px-4 py-3.5 text-sm no-underline transition-colors ${link.featured ? `font-semibold ${isActive ? 'bg-[#a4be2d] text-[#1e2618]' : 'bg-[#edf2dd] text-[#34420f] hover:bg-[#e4eccb]'}` : `font-medium ${isActive ? 'bg-[#eaf0db] text-[#34420f]' : 'text-[#636a5e] hover:bg-[#eef0e9] hover:text-[#171a17]'}`}`}>{link.label}{link.featured && <span aria-hidden className="ml-2 inline-block size-1.5 rounded-full bg-[#7c9318] align-middle" />}</NavLink>)}
+            {links.map((link) => <NavLink key={link.to} end={link.to === '/'} to={link.to} onClick={() => setMenuOpen(false)} className={({ isActive }) => `rounded-xl px-4 py-3.5 text-sm no-underline transition-colors ${link.featured ? `font-semibold ${isActive ? 'bg-[#a4be2d] text-[#1e2618]' : 'border border-[#c5a65e]/50 bg-[linear-gradient(110deg,#17372a,#101b16)] text-[#f3e5bd] hover:border-[#c5a65e] hover:bg-[#17372a]'}` : `font-medium ${isActive ? 'bg-[#eaf0db] text-[#34420f]' : 'text-[#636a5e] hover:bg-[#eef0e9] hover:text-[#171a17]'}`}`}>{link.featured && <Crown size={14} weight="fill" className="mr-2 inline-block text-[#c5a65e] align-[-2px]" aria-hidden />}{link.label}{link.featured && <span aria-hidden className="ml-2 inline-block size-1.5 rounded-full bg-[#c5a65e] align-middle" />}</NavLink>)}
           </nav>
 
           <div className="ml-auto flex shrink-0 items-center gap-3 sm:gap-5">
