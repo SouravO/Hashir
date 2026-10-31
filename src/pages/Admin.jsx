@@ -32,6 +32,7 @@ export default function Admin() {
   const [updatingId, setUpdatingId] = useState('')
   const [approvingId, setApprovingId] = useState('')
   const [retryingId, setRetryingId] = useState('')
+  const [deletingId, setDeletingId] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -173,6 +174,30 @@ export default function Admin() {
     }
   }
 
+  const deleteCancelledAppointment = async (appointment) => {
+    if (!supabase || !isAdmin || appointment.status !== 'cancelled') return
+    const confirmed = window.confirm(`Permanently delete the cancelled appointment for ${appointment.name}? This cannot be undone.`)
+    if (!confirmed) return
+    setDeletingId(appointment.id)
+    setError('')
+    try {
+      const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError || !currentSession?.access_token) throw new Error('Your admin session expired. Sign in again.')
+      const response = await fetch('/api/delete-appointment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${currentSession.access_token}` },
+        body: JSON.stringify({ appointmentId: appointment.id }),
+      })
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(result.message || 'Could not delete this appointment.')
+      setAppointments((items) => items.filter((item) => item.id !== appointment.id))
+    } catch (deleteError) {
+      setError(deleteError.message || 'Could not delete this appointment.')
+    } finally {
+      setDeletingId('')
+    }
+  }
+
   return (
     <main id="main" className="min-h-[70vh] bg-[#f2f3ef] px-5 py-10 text-[#171a17] sm:px-8 sm:py-14">
       <div className="mx-auto w-full max-w-[1120px]">
@@ -267,6 +292,11 @@ export default function Admin() {
                       {appointment.status !== 'cancelled' && (!appointment.owner_notified || (appointment.status === 'confirmed' && !appointment.customer_notified)) && (
                         <button type="button" onClick={() => retryAppointmentEmails(appointment)} disabled={retryingId === appointment.id} className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#d4dbc8] bg-white px-4 text-sm font-semibold text-[#34420f] transition-colors hover:bg-[#f1f5e7] disabled:opacity-60">
                           {retryingId === appointment.id ? 'Retrying email…' : 'Retry failed email(s)'}
+                        </button>
+                      )}
+                      {appointment.status === 'cancelled' && (
+                        <button type="button" onClick={() => deleteCancelledAppointment(appointment)} disabled={deletingId === appointment.id} className="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#e5b5ab] bg-white px-4 text-sm font-semibold text-[#8a2b1d] transition-colors hover:bg-[#fbefec] disabled:opacity-60">
+                          {deletingId === appointment.id ? 'Deleting…' : 'Delete permanently'}
                         </button>
                       )}
                     </div>

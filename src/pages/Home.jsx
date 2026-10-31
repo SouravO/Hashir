@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, ChartLineUp, Compass, Gear, SquaresFour } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 import { brands } from '../data/brands'
-import BrandArtwork from '../components/BrandArtwork'
 
 /* ---------- Editable content (taken from the HU. content blueprint) ---------- */
 const statement = 'I build businesses, and fix a few things along the way. I work with *startup founders*, *business owners*, and *teams* to turn ideas into plans, and plans into action.'
@@ -426,84 +425,59 @@ function Framework() {
   )
 }
 
-/* ---------- Brand portfolio: every brand image, two rows drifting in opposite directions ----------
-   Data lives in src/data/brands.js. Each card links to that brand's full brief on the Ventures page.
-   The rows pause on hover/focus, and become plain scrollable rows when the visitor prefers reduced motion. */
-const MARQUEE_CSS = `
-@keyframes bm-slide{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
-.bm-track{animation:bm-slide var(--bm-d,70s) linear infinite;will-change:transform}
-.bm-rev{animation-direction:reverse}
-.bm-row:hover .bm-track,.bm-row:focus-within .bm-track{animation-play-state:paused}
-@media (prefers-reduced-motion:reduce){.bm-track{animation:none}.bm-row{overflow-x:auto}.bm-dup{display:none}}
+/* ---------- One looping, wave-like row of venture logos ---------- */
+const logoVentures = [
+  ['davone-removebg-preview.png', 'dayone'], ['heydossa-removebg-preview.png', 'heydossa'],
+  ['SUITE-SPOT-removebg-preview.png', 'suite-spot'], ['popsi-removebg-preview.png', 'popsi'],
+  ['NOWO-removebg-preview.png', 'no-two'], ['nothingelse-removebg-preview.png', 'nothing-else'],
+  ['CarBrOker-removebg-preview.png', 'car-broker'], ['zaati-removebg-preview.png', 'zaati'],
+  ['ezka-removebg-preview.png', 'ezkaa'], ['moonBLISS-removebg-preview.png', 'moonbliss'],
+  ['HOUSE-of-Biss-removebg-preview.png', 'house-of-bliss'], ['DE-COFF-removebg-preview.png', 'de-coff'],
+  ['aidesignersecosystem-removebg-preview.png', 'ai-designers'], ['barelogic-removebg-preview.png', 'bare-logic'],
+  ['celebrations-e-removebg-preview.png', 'celebrations'], ['beyondthebussiness-removebg-preview.png', 'beyond-the-business'],
+  ['CURRY-BAG-removebg-preview.png', 'curry-bag'], ['the-grid-store-removebg-preview.png', 'the-grid-store'],
+  ['hungry-potato-removebg-preview.png', 'hungry-potato'], ['Hosther_hostels-removebg-preview.png', 'hosther'],
+  ['sOl-removebg-preview.png', 'sol'], ['nk-reactives-removebg-preview.png', 'nk-reactives'],
+  ['hyzo-removebg-preview.png', 'hyzo'],
+]
+const logoById = new Map(brands.map((brand) => [brand.id, brand]))
+const LOGO_CAROUSEL_CSS = `
+@keyframes venture-loop{to{transform:translate3d(-50%,0,0)}}
+.venture-track{animation:venture-loop 64s linear infinite;will-change:transform}
+.venture-track-reverse{animation-direction:reverse}
+.venture-window:hover .venture-track,.venture-window:focus-within .venture-track{animation-play-state:paused}
+@media(max-width:640px){.venture-track{animation-duration:52s}}
+@media(prefers-reduced-motion:reduce){.venture-track{animation:none;transform:none}.venture-duplicates{display:none}.venture-window{overflow-x:auto}}
 `
-const ventureCount = brands.filter((b) => b.scope.some((s) => s.startsWith('Venture'))).length
-
-function BrandCard({ b, dup }) {
-  return (
-    <li aria-hidden={dup || undefined} className={`w-[220px] shrink-0 sm:w-[260px] lg:w-[280px] ${dup ? 'bm-dup' : ''}`}>
-      <Link
-        to={`/ventures#brand-${b.id}`}
-        tabIndex={dup ? -1 : undefined}
-        className="group/card flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[.04] text-[#f8f9f6] no-underline transition-[transform,border-color,background-color] duration-500 hover:-translate-y-1.5 hover:border-[#a4be2d]/60 hover:bg-white/[.07] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a4be2d]"
-      >
-        <BrandArtwork b={b} alt={dup ? '' : `${b.name} brand artwork`} className="aspect-square" imgClass="transition-transform duration-[1200ms] ease-out group-hover/card:scale-[1.06]" />
-        <div className="flex flex-1 flex-col p-4 sm:p-5">
-          <div className="flex items-baseline justify-between gap-3">
-            <h3 className="m-0 text-lg font-bold tracking-[-.03em]">{b.name}</h3>
-          </div>
-          <p className="m-0 mt-1 text-xs font-semibold text-[#a4be2d]">{b.category}</p>
-          <p className="m-0 mt-3 line-clamp-2 text-[13px] leading-[1.55] text-[#b9bfb0]">{b.short}</p>
-        </div>
-      </Link>
-    </li>
-  )
-}
-
-function MarqueeRow({ items, reverse = false, seconds = 70 }) {
-  const loop = [...items, ...items]
-  return (
-    <div className="bm-row relative overflow-hidden py-3 [-webkit-mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)] [mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)]">
-      <ul className={`bm-track m-0 flex w-max list-none gap-4 p-0 pr-4 sm:gap-5 sm:pr-5 ${reverse ? 'bm-rev' : ''}`} style={{ '--bm-d': `${seconds}s` }}>
-        {loop.map((b, i) => <BrandCard key={`${b.id}-${i}`} b={b} dup={i >= items.length} />)}
-      </ul>
-    </div>
-  )
-}
 
 function Portfolio() {
-  const rows = [brands.filter((_, i) => i % 2 === 0), brands.filter((_, i) => i % 2 === 1)]
-  const sectors = new Set(brands.map((b) => b.group)).size
-  const stats = [[<CountUp key="b" to={brands.length} />, 'startups & businesses'], [<CountUp key="s" to={sectors} />, 'industries'], [<CountUp key="v" to={ventureCount} />, 'venture projects']]
+  const rows = [logoVentures.filter((_, index) => index % 2 === 0), logoVentures.filter((_, index) => index % 2 === 1)]
   return (
-    <section id="brands" aria-labelledby="brands-heading" className="relative overflow-hidden bg-[#171a1b] py-24 text-[#f8f9f6] sm:py-36">
-      <style>{MARQUEE_CSS}</style>
-      <div aria-hidden className="pointer-events-none absolute -top-48 left-1/2 size-[680px] -translate-x-1/2 rounded-full bg-[#a4be2d]/10 blur-3xl" />
-      <div className={`${wrap} relative`}>
-        <header className="mb-12 grid gap-8 sm:mb-16 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-8">
-            <Reveal className="mb-5 flex items-center gap-3 text-[13px] font-semibold text-[#a4be2d] before:h-px before:w-8 before:bg-[#a4be2d]">The work</Reveal>
-            <Heading id="brands-heading" lines={[`${brands.length} builds.`, 'A lot of stories.']} className={h2cls} />
+    <section id="brands" aria-label="Venture logos" className="overflow-hidden bg-[#171a1b] py-16 sm:py-24">
+      <style>{LOGO_CAROUSEL_CSS}</style>
+      <h2 className="mb-6 text-center text-[clamp(30px,4.5vw,54px)] font-extrabold leading-[1.05] tracking-[-.055em] text-white sm:mb-8">
+        Ventures <span className="text-[#a4be2d]">I’ve helped build</span>
+      </h2>
+      <div className="venture-carousel space-y-0">
+        {rows.map((items, rowIndex) => {
+          const loop = [...items, ...items]
+          return <div key={rowIndex} className="venture-window overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)]">
+            <ul className={`venture-track m-0 flex w-max list-none items-center gap-8 p-0 pr-8 sm:gap-14 sm:pr-14 lg:gap-20 lg:pr-20 ${rowIndex ? 'venture-track-reverse' : ''}`}>
+              {loop.map(([file, id], index) => {
+                const brand = logoById.get(id)
+                const duplicate = index >= items.length
+                if (!brand) return null
+                return (
+                  <li key={`${id}-${index}`} aria-hidden={duplicate || undefined} className={`flex h-32 w-[170px] shrink-0 items-center justify-center sm:h-44 sm:w-[230px] ${duplicate ? 'venture-duplicates' : ''}`}>
+                    <Link to={`/ventures#brand-${id}`} tabIndex={duplicate ? -1 : undefined} aria-label={duplicate ? undefined : `View ${brand.name}`} className="grid size-full place-items-center rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a4be2d]">
+                      <img src={`/caurosal/${encodeURIComponent(file)}`} alt={duplicate ? '' : brand.name} loading="lazy" draggable="false" className="max-h-[90%] max-w-[94%] object-contain transition-transform duration-300 hover:scale-110" />
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
-          <Reveal delay={200} className="lg:col-span-4"><p className="max-w-[400px] text-[15px] leading-[1.65] text-[#a5ac9b]">Different industries. Different headaches. Some started as ideas, some needed structure, others needed a fresh way of doing things.</p></Reveal>
-        </header>
-        <dl className="m-0 grid grid-cols-3 border-y border-white/15">
-          {stats.map(([n, label], i) => (
-            <Reveal key={label} delay={i * 100} className={`flex flex-col py-6 sm:py-8 ${i ? 'border-l border-white/15 pl-4 sm:pl-8' : 'pr-4'}`}>
-              <dd className="m-0 text-[clamp(30px,5vw,64px)] font-extrabold leading-none tracking-[-.05em] text-[#a4be2d]">{n}</dd>
-              <dt className="order-2 mt-2 text-xs text-[#a5ac9b] sm:text-sm">{label}</dt>
-            </Reveal>
-          ))}
-        </dl>
-      </div>
-
-      <div className="relative mt-10 space-y-2 sm:mt-14 sm:space-y-3">
-        <MarqueeRow items={rows[0]} seconds={75} />
-        <MarqueeRow items={rows[1]} seconds={85} reverse />
-      </div>
-
-      <div className={`${wrap} relative mt-12 flex flex-col items-start justify-between gap-6 sm:mt-16 sm:flex-row sm:items-center`}>
-        <p className="m-0 max-w-[44ch] text-sm leading-[1.65] text-[#a5ac9b]">Tap any project to see what it is and the scope I worked on.</p>
-        <Link to="/ventures#collection" className="group inline-flex min-h-12 items-center gap-3 rounded-full border border-[#a4be2d] bg-[#a4be2d] px-6 text-sm font-semibold text-[#1e2618] no-underline transition-[transform,background-color] duration-200 hover:scale-[1.02] hover:bg-[#b3cc35] active:scale-[.98]">See All Startups &amp; Businesses <Arrow /></Link>
+        })}
       </div>
     </section>
   )
