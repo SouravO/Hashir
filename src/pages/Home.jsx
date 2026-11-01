@@ -450,6 +450,7 @@ const logoVentures = [
 ]
 const logoById = new Map(brands.map((brand) => [brand.id, brand]))
 const VENTURES = logoVentures.map((id) => ({ id, brand: logoById.get(id) })).filter((v) => v.brand)
+const FALLBACK_META = VENTURES.map(() => ({ r: 1, bg: '#15191a', kind: 'blur', crop: { x: 0, y: 0, w: 1, h: 1 } }))
 
 const STEP_MS = 3200 /* how long each layout stays */
 const MOVE_MS = 650 /* how long the tiles take to rearrange */
@@ -610,7 +611,7 @@ function Portfolio() {
   const [step, setStep] = useState(0)
   const [live, setLive] = useState(false)
   const [near, setNear] = useState(false)
-  const [meta, setMeta] = useState(null)
+  const [meta, setMeta] = useState(FALLBACK_META)
   const [still] = useState(calm)
   const stageRef = useRef(null)
 
@@ -636,7 +637,7 @@ function Portfolio() {
     let dead = false
     let late = false
     let waiting = VENTURES.length
-    const found = VENTURES.map(() => ({ r: 1, bg: '#15191a', kind: 'blur', crop: { x: 0, y: 0, w: 1, h: 1 } }))
+    const found = FALLBACK_META.map((entry) => ({ ...entry, crop: { ...entry.crop } }))
     const publish = () => { if (!dead) setMeta(found.slice()) }
     const timer = setTimeout(() => { late = true; publish() }, 4500)
     VENTURES.forEach((v, i) => loadMeta(brandImage(v.brand.file)).then((m) => {
@@ -648,13 +649,12 @@ function Portfolio() {
   }, [near])
 
   const cfg = tall ? STAGES.tall : STAGES.wide
-  const schedule = useMemo(() => (meta ? buildSchedule(cfg, meta) : null), [cfg, meta])
-  const ready = Boolean(schedule)
+  const schedule = useMemo(() => buildSchedule(cfg, meta), [cfg, meta])
   const i = still ? 0 : step % STEPS
   const k = still ? 1 : step % cfg.layouts.length
   const layout = cfg.layouts[k]
-  const slots = schedule ? schedule[i] : new Array(TILES).fill(-1)
-  const before = schedule ? schedule[(i + STEPS - 1) % STEPS] : slots
+  const slots = schedule[i]
+  const before = schedule[(i + STEPS - 1) % STEPS]
 
   return (
     <section id="brands" aria-labelledby="brands-title" className="relative isolate overflow-hidden bg-[#0d0f10] py-16 sm:py-24">
@@ -705,7 +705,7 @@ function Portfolio() {
           </div>
 
           {/* timer: when the line fills, the tiles move on */}
-          {!still && ready && (
+          {!still && (
             <span aria-hidden className="mt-3 block h-[2px] w-full bg-white/10">
               <span key={step} className="vs-fill block h-full bg-[#a4be2d]" onAnimationEnd={() => setStep((s) => s + 1)} style={{ animationDuration: `${STEP_MS}ms`, animationPlayState: live ? undefined : 'paused' }} />
             </span>
