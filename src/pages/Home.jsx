@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowUpRight, ChartLineUp, Compass, Gear, SquaresFour } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
-import { brands } from '../data/brands'
+import { brandImage, brands } from '../data/brands'
 
 /* ---------- Editable content (taken from the HU. content blueprint) ---------- */
 const statement = 'I build businesses, and fix a few things along the way. I work with *startup founders*, *business owners*, and *teams* to turn ideas into plans, and plans into action.'
@@ -425,59 +425,301 @@ function Framework() {
   )
 }
 
-/* ---------- One looping, wave-like row of venture logos ---------- */
+/* ---------- Ventures showcase: a dark bento stage that keeps rearranging itself ----------
+   Every venture image sits on its own rounded tile. The tiles slide, grow, shrink and trade places through four layouts
+   (the idea comes from the reference video), while the image inside each tile slowly zooms.
+
+   The images are no longer transparent logos: each one is a picture with its own background, and they are not all the same
+   shape. So nothing here leaves empty space around an image:
+     1. Each image is read once (its shape, and what its edges look like).
+     2. Tiles are mostly squares, plus a few wide ones. When a tile gets a new image the schedule prefers the image whose
+        shape is closest to the tile, and rotates through all of them so every venture is shown.
+     3. If the shape still does not match exactly, the image is shown whole and the gap is filled with its own background
+        colour (when its edges are one flat colour) or a blurred copy of itself. It never shows the dark tile.
+
+     A  one big square + two squares     B  three squares, one wide tile, and the lime link tile
+     C  the big square moves to the right   D  two wide tiles on top, three squares below
+   Tiles that are not in a layout shrink into the edge of the stage and fade out, then grow back later.
+   The thin line under the stage is the timer: when it fills, the next layout starts. It pauses on hover, on keyboard focus
+   and while the section is off screen. Reduced-motion visitors get one still layout. Phones get a tall version of the stage
+   (6 x 8 cells), larger screens a wide one (12 x 8 cells). Every venture is also listed for screen readers. */
 const logoVentures = [
-  ['davone-removebg-preview.png', 'dayone'], ['heydossa-removebg-preview.png', 'heydossa'],
-  ['SUITE-SPOT-removebg-preview.png', 'suite-spot'], ['popsi-removebg-preview.png', 'popsi'],
-  ['NOWO-removebg-preview.png', 'no-two'], ['nothingelse-removebg-preview.png', 'nothing-else'],
-  ['CarBrOker-removebg-preview.png', 'car-broker'], ['zaati-removebg-preview.png', 'zaati'],
-  ['ezka-removebg-preview.png', 'ezkaa'], ['moonBLISS-removebg-preview.png', 'moonbliss'],
-  ['HOUSE-of-Biss-removebg-preview.png', 'house-of-bliss'], ['DE-COFF-removebg-preview.png', 'de-coff'],
-  ['aidesignersecosystem-removebg-preview.png', 'ai-designers'], ['barelogic-removebg-preview.png', 'bare-logic'],
-  ['celebrations-e-removebg-preview.png', 'celebrations'], ['beyondthebussiness-removebg-preview.png', 'beyond-the-business'],
-  ['CURRY-BAG-removebg-preview.png', 'curry-bag'], ['the-grid-store-removebg-preview.png', 'the-grid-store'],
-  ['hungry-potato-removebg-preview.png', 'hungry-potato'], ['Hosther_hostels-removebg-preview.png', 'hosther'],
-  ['sOl-removebg-preview.png', 'sol'], ['nk-reactives-removebg-preview.png', 'nk-reactives'],
-  ['hyzo-removebg-preview.png', 'hyzo'],
+  'dayone', 'heydossa', 'suite-spot', 'popsi', 'no-two', 'nothing-else', 'car-broker', 'zaati',
+  'ezkaa', 'moonbliss', 'house-of-bliss', 'de-coff', 'ai-designers', 'bare-logic', 'celebrations',
+  'beyond-the-business', 'curry-bag', 'the-grid-store', 'hungry-potato', 'hosther', 'sol', 'nk-reactives', 'hyzo',
 ]
 const logoById = new Map(brands.map((brand) => [brand.id, brand]))
-const LOGO_CAROUSEL_CSS = `
-@keyframes venture-loop{to{transform:translate3d(-50%,0,0)}}
-.venture-track{animation:venture-loop 64s linear infinite;will-change:transform}
-.venture-track-reverse{animation-direction:reverse}
-.venture-window:hover .venture-track,.venture-window:focus-within .venture-track{animation-play-state:paused}
-@media(max-width:640px){.venture-track{animation-duration:52s}}
-@media(prefers-reduced-motion:reduce){.venture-track{animation:none;transform:none}.venture-duplicates{display:none}.venture-window{overflow-x:auto}}
+const VENTURES = logoVentures.map((id) => ({ id, brand: logoById.get(id) })).filter((v) => v.brand)
+
+const STEP_MS = 3200 /* how long each layout stays */
+const MOVE_MS = 650 /* how long the tiles take to rearrange */
+const MOVE_EASE = 'cubic-bezier(.22,1,.36,1)'
+const TILES = 7 /* each tile showcases a venture */
+const STEPS = 48 /* the schedule repeats after this many layouts (a multiple of 4) */
+const make = (spec) => Array.from({ length: TILES }, (_, t) => spec[t] || null) /* [column, row, width, height] in grid cells, or null when the tile is tucked away */
+const STAGES = {
+  wide: {
+    cols: 12,
+    rows: 8,
+    ratio: '3 / 2',
+    feature: [0, 3, 3, 1], /* the "main" tile of each layout: its venture name goes in the caption */
+    layouts: [
+      make({ 0: [0, 0, 8, 8], 1: [8, 0, 4, 4], 2: [8, 4, 4, 4] }),
+      make({ 0: [0, 0, 4, 4], 1: [4, 0, 4, 4], 2: [8, 0, 4, 4], 3: [0, 4, 8, 4], 6: [8, 4, 4, 4] }),
+      make({ 4: [0, 0, 4, 4], 5: [0, 4, 4, 4], 3: [4, 0, 8, 8] }),
+      make({ 1: [0, 0, 6, 4], 2: [6, 0, 6, 4], 4: [0, 4, 4, 4], 5: [4, 4, 4, 4], 0: [8, 4, 4, 4] }),
+    ],
+  },
+  tall: {
+    cols: 6,
+    rows: 8,
+    ratio: '3 / 4',
+    feature: [0, 3, 3, 1],
+    layouts: [
+      make({ 0: [0, 0, 6, 6], 1: [0, 6, 3, 2], 2: [3, 6, 3, 2] }),
+      make({ 0: [0, 0, 3, 3], 1: [3, 0, 3, 3], 3: [0, 3, 6, 3], 2: [0, 6, 3, 2], 6: [3, 6, 3, 2] }),
+      make({ 3: [0, 0, 6, 6], 4: [0, 6, 3, 2], 5: [3, 6, 3, 2] }),
+      make({ 1: [0, 0, 6, 3], 2: [0, 3, 6, 3], 4: [0, 6, 3, 2], 5: [3, 6, 3, 2] }),
+    ],
+  },
+}
+const SIDE = [0, 1, 1, 1, 0, 0, 1] /* which edge a hidden tile tucks into: 0 = left, 1 = right */
+
+/* Works out which image sits on which tile at every step. A tile gets a new image when it appears, when it is the main tile,
+   and every third step otherwise. The pick is the image whose shape is closest to the tile, among those not on stage,
+   and the longer an image has been away the better its chance, so all of them come round. Built once per stage and set of shapes. */
+function buildSchedule(cfg, meta) {
+  const total = meta.length
+  const last = new Array(total).fill(-1)
+  const table = []
+  for (let s = 0; s < STEPS; s += 1) {
+    const k = s % cfg.layouts.length
+    const now = cfg.layouts[k]
+    const before = cfg.layouts[(s + cfg.layouts.length - 1) % cfg.layouts.length]
+    const next = s ? table[s - 1].slice() : new Array(TILES).fill(-1)
+    for (let t = 0; t < TILES; t += 1) {
+      if (!now[t]) continue
+      if (!(s === 0 || next[t] < 0 || !before[t] || t === cfg.feature[k] || (t + s) % 3 === 0)) continue
+      const tile = now[t][2] / now[t][3]
+      let best = -1
+      let bestCost = Infinity
+      for (let v = 0; v < total; v += 1) {
+        if (next.includes(v)) continue
+        const cost = 14 * Math.abs(Math.log(tile / meta[v].r)) + last[v]
+        if (cost < bestCost) { bestCost = cost; best = v }
+      }
+      if (best >= 0) { next[t] = best; last[best] = s }
+    }
+    table.push(next)
+  }
+  return table
+}
+
+/* Reads one image: its shape, and whether its edges are a flat colour, a busy picture, or see-through. */
+function loadMeta(src) {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onerror = () => resolve({ r: 1, bg: '#15191a', kind: 'blur', crop: { x: 0, y: 0, w: 1, h: 1 } })
+    img.onload = () => {
+      const r = (img.naturalWidth || 1) / (img.naturalHeight || 1)
+      try {
+        const S = 64
+        const c = document.createElement('canvas')
+        c.width = S
+        c.height = S
+        const ctx = c.getContext('2d', { willReadFrequently: true })
+        ctx.drawImage(img, 0, 0, S, S)
+        const px = ctx.getImageData(0, 0, S, S).data
+        const ring = []
+        for (let y = 0; y < S; y += 1) for (let x = 0; x < S; x += 1) if (x === 0 || y === 0 || x === S - 1 || y === S - 1) ring.push((y * S + x) * 4)
+        const mean = [0, 1, 2].map((ch) => ring.reduce((a, i) => a + px[i + ch], 0) / ring.length)
+        const spread = ring.reduce((a, i) => a + Math.abs(px[i] - mean[0]) + Math.abs(px[i + 1] - mean[1]) + Math.abs(px[i + 2] - mean[2]), 0) / (ring.length * 3)
+        const clear = ring.some((i) => px[i + 3] < 40)
+        const solid = ring.every((i) => px[i + 3] > 240)
+        const kind = clear ? 'none' : solid && spread < 16 ? 'solid' : 'blur'
+        let x0 = S
+        let y0 = S
+        let x1 = -1
+        let y1 = -1
+        if (kind !== 'blur') {
+          for (let y = 0; y < S; y += 1) for (let x = 0; x < S; x += 1) {
+            const i = (y * S + x) * 4
+            const content = clear
+              ? px[i + 3] > 48
+              : Math.abs(px[i] - mean[0]) + Math.abs(px[i + 1] - mean[1]) + Math.abs(px[i + 2] - mean[2]) > 54
+            if (content) { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y) }
+          }
+        }
+        const pad = 2 / S
+        const left = x1 < x0 ? 0 : Math.max(0, x0 / S - pad)
+        const top = y1 < y0 ? 0 : Math.max(0, y0 / S - pad)
+        const right = x1 < x0 ? 1 : Math.min(1, (x1 + 1) / S + pad)
+        const bottom = y1 < y0 ? 1 : Math.min(1, (y1 + 1) / S + pad)
+        resolve({ r, bg: `rgb(${mean.map(Math.round).join(',')})`, kind, crop: { x: left, y: top, w: right - left, h: bottom - top } })
+      } catch {
+        resolve({ r, bg: '#15191a', kind: 'blur', crop: { x: 0, y: 0, w: 1, h: 1 } })
+      }
+    }
+    img.src = src
+  })
+}
+
+const VENTURES_CSS = `
+.vs-fit{transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.vs-in{animation:vs-in 700ms cubic-bezier(.16,1,.3,1) backwards}
+@keyframes vs-in{from{opacity:0}}
+.vs-out{animation:vs-out 600ms ease forwards;pointer-events:none}
+@keyframes vs-out{to{opacity:0}}
+.vs-fill{transform-origin:left;animation:vs-fill linear forwards}
+@keyframes vs-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media (hover:hover) and (pointer:fine){.vs-stage:hover .vs-fill,.vs-stage:focus-within .vs-fill{animation-play-state:paused}}
+@media (prefers-reduced-motion:reduce){.vs-in,.vs-out,.vs-fill{animation:none}}
 `
 
-function Portfolio() {
-  const rows = [logoVentures.filter((_, index) => index % 2 === 0), logoVentures.filter((_, index) => index % 2 === 1)]
+/* One image, filling its tile. The image is always shown whole; whatever the tile has left over is filled with the image's own
+   background colour, or a blurred copy of the image, so the dark tile never shows. */
+function Pane({ src, m, cls = '', tileAspect = 1 }) {
+  const metadata = m ?? { r: 1, bg: '#15191a', kind: 'blur' }
+  const candidate = metadata.crop
+  const hasValidCrop = candidate && Number.isFinite(candidate.x) && Number.isFinite(candidate.y)
+    && Number.isFinite(candidate.w) && Number.isFinite(candidate.h) && candidate.w > 0 && candidate.h > 0
+  const ratio = Number.isFinite(metadata.r) && metadata.r > 0 ? metadata.r : 1
+  const cropArtwork = (metadata.kind === 'solid' || metadata.kind === 'none') && hasValidCrop
+  const crop = cropArtwork ? candidate : { x: 0, y: 0, w: 1, h: 1 }
+  const scale = cropArtwork ? Math.min(1 / crop.h, tileAspect / (crop.w * ratio)) : 1
+  const imageWidth = scale * ratio / tileAspect
+  const imageHeight = scale
+  const imageStyle = cropArtwork ? {
+    width: `${imageWidth * 100}%`,
+    height: `${imageHeight * 100}%`,
+    left: `${(0.5 - (crop.x + crop.w / 2) * imageWidth) * 100}%`,
+    top: `${(0.5 - (crop.y + crop.h / 2) * imageHeight) * 100}%`,
+  } : undefined
   return (
-    <section id="brands" aria-label="Venture logos" className="overflow-hidden bg-[#171a1b] py-16 sm:py-24">
-      <style>{LOGO_CAROUSEL_CSS}</style>
-      <h2 className="mb-6 text-center text-[clamp(30px,4.5vw,54px)] font-extrabold leading-[1.05] tracking-[-.055em] text-white sm:mb-8">
-        Ventures <span className="text-[#a4be2d]">I’ve helped build</span>
-      </h2>
-      <div className="venture-carousel space-y-0">
-        {rows.map((items, rowIndex) => {
-          const loop = [...items, ...items]
-          return <div key={rowIndex} className="venture-window overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_7%,#000_93%,transparent)]">
-            <ul className={`venture-track m-0 flex w-max list-none items-center gap-8 p-0 pr-8 sm:gap-14 sm:pr-14 lg:gap-20 lg:pr-20 ${rowIndex ? 'venture-track-reverse' : ''}`}>
-              {loop.map(([file, id], index) => {
-                const brand = logoById.get(id)
-                const duplicate = index >= items.length
-                if (!brand) return null
-                return (
-                  <li key={`${id}-${index}`} aria-hidden={duplicate || undefined} className={`flex h-32 w-[170px] shrink-0 items-center justify-center sm:h-44 sm:w-[230px] ${duplicate ? 'venture-duplicates' : ''}`}>
-                    <Link to={`/ventures#brand-${id}`} tabIndex={duplicate ? -1 : undefined} aria-label={duplicate ? undefined : `View ${brand.name}`} className="grid size-full place-items-center rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a4be2d]">
-                      <img src={`/caurosal/${encodeURIComponent(file)}`} alt={duplicate ? '' : brand.name} loading="lazy" draggable="false" className="max-h-[90%] max-w-[94%] object-contain transition-transform duration-300 hover:scale-110" />
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
+    <span aria-hidden className={`absolute inset-0 grid place-items-center ${cls}`}>
+      {metadata.kind === 'solid' && <span className="absolute inset-0" style={{ background: metadata.bg }} />}
+      {metadata.kind !== 'solid' && metadata.kind !== 'none' && <img src={src} alt="" draggable="false" className="absolute inset-0 size-full scale-125 object-cover object-center opacity-90 blur-2xl" />}
+      <img src={src} alt="" draggable="false" className={cropArtwork ? 'absolute max-w-none' : 'vs-fit relative block size-full object-contain object-center p-[5%]'} style={imageStyle} />
+    </span>
+  )
+}
+
+function Portfolio() {
+  const total = VENTURES.length
+  const [tall, setTall] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches)
+  const [step, setStep] = useState(0)
+  const [live, setLive] = useState(false)
+  const [near, setNear] = useState(false)
+  const [meta, setMeta] = useState(null)
+  const [still] = useState(calm)
+  const stageRef = useRef(null)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    const on = () => setTall(mq.matches)
+    on()
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [])
+  /* the timer only runs while the stage is on screen; the images are only fetched once it is close */
+  useEffect(() => {
+    const el = stageRef.current
+    if (!el) return undefined
+    const onScreen = new IntersectionObserver(([en]) => setLive(en.isIntersecting), { threshold: 0.25 })
+    const close = new IntersectionObserver(([en]) => { if (en.isIntersecting) { setNear(true); close.disconnect() } }, { rootMargin: '800px 0px' })
+    onScreen.observe(el)
+    close.observe(el)
+    return () => { onScreen.disconnect(); close.disconnect() }
+  }, [])
+  useEffect(() => {
+    if (!near) return undefined
+    let dead = false
+    let late = false
+    let waiting = VENTURES.length
+    const found = VENTURES.map(() => ({ r: 1, bg: '#15191a', kind: 'blur', crop: { x: 0, y: 0, w: 1, h: 1 } }))
+    const publish = () => { if (!dead) setMeta(found.slice()) }
+    const timer = setTimeout(() => { late = true; publish() }, 4500)
+    VENTURES.forEach((v, i) => loadMeta(brandImage(v.brand.file)).then((m) => {
+      found[i] = m
+      waiting -= 1
+      if (waiting === 0) { clearTimeout(timer); publish() } else if (late) publish()
+    }))
+    return () => { dead = true; clearTimeout(timer) }
+  }, [near])
+
+  const cfg = tall ? STAGES.tall : STAGES.wide
+  const schedule = useMemo(() => (meta ? buildSchedule(cfg, meta) : null), [cfg, meta])
+  const ready = Boolean(schedule)
+  const i = still ? 0 : step % STEPS
+  const k = still ? 1 : step % cfg.layouts.length
+  const layout = cfg.layouts[k]
+  const slots = schedule ? schedule[i] : new Array(TILES).fill(-1)
+  const before = schedule ? schedule[(i + STEPS - 1) % STEPS] : slots
+
+  return (
+    <section id="brands" aria-labelledby="brands-title" className="relative isolate overflow-hidden bg-[#0d0f10] py-16 sm:py-24">
+      <style>{VENTURES_CSS}</style>
+      <span aria-hidden className="pointer-events-none absolute inset-0 -z-10" style={{ background: 'radial-gradient(900px circle at 50% 38%, rgba(164,190,45,.09), transparent 65%)' }} />
+      <span aria-hidden className={`pointer-events-none absolute inset-0 -z-10 opacity-40 ${dotted}`} style={{ WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 45%, #000, transparent 100%)', maskImage: 'radial-gradient(ellipse 70% 60% at 50% 45%, #000, transparent 100%)' }} />
+
+      <div className={wrap}>
+        <h2 id="brands-title" className="mb-8 text-center text-[clamp(30px,4.5vw,54px)] font-extrabold leading-[1.05] tracking-[-.055em] text-white sm:mb-12">
+          Ventures <span className="text-[#a4be2d]">I’ve helped build</span>
+        </h2>
+
+        <div ref={stageRef} className="vs-stage mx-auto" style={{ width: tall ? 'min(100%, calc(82svh * .75))' : 'min(100%, calc(78svh * 1.5))' }}>
+          <div className="relative w-full" style={{ aspectRatio: cfg.ratio }}>
+            {Array.from({ length: TILES }, (_, t) => {
+              const rect = layout[t]
+              const on = Boolean(rect)
+              const [x, y, w, h] = rect || [SIDE[t] ? cfg.cols : 0, cfg.rows / 2, 0, 0]
+              const box = {
+                inset: 0,
+                transformOrigin: 'top left',
+                transform: `translate3d(${(x / cfg.cols) * 100}%, ${(y / cfg.rows) * 100}%, 0) scale(${w / cfg.cols}, ${h / cfg.rows}) translateZ(0)`,
+                opacity: on ? 1 : 0,
+                visibility: on ? 'visible' : 'hidden',
+                willChange: 'transform, opacity',
+                transition: `transform ${MOVE_MS}ms ${MOVE_EASE}, opacity 450ms ease, visibility 0s linear ${on ? 0 : MOVE_MS}ms`,
+              }
+              const tileCls = 'vs-tile absolute inset-[5px] overflow-hidden rounded-[16px] sm:inset-[7px] sm:rounded-[22px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a4be2d]'
+
+              const idx = slots[t]
+              const v = idx >= 0 ? VENTURES[idx] : null
+              if (!v) return <div key={t} className="absolute" style={box}><span className={`${tileCls} bg-[#15191a]`} /></div>
+              const prev = before[t]
+              const changed = !still && step > 0 && prev >= 0 && idx !== prev
+              const [stageWidth, stageHeight] = cfg.ratio.split('/').map(Number)
+              const tileAspect = h ? (w * stageWidth * cfg.rows) / (h * stageHeight * cfg.cols) : 1
+              return (
+                <div key={t} className="absolute" style={box}>
+                  <Link to={`/ventures#brand-${v.id}`} aria-label={`View ${v.brand.name}`} className={`${tileCls} group bg-[#15191a]`}>
+                    <span aria-hidden className="absolute inset-0">
+                      {changed && <Pane key={`o${prev}`} src={brandImage(VENTURES[prev].brand.file)} m={meta[prev]} cls="vs-out" tileAspect={tileAspect} />}
+                      <Pane key={`c${idx}`} src={brandImage(v.brand.file)} m={meta[idx]} cls={changed ? 'vs-in' : ''} tileAspect={tileAspect} />
+                    </span>
+                  </Link>
+                </div>
+              )
+            })}
           </div>
-        })}
+
+          {/* timer: when the line fills, the tiles move on */}
+          {!still && ready && (
+            <span aria-hidden className="mt-3 block h-[2px] w-full bg-white/10">
+              <span key={step} className="vs-fill block h-full bg-[#a4be2d]" onAnimationEnd={() => setStep((s) => s + 1)} style={{ animationDuration: `${STEP_MS}ms`, animationPlayState: live ? undefined : 'paused' }} />
+            </span>
+          )}
+
+          <div className="mt-6 flex justify-center">
+            <Link to="/ventures#collection" className="group inline-flex min-h-12 items-center gap-3 rounded-full bg-white px-6 text-[13px] font-semibold text-[#171a1b] no-underline transition-colors duration-300 hover:bg-[#a4be2d] active:scale-[.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a4be2d]">See all ventures <Arrow /></Link>
+          </div>
+        </div>
+
+        {/* the tiles keep changing, so every venture is also listed here for screen readers */}
+        <ul className="sr-only">
+          {VENTURES.map((v) => <li key={v.id}><Link to={`/ventures#brand-${v.id}`}>{v.brand.name}</Link></li>)}
+        </ul>
       </div>
     </section>
   )

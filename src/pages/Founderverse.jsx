@@ -305,8 +305,8 @@ function Hero() {
               <Typed text={QUESTIONS[stage]} accent={stage === QUESTIONS.length - 1} onDone={() => setStage((s) => s + 1)} />
             </motion.div>
           ) : (
-            <motion.div key="final" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="grid w-full items-center gap-3 sm:gap-14 lg:grid-cols-12 lg:gap-8">
-              <div className="lg:col-span-7">
+            <motion.div key="final" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="grid w-full items-center gap-10 sm:gap-14 lg:grid-cols-12 lg:gap-8">
+              <div className="order-2 lg:order-1 lg:col-span-7">
                 <h1 className="m-0 text-[clamp(36px,9vw,58px)] font-extrabold leading-[.98] tracking-[-.045em] lg:text-[clamp(40px,5.6vw,84px)]">
                   {HERO_LINES.map((line, i) => (
                     <span key={i} className="-my-[.12em] block overflow-hidden py-[.12em]">
@@ -323,10 +323,10 @@ function Hero() {
                     <span className="block text-[clamp(30px,3.2vw,42px)] font-extrabold leading-none tracking-[-.04em]">{startPrice}</span>
                   </p>
                   <span aria-hidden className="hidden h-12 w-px bg-white/20 sm:block" />
-                  <Cta to={ORDER.physical} track="cta-hero" className="max-sm:min-h-11 max-sm:gap-2 max-sm:pl-4 max-sm:text-[13px]">Buy the collection</Cta>
+                  <Cta to={ORDER.physical} track="cta-hero" className="max-sm:min-h-11 max-sm:gap-2 max-sm:pl-4 max-sm:pr-1 max-sm:text-[13px] [&>a>span]:max-sm:size-10">Buy the collection</Cta>
                 </motion.div>
               </div>
-              <div className="mx-auto w-full max-w-[220px] sm:max-w-[300px] lg:col-span-5 lg:max-w-none"><BookFan /></div>
+              <div className="order-1 mx-auto w-full max-w-[min(78vw,300px)] sm:max-w-[300px] lg:order-2 lg:col-span-5 lg:max-w-none"><BookFan /></div>
             </motion.div>
           )}
         </AnimatePresence>
