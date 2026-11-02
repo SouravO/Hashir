@@ -452,8 +452,8 @@ const logoById = new Map(brands.map((brand) => [brand.id, brand]))
 const VENTURES = logoVentures.map((id) => ({ id, brand: logoById.get(id) })).filter((v) => v.brand)
 const FALLBACK_META = VENTURES.map(() => ({ r: 1, bg: '#15191a', kind: 'blur', crop: { x: 0, y: 0, w: 1, h: 1 } }))
 
-const STEP_MS = 3200 /* how long each layout stays */
-const MOVE_MS = 650 /* how long the tiles take to rearrange */
+const STEP_MS = 3800 /* how long each layout stays */
+const MOVE_MS = 1000 /* how long the tiles take to rearrange */
 const MOVE_EASE = 'cubic-bezier(.22,1,.36,1)'
 const TILES = 7 /* each tile showcases a venture */
 const STEPS = 48 /* the schedule repeats after this many layouts (a multiple of 4) */
@@ -566,11 +566,11 @@ function loadMeta(src) {
 }
 
 const VENTURES_CSS = `
-.vs-fit{transition:transform .6s cubic-bezier(.16,1,.3,1)}
-.vs-in{animation:vs-in 700ms cubic-bezier(.16,1,.3,1) backwards}
-@keyframes vs-in{from{opacity:0}}
-.vs-out{animation:vs-out 600ms ease forwards;pointer-events:none}
-@keyframes vs-out{to{opacity:0}}
+.vs-fit{transition:transform .9s cubic-bezier(.16,1,.3,1),width .9s cubic-bezier(.16,1,.3,1),height .9s cubic-bezier(.16,1,.3,1),left .9s cubic-bezier(.16,1,.3,1),top .9s cubic-bezier(.16,1,.3,1)}
+.vs-in{animation:vs-in 850ms cubic-bezier(.16,1,.3,1) backwards}
+@keyframes vs-in{from{opacity:0;transform:scale(.92);filter:blur(8px)}}
+.vs-out{animation:vs-out 650ms cubic-bezier(.22,1,.36,1) forwards;pointer-events:none}
+@keyframes vs-out{to{opacity:0;transform:scale(1.06);filter:blur(5px)}}
 .vs-fill{transform-origin:left;animation:vs-fill linear forwards}
 @keyframes vs-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @media (hover:hover) and (pointer:fine){.vs-stage:hover .vs-fill,.vs-stage:focus-within .vs-fill{animation-play-state:paused}}
@@ -600,17 +600,17 @@ function Pane({ src, m, cls = '', tileAspect = 1 }) {
     <span aria-hidden className={`absolute inset-0 grid place-items-center ${cls}`}>
       {metadata.kind === 'solid' && <span className="absolute inset-0" style={{ background: metadata.bg }} />}
       {metadata.kind !== 'solid' && metadata.kind !== 'none' && <img src={src} alt="" draggable="false" className="absolute inset-0 size-full scale-125 object-cover object-center opacity-90 blur-2xl" />}
-      <img src={src} alt="" draggable="false" className={cropArtwork ? 'absolute max-w-none' : 'vs-fit relative block size-full object-contain object-center p-[5%]'} style={imageStyle} />
+      <img src={src} alt="" draggable="false" className={cropArtwork ? 'vs-fit absolute max-w-none' : 'vs-fit relative block size-full object-contain object-center p-[2%]'} style={imageStyle} />
     </span>
   )
 }
 
 function Portfolio() {
-  const total = VENTURES.length
   const [tall, setTall] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches)
   const [step, setStep] = useState(0)
   const [live, setLive] = useState(false)
   const [near, setNear] = useState(false)
+  const [assetsReady, setAssetsReady] = useState(false)
   const [meta, setMeta] = useState(FALLBACK_META)
   const [still] = useState(calm)
   const stageRef = useRef(null)
@@ -635,15 +635,20 @@ function Portfolio() {
   useEffect(() => {
     if (!near) return undefined
     let dead = false
-    let late = false
+    let published = false
     let waiting = VENTURES.length
     const found = FALLBACK_META.map((entry) => ({ ...entry, crop: { ...entry.crop } }))
-    const publish = () => { if (!dead) setMeta(found.slice()) }
-    const timer = setTimeout(() => { late = true; publish() }, 4500)
+    const publish = () => {
+      if (dead || published) return
+      published = true
+      setMeta(found.slice())
+      setAssetsReady(true)
+    }
+    const timer = setTimeout(publish, 4500)
     VENTURES.forEach((v, i) => loadMeta(brandImage(v.brand.file)).then((m) => {
       found[i] = m
       waiting -= 1
-      if (waiting === 0) { clearTimeout(timer); publish() } else if (late) publish()
+      if (waiting === 0) { clearTimeout(timer); publish() }
     }))
     return () => { dead = true; clearTimeout(timer) }
   }, [near])
@@ -657,17 +662,17 @@ function Portfolio() {
   const before = schedule[(i + STEPS - 1) % STEPS]
 
   return (
-    <section id="brands" aria-labelledby="brands-title" className="relative isolate overflow-hidden bg-[#0d0f10] py-16 sm:py-24">
+    <section id="brands" aria-labelledby="brands-title" className="relative isolate overflow-hidden bg-[#0d0f10] py-[clamp(24px,4svh,56px)]">
       <style>{VENTURES_CSS}</style>
       <span aria-hidden className="pointer-events-none absolute inset-0 -z-10" style={{ background: 'radial-gradient(900px circle at 50% 38%, rgba(164,190,45,.09), transparent 65%)' }} />
       <span aria-hidden className={`pointer-events-none absolute inset-0 -z-10 opacity-40 ${dotted}`} style={{ WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 45%, #000, transparent 100%)', maskImage: 'radial-gradient(ellipse 70% 60% at 50% 45%, #000, transparent 100%)' }} />
 
-      <div className={wrap}>
-        <h2 id="brands-title" className="mb-8 text-center text-[clamp(30px,4.5vw,54px)] font-extrabold leading-[1.05] tracking-[-.055em] text-white sm:mb-12">
+      <div className="mx-auto w-full max-w-[1440px] px-5 sm:px-7">
+        <h2 id="brands-title" className="mb-[clamp(16px,3svh,36px)] text-center text-[clamp(30px,4.5vw,54px)] font-extrabold leading-[1.05] tracking-[-.055em] text-white">
           Ventures <span className="text-[#a4be2d]">I’ve helped build</span>
         </h2>
 
-        <div ref={stageRef} className="vs-stage mx-auto" style={{ width: tall ? 'min(100%, calc(82svh * .75))' : 'min(100%, calc(78svh * 1.5))' }}>
+        <div ref={stageRef} className="vs-stage mx-auto" style={{ width: tall ? 'min(100%, calc(54svh * .75))' : 'min(100%, calc(62svh * 1.5))' }}>
           <div className="relative w-full" style={{ aspectRatio: cfg.ratio }}>
             {Array.from({ length: TILES }, (_, t) => {
               const rect = layout[t]
@@ -680,7 +685,7 @@ function Portfolio() {
                 opacity: on ? 1 : 0,
                 visibility: on ? 'visible' : 'hidden',
                 willChange: 'transform, opacity',
-                transition: `transform ${MOVE_MS}ms ${MOVE_EASE}, opacity 450ms ease, visibility 0s linear ${on ? 0 : MOVE_MS}ms`,
+                transition: `transform ${MOVE_MS}ms ${MOVE_EASE} ${t * 42}ms, opacity 550ms ease ${t * 32}ms, visibility 0s linear ${on ? 0 : MOVE_MS + t * 42}ms`,
               }
               const tileCls = 'vs-tile absolute inset-[5px] overflow-hidden rounded-[16px] sm:inset-[7px] sm:rounded-[22px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a4be2d]'
 
@@ -707,11 +712,11 @@ function Portfolio() {
           {/* timer: when the line fills, the tiles move on */}
           {!still && (
             <span aria-hidden className="mt-3 block h-[2px] w-full bg-white/10">
-              <span key={step} className="vs-fill block h-full bg-[#a4be2d]" onAnimationEnd={() => setStep((s) => s + 1)} style={{ animationDuration: `${STEP_MS}ms`, animationPlayState: live ? undefined : 'paused' }} />
+              <span key={step} className="vs-fill block h-full bg-[#a4be2d]" onAnimationEnd={() => { if (assetsReady) setStep((s) => s + 1) }} style={{ animationDuration: `${STEP_MS}ms`, animationPlayState: live && assetsReady ? undefined : 'paused' }} />
             </span>
           )}
 
-          <div className="mt-6 flex justify-center">
+          <div className="mt-4 flex justify-center">
             <Link to="/ventures#collection" className="group inline-flex min-h-12 items-center gap-3 rounded-full bg-white px-6 text-[13px] font-semibold text-[#171a1b] no-underline transition-colors duration-300 hover:bg-[#a4be2d] active:scale-[.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a4be2d]">See all ventures <Arrow /></Link>
           </div>
         </div>
