@@ -181,6 +181,22 @@ export async function notifyOpportunityApplication(accessToken, application) {
   await sendGmail(accessToken, 'connect@hashirusman.online', subject, body, application.email)
 }
 
+export async function notifyContactInquiry(accessToken, inquiry) {
+  const subject = `Website contact: ${inquiry.topic} — ${inquiry.name}`
+  const body = [
+    'A new contact message was submitted through hashirusman.online.',
+    '',
+    `Name: ${inquiry.name}`,
+    `Email: ${inquiry.email}`,
+    `Phone / WhatsApp: ${inquiry.phone || 'Not provided'}`,
+    `Topic: ${inquiry.topic}`,
+    '',
+    'Message:',
+    inquiry.message,
+  ].join('\r\n')
+  await sendGmail(accessToken, 'connect@hashirusman.online', subject, body, inquiry.email)
+}
+
 export async function notifyOwner(accessToken, appointment, meetingUrl, inviteSent) {
   const isPending = appointment.status === 'pending'
   const subject = `${isPending ? 'New consultation request' : 'Appointment update'} from ${appointment.name}`

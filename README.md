@@ -29,9 +29,13 @@ The production site is generated in `dist/` and can be hosted on any static host
 - `src/index.css`: Tailwind import, design font, and Hero animation keyframes.
 - `public/images/`: responsive portrait assets used by the site.
 
-The contact and newsletter forms open prefilled email drafts; they do not submit to a backend. The LinkedIn destination is the general LinkedIn site because a personal profile URL was not present in the project.
+The contact form saves messages in Supabase and sends an email notification through the configured Gmail account. The LinkedIn destination is the general LinkedIn site because a personal profile URL was not present in the project.
 
 Venture wordmarks are typographic recreations. Case study outcomes only include information already documented in the project; unreported metrics are identified as such.
+
+## Contact form submissions
+
+The contact page posts to `/api/submit-contact`. Run the updated [`supabase/schema.sql`](supabase/schema.sql) to create the private `contact_inquiries` table. The server saves each submission there and emails `connect@hashirusman.online` through the same Gmail API configuration used by the booking flow. Set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REFRESH_TOKEN` in the local server environment and in the hosting provider's server-side environment. The Google account must have Gmail API access and the `https://www.googleapis.com/auth/gmail.send` scope. Keep all service keys and OAuth secrets out of browser-visible `VITE_` variables.
 
 ## Appointment requests and admin
 

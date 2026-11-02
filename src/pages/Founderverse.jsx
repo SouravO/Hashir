@@ -141,7 +141,7 @@ function Book({ className = '' }) {
 function Typed({ text, accent, onDone }) {
   const [n, setN] = useState(0)
   const done = useRef(onDone)
-  done.current = onDone
+  useEffect(() => { done.current = onDone }, [onDone])
   useEffect(() => {
     let i = 0
     let hold
@@ -272,8 +272,7 @@ const HERO_LINES = [<>Learn it <Before /></>, 'it costs you.']
 function Hero() {
   const reduce = useReducedMotion()
   const [stage, setStage] = useState(0)
-  const done = stage >= QUESTIONS.length
-  useEffect(() => { if (reduce) setStage(QUESTIONS.length) }, [reduce])
+  const done = reduce || stage >= QUESTIONS.length
   const startPrice = DIGITAL_AVAILABLE ? PRICE.digital : PRICE.physical
 
   // A soft lime light follows the cursor across the hero.
@@ -288,7 +287,7 @@ function Hero() {
   }
 
   return (
-    <section aria-label="Founder Versa" onPointerMove={onMove} className="relative isolate flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden bg-[#101310] text-white lg:min-h-[100svh]">
+    <section aria-label="Founder Versa" onPointerMove={onMove} className="relative isolate flex h-[calc(100svh-80px)] min-h-0 flex-col overflow-hidden bg-[#101310] text-white max-[768px]:h-[calc(100svh-64px)]">
       <div className="absolute inset-0 -z-20">
         <img src={HERO_IMAGE} alt="" decoding="async" draggable={false} onError={(event) => { event.currentTarget.style.visibility = 'hidden' }} className="size-full object-cover saturate-[.8]" />
       </div>
@@ -296,16 +295,16 @@ function Hero() {
       <motion.div aria-hidden style={{ background: glow }} className="absolute inset-0 -z-10" />
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 opacity-[.09] mix-blend-overlay" style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")" }} />
 
-      <div className={`${wrap} pt-3 sm:pt-8`}><img src={LOGO_IMAGE} alt="Founder Versa" className="h-10 w-auto object-contain sm:h-16" /></div>
+      <div className={`${wrap} shrink-0 pt-3 sm:pt-5`}><img src={LOGO_IMAGE} alt="Founder Versa" className="h-10 w-auto object-contain sm:h-14" /></div>
 
-      <div className={`${wrap} flex flex-1 items-center py-3 sm:py-10`}>
+      <div className={`${wrap} flex min-h-0 flex-1 items-center py-2 sm:py-[clamp(12px,3svh,28px)]`}>
         <AnimatePresence mode="wait">
           {!done ? (
             <motion.div key={stage} initial={reduce ? false : { opacity: 0, filter: 'blur(12px)' }} animate={{ opacity: 1, filter: 'blur(0px)' }} exit={{ opacity: 0, y: -40, filter: 'blur(12px)' }} transition={{ duration: 0.5, ease: EASE }} className="w-full max-w-[1000px]">
               <Typed text={QUESTIONS[stage]} accent={stage === QUESTIONS.length - 1} onDone={() => setStage((s) => s + 1)} />
             </motion.div>
           ) : (
-            <motion.div key="final" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="grid w-full items-center gap-10 sm:gap-14 lg:grid-cols-12 lg:gap-8">
+            <motion.div key="final" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="grid w-full items-center gap-4 sm:gap-8 lg:grid-cols-12">
               <div className="order-2 lg:order-1 lg:col-span-7">
                 <h1 className="m-0 text-[clamp(36px,9vw,58px)] font-extrabold leading-[.98] tracking-[-.045em] lg:text-[clamp(40px,5.6vw,84px)]">
                   {HERO_LINES.map((line, i) => (
@@ -326,14 +325,14 @@ function Hero() {
                   <Cta to={ORDER.physical} track="cta-hero" className="max-sm:min-h-11 max-sm:gap-2 max-sm:pl-4 max-sm:pr-1 max-sm:text-[13px] [&>a>span]:max-sm:size-10">Buy the collection</Cta>
                 </motion.div>
               </div>
-              <div className="order-1 mx-auto w-full max-w-[min(78vw,300px)] sm:max-w-[300px] lg:order-2 lg:col-span-5 lg:max-w-none"><BookFan /></div>
+              <div className="order-1 mx-auto w-full max-w-[min(68vw,34svh,300px)] sm:max-w-[min(34svh,300px)] lg:order-2 lg:col-span-5 lg:max-w-[min(440px,52svh)]"><BookFan /></div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
       {!done && (
-        <div className={`${wrap} pb-6`}>
+        <div className={`${wrap} shrink-0 pb-3 sm:pb-4`}>
           <div className="flex items-center justify-between border-t border-white/15 pt-4">
             <div aria-hidden className="flex gap-2">
               {QUESTIONS.map((q, i) => <span key={q} className={`h-1 rounded-full transition-all duration-500 ${i === stage ? 'w-10 bg-[#a4be2d]' : i < stage ? 'w-4 bg-white/60' : 'w-4 bg-white/20'}`} />)}
@@ -405,7 +404,7 @@ function StackCard({ i, n, p, children, tone }) {
 function Problem() {
   const list = useRef(null)
   const { scrollYProgress: p } = useScroll({ target: list, offset: ['start 30%', 'end 70%'] })
-  const n = costs.length + 1
+  const n = costs.length
   return (
     <>
       <div className="relative overflow-hidden bg-[#101310] py-12 sm:py-16" aria-label="Questions every founder has">
@@ -448,14 +447,15 @@ function Problem() {
               )
             })}
 
-            <StackCard i={n - 1} n={n} p={p} tone="bg-[#a4be2d] !border-[#a4be2d]">
-              <div className="grid items-end gap-8 text-[#101310] md:grid-cols-12 md:gap-12">
-                <h3 className="m-0 text-[clamp(30px,4vw,58px)] font-extrabold leading-[1.02] tracking-[-.04em] md:col-span-8">
-                  Ten books.<br /><span className="fv-accent">Every part of building a business.</span>
-                </h3>
-                <div className="md:col-span-4 md:justify-self-end"><Cta to="#collection" tone="dark" track="cta-problem">See the collection</Cta></div>
-              </div>
-            </StackCard>
+          </div>
+
+          <div className="relative mt-20 overflow-hidden rounded-[26px] border border-[#a4be2d] bg-[#a4be2d] p-6 text-[#101310] shadow-[0_24px_60px_rgba(16,19,16,.18)] sm:p-9">
+            <div className="grid items-end gap-8 md:grid-cols-12 md:gap-12">
+              <h3 className="m-0 text-[clamp(30px,4vw,58px)] font-extrabold leading-[1.02] tracking-[-.04em] md:col-span-8">
+                Ten books.<br /><span className="fv-accent">Every part of building a business.</span>
+              </h3>
+              <div className="md:col-span-4 md:justify-self-end"><Cta to="#collection" tone="dark" track="cta-problem">See the collection</Cta></div>
+            </div>
           </div>
         </div>
       </section>

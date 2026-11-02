@@ -29,7 +29,9 @@ const css = `
 
 export default function Contact() {
   const { search } = useLocation()
-  const [prepared, setPrepared] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState('Messages are sent securely to connect@hashirusman.online.')
+  const [submitted, setSubmitted] = useState(false)
   const [topic, setTopic] = useState('')
 
   useEffect(() => {
@@ -53,14 +55,31 @@ export default function Contact() {
     return () => observer.disconnect()
   }, [])
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
-    const data = new FormData(event.currentTarget)
-    const phone = data.get('phone')
-    const subject = data.get('topic')
-    const body = `Hi Hashir,\n\nI'm ${data.get('name')}.\nEmail: ${data.get('email')}${phone ? `\nPhone / WhatsApp: ${phone}` : ''}\nThis is about: ${data.get('topic')}\n\n${data.get('message')}\n\nThank you!`
-    window.location.href = `mailto:connect@hashirusman.online?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-    setPrepared(true)
+    if (sending) return
+    setSending(true)
+    setSubmitted(false)
+    setSubmitMessage('Sending your message…')
+    const form = event.currentTarget
+    const data = new FormData(form)
+    try {
+      const response = await fetch('/api/submit-contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(data.entries())),
+      })
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(result.message || 'We could not send your message. Please try again.')
+      form.reset()
+      setTopic('')
+      setSubmitted(true)
+      setSubmitMessage('Thanks — your message was sent to connect@hashirusman.online.')
+    } catch (error) {
+      setSubmitMessage(error.message || 'We could not send your message. Please try again.')
+    } finally {
+      setSending(false)
+    }
   }
 
   const fieldClass = 'peer w-full min-w-0 rounded-2xl border border-[#dfe5d2] bg-[#fafbf6] px-4 py-4 text-[15px] leading-[1.5] text-[#171a17] transition-[border-color,box-shadow,background-color] duration-300 placeholder:text-[#9aa592] hover:border-[#c4d198] focus-visible:border-[#7c9318] focus-visible:bg-white focus-visible:outline-none focus-visible:shadow-[0_0_0_4px_#a4be2d2e,0_12px_24px_-16px_#7c9318]'
@@ -133,6 +152,7 @@ export default function Contact() {
             <p className="ct-serif max-w-xs border-l border-[#a4be2d] pl-4 text-[15px] italic leading-6 text-[#72766f]">Or maybe you just want to ask something.</p>
           </div>
           <form onSubmit={handleSubmit} className="grid gap-6">
+            <label className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden" aria-hidden="true" tabIndex={-1}>Website<input name="website" autoComplete="off" tabIndex={-1} /></label>
             <div className="grid gap-6 sm:grid-cols-2">
               <label className={labelClass}><span>What should I call you?{star}</span>
                 <span className="relative block"><input className={`${fieldClass} pl-12`} autoComplete="name" name="name" required maxLength={100} /><UserCircle size={20} weight="light" className={fieldIconClass} aria-hidden /></span>
@@ -159,8 +179,8 @@ export default function Contact() {
             </div>
             <label className={labelClass}><span>Tell me a little more…{star}</span><textarea className={`${fieldClass} min-h-44 resize-y`} name="message" rows={5} required maxLength={3000} /></label>
             <div className="mt-2 flex flex-wrap items-center gap-x-7 gap-y-4 border-t border-[#edf0e7] pt-7">
-              <button className="group relative inline-flex min-h-14 items-center justify-center gap-5 overflow-hidden rounded-full bg-[#1e2618] py-1.5 pl-8 pr-1.5 text-sm font-semibold tracking-[.01em] text-[#f3f7e2] shadow-[0_18px_34px_-16px_#1e2618] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#2a3a22] hover:shadow-[0_26px_42px_-16px_#1e2618] active:scale-[.98]" type="submit">Send It My Way <span className="grid size-11 place-items-center rounded-full bg-[#a4be2d] text-[#1e2618] transition-transform duration-300 group-hover:rotate-45"><ArrowUpRight size={18} aria-hidden /></span></button>
-              <p className="ct-serif flex items-center text-[13px] italic leading-[1.6] text-[#68745e] before:mr-2.5 before:inline-block before:size-1.5 before:shrink-0 before:rounded-full before:bg-[#a4be2d]" role="status">{prepared ? 'Your email draft is ready. Send it from your email app.' : 'This opens an email draft in your email app.'}</p>
+              <button disabled={sending} className="group relative inline-flex min-h-14 items-center justify-center gap-5 overflow-hidden rounded-full bg-[#1e2618] py-1.5 pl-8 pr-1.5 text-sm font-semibold tracking-[.01em] text-[#f3f7e2] shadow-[0_18px_34px_-16px_#1e2618] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#2a3a22] hover:shadow-[0_26px_42px_-16px_#1e2618] active:scale-[.98] disabled:cursor-wait disabled:opacity-70" type="submit">{sending ? 'Sending…' : 'Send It My Way'} <span className="grid size-11 place-items-center rounded-full bg-[#a4be2d] text-[#1e2618] transition-transform duration-300 group-hover:rotate-45"><ArrowUpRight size={18} aria-hidden /></span></button>
+              <p className={`ct-serif flex items-center text-[13px] italic leading-[1.6] ${submitted ? 'text-[#4f6212]' : 'text-[#68745e]'}`} role="status" aria-live="polite">{submitMessage}</p>
             </div>
           </form>
         </section>

@@ -7,6 +7,7 @@ import availability from './api/availability.js'
 import approveAppointment from './api/approve-appointment.js'
 import cancelAppointment from './api/cancel-appointment.js'
 import submitOpportunity from './api/submit-opportunity.js'
+import submitContact from './api/submit-contact.js'
 import retryAppointmentEmails from './api/retry-appointment-emails.js'
 
 const localApiHandlers = {
@@ -15,6 +16,7 @@ const localApiHandlers = {
   '/api/approve-appointment': approveAppointment,
   '/api/cancel-appointment': cancelAppointment,
   '/api/submit-opportunity': submitOpportunity,
+  '/api/submit-contact': submitContact,
   '/api/retry-appointment-emails': retryAppointmentEmails,
 }
 

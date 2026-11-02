@@ -65,3 +65,20 @@ create policy "Admins can update appointment status"
 
 -- The Vercel function uses the server-only service role key, which bypasses RLS.
 -- No anon insert/select/update policy exists: visitors cannot read the appointment table.
+
+-- Contact messages are written and emailed by the server-side API only.
+create table if not exists public.contact_inquiries (
+  id uuid primary key default gen_random_uuid(),
+  name text not null check (char_length(name) between 2 and 100),
+  email text not null check (char_length(email) between 3 and 254),
+  phone text not null default '' check (char_length(phone) <= 30),
+  topic text not null,
+  message text not null check (char_length(message) between 1 and 3000),
+  email_sent boolean not null default false,
+  delivery_note text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.contact_inquiries enable row level security;
+revoke all on table public.contact_inquiries from anon, authenticated;
+-- The server-only service role key bypasses RLS; no browser access is granted.
