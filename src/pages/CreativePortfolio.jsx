@@ -569,7 +569,7 @@ export default function CreativePortfolio() {
 
       {/* ============ TOP BAR ============ */}
       <header ref={topbarRef} className="sticky top-0 z-50 bg-[#fffdf8] border-b-[3px] border-[#141414]" id="top">
-        <div className="max-w-[1480px] mx-auto flex items-center gap-6 px-[clamp(16px,3vw,36px)] py-3">
+        <div className="max-w-[1480px] mx-auto relative grid grid-cols-[1fr_auto] items-center gap-6 px-[clamp(16px,3vw,36px)] py-3">
           <a className="flex items-center gap-3 no-underline" href="../" aria-label="Back to hashirusman.online">
             <span className="grid place-items-center w-[58px] h-[52px] text-[1.6rem] font-black bg-[#ffe14d] border-[3px] border-[#141414] rounded-xl shadow-[3px_3px_0_#141414]">HU</span>
             <span className="flex flex-col leading-[1.05] max-[420px]:hidden">
@@ -578,35 +578,38 @@ export default function CreativePortfolio() {
             </span>
           </a>
 
-          <a
-            className={`${BTN_CORE} ${BTN_DARK} ${BTN_PAD} ml-auto bg-[#ff5a52] max-[760px]:px-[14px] max-[760px]:py-[9px] max-[760px]:text-[0.82rem]`}
-            href="#contact"
-          >
-            Let's talk <span aria-hidden="true">→</span>
-          </a>
-
-          <button
-            className="hidden max-[1024px]:flex ml-0 w-12 h-11 flex-col justify-center items-center gap-[5px] border-[3px] border-[#141414] rounded-xl bg-[#ffe14d] shadow-[3px_3px_0_#141414] cursor-pointer"
-            type="button"
-            aria-expanded={menuOpen}
-            aria-controls="sidenav"
-            aria-label={menuOpen ? 'Close section menu' : 'Open section menu'}
-            onClick={() => setMenuOpen((o) => !o)}
-          >
-            <span className={`w-5 h-[3px] bg-[#141414] rounded-[2px] transition-[transform,opacity] duration-200 ${menuOpen ? 'translate-y-2 rotate-45' : ''}`} />
-            <span className={`w-5 h-[3px] bg-[#141414] rounded-[2px] transition-[transform,opacity] duration-200 ${menuOpen ? 'opacity-0' : ''}`} />
-            <span className={`w-5 h-[3px] bg-[#141414] rounded-[2px] transition-[transform,opacity] duration-200 ${menuOpen ? '-translate-y-2 -rotate-45' : ''}`} />
-          </button>
-        </div>
-        <div className="max-w-[1480px] mx-auto relative flex flex-wrap items-center justify-between gap-3 px-[clamp(16px,3vw,36px)] pb-2 text-[0.75rem] text-[#5b5b5b] max-[1240px]:flex-col max-[1240px]:justify-center">
-          <div className="min-w-0 max-[1240px]:text-center">
-            <a className="no-underline hover:underline" href="../">hashirusman.online</a> <span className="mx-1">/</span> hu-studio <span className="mx-1">/</span> <b className="text-[#141414]">creative-portfolio</b>
-          </div>
-          <div className="absolute left-1/2 flex -translate-x-1/2 flex-wrap items-center justify-center gap-3 max-[1240px]:static max-[1240px]:translate-x-0">
+          <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-wrap items-center justify-center gap-3 max-[1240px]:relative max-[1240px]:left-auto max-[1240px]:top-auto max-[1240px]:col-span-2 max-[1240px]:col-start-1 max-[1240px]:row-start-2 max-[1240px]:translate-x-0 max-[1240px]:translate-y-0 max-[1024px]:hidden">
             <span className="text-sm font-semibold text-[#141414]">Want to see who I really am?</span>
             <Link to="/ventures" className={`${BTN_CORE} ${BTN_DARK} px-4 py-2 text-[0.78rem] bg-[#ffe14d] text-[#141414]`}>
               View My Portfolio <span aria-hidden="true">→</span>
             </Link>
+          </div>
+
+          <div className="col-start-2 row-start-1 flex items-center gap-3">
+            <a
+              className={`${BTN_CORE} ${BTN_DARK} ${BTN_PAD} bg-[#ff5a52] max-[760px]:px-[14px] max-[760px]:py-[9px] max-[760px]:text-[0.82rem]`}
+              href="#contact"
+            >
+              Let's talk <span aria-hidden="true">→</span>
+            </a>
+
+            <button
+              className="hidden max-[1024px]:flex w-12 h-11 flex-col justify-center items-center gap-[5px] border-[3px] border-[#141414] rounded-xl bg-[#ffe14d] shadow-[3px_3px_0_#141414] cursor-pointer"
+              type="button"
+              aria-expanded={menuOpen}
+              aria-controls="sidenav"
+              aria-label={menuOpen ? 'Close section menu' : 'Open section menu'}
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              <span className={`w-5 h-[3px] bg-[#141414] rounded-[2px] transition-[transform,opacity] duration-200 ${menuOpen ? 'translate-y-2 rotate-45' : ''}`} />
+              <span className={`w-5 h-[3px] bg-[#141414] rounded-[2px] transition-[transform,opacity] duration-200 ${menuOpen ? 'opacity-0' : ''}`} />
+              <span className={`w-5 h-[3px] bg-[#141414] rounded-[2px] transition-[transform,opacity] duration-200 ${menuOpen ? '-translate-y-2 -rotate-45' : ''}`} />
+            </button>
+          </div>
+        </div>
+        <div className="max-w-[1480px] mx-auto relative flex flex-wrap items-center justify-between gap-3 px-[clamp(16px,3vw,36px)] pb-2 text-[0.75rem] text-[#5b5b5b] max-[1240px]:flex-col max-[1240px]:justify-center">
+          <div className="min-w-0 max-[1240px]:text-center">
+            <a className="no-underline hover:underline" href="../">hashirusman.online</a> <span className="mx-1">/</span> hu-studio <span className="mx-1">/</span> <b className="text-[#141414]">creative-portfolio</b>
           </div>
         </div>
       </header>
@@ -624,6 +627,12 @@ export default function CreativePortfolio() {
           }`}
         >
           <div className="sticky top-[calc(var(--topbar-h)_+_20px)] flex flex-col max-h-[calc(100vh_-_var(--topbar-h)_-_40px)] bg-[#ffe14d] border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] pt-[22px] px-4 pb-4 overflow-y-auto max-[1024px]:static max-[1024px]:max-h-[calc(100vh_-_var(--topbar-h)_-_30px)]">
+            <div className="mb-4 hidden items-center justify-between gap-3 rounded-xl border-[2px] border-[#141414] bg-white/70 p-3 max-[1024px]:flex max-[760px]:flex-col max-[760px]:items-stretch">
+              <span className="text-sm font-semibold text-[#141414]">Want to see who I really am?</span>
+              <Link to="/ventures" className={`${BTN_CORE} ${BTN_DARK} justify-center px-4 py-2 text-[0.78rem] bg-[#fffdf8] text-[#141414]`}>
+                View My Portfolio <span aria-hidden="true">→</span>
+              </Link>
+            </div>
             <p className="font-black text-[1rem] tracking-[0.04em] uppercase px-2 pb-3">Navigation</p>
             <ol>
               {SIDE_NAV.map(([id, no, label], i) => (

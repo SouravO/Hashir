@@ -949,7 +949,10 @@ export default function Home() {
                 <h1 id="hero-title" className="text-[clamp(60px,7.8vw,138px)] font-extrabold leading-[.88] tracking-[-.075em]">Hashir Usman</h1>
               </div>
               <Heading tag="h2" on={ready} delay={120} className="mt-7 text-[clamp(40px,5vw,88px)] font-extrabold leading-[.94] tracking-[-.065em]" lines={['Is your business growing?', <span className="text-[#7c9318]">Or just getting busier?</span>]} />
-              <p className="order-1 mt-6 max-w-[600px] text-base leading-[1.6] text-[#2f332e] sm:text-lg xl:text-xl lg:order-none" style={rise(ready, 500)}>Startup architect. Venture builder. Business consultant. I help people start businesses, fix what’s not working, and build systems that make growth a little less chaotic.</p>
+              <div className="order-1 mt-6 max-w-[600px] lg:order-none" style={rise(ready, 500)}>
+                <h3 className="m-0 text-xl font-bold leading-tight tracking-[-.02em] text-[#65751b] sm:text-2xl">Startup architect. Venture builder. Business consultant.</h3>
+                <p className="m-0 mt-3 text-base leading-[1.6] text-[#2f332e] sm:text-lg xl:text-xl">I help people start businesses, fix what’s not working, and build systems that make growth a little less chaotic.</p>
+              </div>
               <div className="order-3 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 lg:order-none" style={rise(ready, 620)}>
                 <Link to="/contact" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4be2d] bg-[#a4be2d] px-6 text-[13px] font-semibold text-[#1e2618] transition-colors duration-300 hover:border-[#b3cc35] hover:bg-[#b3cc35] active:scale-[.97]">Book a Strategy Call <Arrow /></Link>
                 <Link to="/ventures" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4aaa0] px-6 text-[13px] font-semibold transition-colors duration-300 hover:border-[#171a1b] hover:bg-[#171a1b] hover:text-white active:scale-[.97]">See My Work <Arrow /></Link>

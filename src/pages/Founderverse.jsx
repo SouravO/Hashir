@@ -12,6 +12,7 @@ const LOGO_IMAGE = '/fv-logo.png'
 const ORDER = { physical: '/contact', digital: '/contact' } // point at real checkout links
 const DIGITAL_AVAILABLE = true
 const PRICE = { physical: '₹4,999', digital: '₹3,499' }
+const REGULAR_PRICE = { physical: 24999, digital: 17499 }
 const TERMS_PENDING = 'These details will be confirmed before launch.'
 
 /* ---------- Content ---------- */
@@ -549,8 +550,8 @@ function AnimatedPrice({ value }) {
 function Offer() {
   const reduce = useReducedMotion()
   const formats = [
-    { key: 'physical', name: 'Physical', price: num(PRICE.physical), to: ORDER.physical, track: 'cta-physical', tag: 'In print' },
-    ...(DIGITAL_AVAILABLE ? [{ key: 'digital', name: 'Digital', price: num(PRICE.digital), to: ORDER.digital, track: 'cta-digital', tag: 'In digital format' }] : []),
+    { key: 'physical', name: 'Physical', price: num(PRICE.physical), regularPrice: REGULAR_PRICE.physical, to: ORDER.physical, track: 'cta-physical', tag: 'In print' },
+    ...(DIGITAL_AVAILABLE ? [{ key: 'digital', name: 'Digital', price: num(PRICE.digital), regularPrice: REGULAR_PRICE.digital, to: ORDER.digital, track: 'cta-digital', tag: 'In digital format' }] : []),
   ]
   const [i, setI] = useState(0)
   const f = formats[i]
@@ -572,7 +573,10 @@ function Offer() {
             </div>
           )}
 
-          <p className="m-0 mt-6 text-[clamp(72px,14vw,176px)] font-extrabold leading-[.88] tracking-[-.07em]" aria-live="polite"><AnimatedPrice value={f.price} /></p>
+          <p className="m-0 mt-6 text-base font-semibold text-[#101310]/60" aria-label={`Regular price ₹${f.regularPrice.toLocaleString('en-IN')}`}>
+            Regular price <del className="ml-1 tabular-nums">₹{f.regularPrice.toLocaleString('en-IN')}</del>
+          </p>
+          <p className="m-0 mt-1 text-[clamp(72px,14vw,176px)] font-extrabold leading-[.88] tracking-[-.07em]" aria-live="polite"><AnimatedPrice value={f.price} /></p>
 
           <ul className="m-0 mt-8 flex list-none flex-wrap gap-2.5 p-0">
             {['All 10 books', 'Case studies + frameworks', f.tag].map((item) => (
