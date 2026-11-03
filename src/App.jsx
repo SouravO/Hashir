@@ -10,6 +10,7 @@ import Founderverse from './pages/Founderverse'
 import Admin from './pages/Admin'
 import Privacy from './pages/Privacy'
 import Opportunities from './pages/Opportunities'
+import CreativePortfolio from './pages/CreativePortfolio'
 
 function ScrollToRouteTarget() {
   const { pathname, hash } = useLocation()
@@ -34,7 +35,7 @@ export default function App() {
   return (
     <div className="flex min-h-dvh flex-col bg-[#f8f9f6]">
       <ScrollToRouteTarget />
-      <Navbar />
+      {pathname !== '/creative-portfolio' && <Navbar />}
       <div key={pathname} className="flex-1 animate-page-enter motion-reduce:animate-none">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/ventures" element={<Ventures />} />
           <Route path="/founderverse" element={<Founderverse />} />
           <Route path="/opportunities" element={<Opportunities />} />
+          <Route path="/creative-portfolio" element={<CreativePortfolio />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/admin" element={<Admin />} />
