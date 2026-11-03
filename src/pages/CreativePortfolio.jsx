@@ -328,19 +328,6 @@ const GROUPS = {
   mkt: { dot: 'bg-[#7ee2a8]', tag: 'text-[0.72rem] bg-[#dcf7e7]' },
 }
 
-/* ---------- 360° starburst points ---------- */
-
-const STAR_POINTS = (() => {
-  const pts = []
-  const spikes = 14
-  for (let i = 0; i < spikes * 2; i++) {
-    const r = i % 2 === 0 ? 92 : 52
-    const a = (Math.PI * i) / spikes - Math.PI / 2
-    pts.push(`${(100 + r * Math.cos(a)).toFixed(1)},${(100 + r * Math.sin(a)).toFixed(1)}`)
-  }
-  return pts.join(' ')
-})()
-
 const SEARCH_ICON =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%23141414' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='8.5' cy='8.5' r='6'/%3E%3Cpath d='M13 13l5 5'/%3E%3C/svg%3E\")"
 
@@ -355,7 +342,7 @@ const SECTION = `flex flex-col ${GAP}`
 const REVEAL =
   'opacity-0 translate-y-[18px] transition-[opacity,transform] duration-500 ease-[ease] data-[in=true]:opacity-100 data-[in=true]:translate-y-0 motion-reduce:opacity-100 motion-reduce:translate-y-0 motion-reduce:transition-none'
 
-const FRAME = 'relative border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px]'
+const FRAME = 'hu-checker relative border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px]'
 const PAD = 'p-[clamp(18px,2.2vw,28px)]'
 const CARD = `${FRAME} ${PAD} shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414]`
 const CARD_INK = `${FRAME} ${PAD} bg-[#141414] text-white shadow-[6px_6px_0_#ffe14d]`
@@ -570,6 +557,7 @@ export default function CreativePortfolio() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap');
         .hu-root { --topbar-h: 96px; font-family: Archivo, system-ui, -apple-system, "Segoe UI", sans-serif; }
+        .hu-checker:not(.bg-cover) { background-image: repeating-conic-gradient(rgba(20,20,20,.045) 0% 25%, transparent 0% 50%); background-size: 48px 48px; }
         :where(.hu-root) :focus-visible { outline: 3px solid #5468ff; outline-offset: 3px; }
         @keyframes pop { from { transform: translateY(14px) scale(0.98); opacity: 0; } }
       `}</style>
@@ -633,7 +621,7 @@ export default function CreativePortfolio() {
               : 'max-[1024px]:-translate-y-[120%] max-[1024px]:pointer-events-none'
           }`}
         >
-          <div className="sticky top-[calc(var(--topbar-h)_+_20px)] flex flex-col max-h-[calc(100vh_-_var(--topbar-h)_-_40px)] bg-[#ffe14d] border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] pt-[22px] px-4 pb-4 overflow-y-auto max-[1024px]:static max-[1024px]:max-h-[calc(100vh_-_var(--topbar-h)_-_30px)]">
+          <div className="hu-checker sticky top-[calc(var(--topbar-h)_+_20px)] flex flex-col max-h-[calc(100vh_-_var(--topbar-h)_-_40px)] bg-[#ffe14d] border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] pt-[22px] px-4 pb-4 overflow-y-auto max-[1024px]:static max-[1024px]:max-h-[calc(100vh_-_var(--topbar-h)_-_30px)]">
             <div className="mb-4 hidden items-center justify-between gap-3 rounded-xl border-[2px] border-[#141414] bg-white/70 p-3 max-[1024px]:flex max-[760px]:flex-col max-[760px]:items-stretch">
               <span className="text-sm font-semibold text-[#141414]">Want to see who I really am?</span>
               <Link to="/ventures" className={`${BTN_CORE} ${BTN_DARK} justify-center px-4 py-2 text-[0.78rem] bg-[#fffdf8] text-[#141414]`}>
@@ -657,7 +645,7 @@ export default function CreativePortfolio() {
                 </li>
               ))}
             </ol>
-            <div className="relative mt-[18px] px-4 py-[18px] bg-[#5468ff] text-white border-[3px] border-[#141414] rounded-[14px]">
+            <div className="hu-checker relative mt-[18px] px-4 py-[18px] bg-[#5468ff] text-white border-[3px] border-[#141414] rounded-[14px]">
               <span className="absolute -top-[18px] right-2 text-[2.4rem] text-[#ffe14d] leading-none [text-shadow:2px_2px_0_#141414]" aria-hidden="true">✦</span>
               <p className="font-black uppercase tracking-[0.03em] mb-1.5">The mindset</p>
               <p className="font-bold text-[1.05rem] leading-[1.3]">Build with clarity.<br />Scale with intention.</p>
@@ -671,37 +659,34 @@ export default function CreativePortfolio() {
             <div className={`grid grid-cols-[minmax(0,1.75fr)_minmax(0,1fr)] max-[1024px]:grid-cols-1 ${GAP}`}>
               <article
                 data-reveal
-                className={`${CARD} ${REVEAL} bg-[#ffcfae] pr-[clamp(18px,16vw,230px)] min-h-[330px] flex flex-col gap-[18px] max-[760px]:pr-[clamp(18px,2.2vw,28px)] max-[760px]:pb-[170px]`}
+                className={`${CARD} ${REVEAL} relative min-h-[520px] overflow-hidden bg-[#ffcfae] flex flex-col gap-[18px] max-[760px]:min-h-[460px]`}
               >
-                <span className={`${PILL} bg-[#ffe14d] self-start`}>The creative leadership dashboard</span>
-                <h1 id="dash-title" className="text-[length:clamp(2rem,3.9vw,3.9rem)] font-black [font-stretch:82%] leading-[0.95] tracking-[-0.01em] uppercase">
-                  Building brands.<br />
-                  Leading execution.<br />
-                  <span className={`${HL} bg-[#ffe14d]`}>Driving growth.</span>
+                <span className={`${PILL} bg-[#ffe14d] self-start`}>01 / The creative leadership dashboard</span>
+                <h1 id="dash-title" className="text-[length:clamp(2.4rem,5.3vw,5.8rem)] font-black [font-stretch:82%] leading-[0.92] tracking-[-0.02em] uppercase">
+                  Think.<br />
+                  Create.<br />
+                  Execute.<br />
+                  <span className="inline-block rounded-xl border-[3px] border-[#141414] bg-[#ffe14d] px-3 py-[0.08em]">Make moves.</span>
                 </h1>
-                <p className="mt-auto text-[1.05rem] font-medium">
-                  Business strategy <i className="not-italic font-extrabold mx-1.5">×</i> Creative direction <i className="not-italic font-extrabold mx-1.5">×</i> Marketing execution
+                <p className="max-w-[48ch] text-[clamp(1rem,1.5vw,1.35rem)] font-semibold leading-[1.4]">
+                  Business strategy. Creative direction. Marketing leadership. Growth execution.
                 </p>
-                <div
-                  className="absolute top-1/2 right-[clamp(14px,2.5vw,34px)] w-[clamp(130px,14vw,190px)] aspect-square -translate-y-1/2 max-[760px]:top-auto max-[760px]:bottom-4 max-[760px]:translate-y-0 max-[760px]:w-[140px]"
-                  aria-hidden="true"
-                >
-                  <svg viewBox="0 0 200 200" className="w-full h-full overflow-visible animate-[spin_26s_linear_infinite] motion-reduce:animate-none">
-                    <circle cx="100" cy="100" r="96" className="fill-[#5468ff] stroke-[#141414] [stroke-width:5]" />
-                    <polygon points={STAR_POINTS} className="fill-[#ffe14d]" />
-                  </svg>
-                  <span className="absolute inset-0 flex flex-col items-center justify-center font-extrabold uppercase text-[0.8rem] tracking-[0.04em]">
-                    <b className="text-[length:clamp(1.8rem,3vw,2.6rem)] font-black leading-none">360°</b>Thinking
-                  </span>
+                <a href="#work" className={`${BTN_CORE} ${BTN_DARK} mt-auto w-fit bg-[#ff5a52] px-6 py-3 text-[#141414]`}>
+                  Explore my work <span aria-hidden="true">→</span>
+                </a>
+                <div aria-hidden="true" className="pointer-events-none absolute bottom-8 right-8 flex items-center gap-5 max-[760px]:bottom-5 max-[760px]:right-5">
+                  <span className="size-8 rotate-45 bg-[#5468ff] sm:size-10" />
+                  <span className="size-4 rounded-full border-[3px] border-[#141414] bg-[#ffe14d] sm:size-5" />
                 </div>
               </article>
 
-              <article data-reveal className={`${CARD} ${REVEAL} bg-[#c9b8ff] flex flex-col items-center text-center justify-center gap-1.5`}>
-                <span className={`${PILL} bg-white absolute top-4 left-4`}>Meet the studio</span>
-                <p className="text-[length:clamp(4rem,8vw,6.5rem)] font-black leading-[0.9] [font-stretch:90%] mt-7">H/U</p>
-                <p className="text-[length:clamp(1.4rem,2.4vw,2.1rem)] font-black uppercase leading-none">Hashir Usman</p>
-                <hr className="w-full border-t-[3px] border-[#141414] mt-[14px] mb-2" />
-                <p className="font-extrabold uppercase text-[0.92rem]">Business / Marketing / Creative</p>
+              <article
+                data-reveal
+                className={`${CARD} ${REVEAL} relative isolate min-h-[360px] overflow-hidden bg-cover bg-center`}
+                style={{ backgroundImage: "url('/hashir.PNG')", backgroundPosition: 'center 38%' }}
+              >
+                <span className="absolute right-4 top-4 z-10 grid size-14 place-items-center rounded-xl border-[3px] border-[#141414] bg-[#ffe14d] text-xl font-black shadow-[3px_3px_0_#141414]">01</span>
+                <span className="absolute bottom-4 left-1/2 z-10 w-[min(88%,420px)] -translate-x-1/2 rounded-xl border-[3px] border-[#141414] bg-[#c9b8ff] px-5 py-3 text-center text-[clamp(1.5rem,3vw,2.5rem)] font-black uppercase leading-none shadow-[4px_4px_0_#141414] sm:px-7 sm:py-4">Your move.</span>
               </article>
             </div>
 
@@ -722,11 +707,6 @@ export default function CreativePortfolio() {
               </div>
             </div>
 
-            <p className="flex flex-wrap gap-2">
-              {['Executive leadership', 'CMO capabilities', 'Creative direction', 'Integrated marketing', 'Go-to-market', 'Revenue strategy'].map((t) => (
-                <span key={t} className="text-[0.82rem] font-bold px-3 py-[5px] border-2 border-dashed border-[#141414] rounded-full bg-white/60">{t}</span>
-              ))}
-            </p>
           </section>
 
           {/* ============ 02 PROFILE ============ */}
@@ -798,7 +778,7 @@ export default function CreativePortfolio() {
                 {STEPS.map(([no, label, bg], i) => (
                   <li
                     key={no}
-                    className={`relative flex flex-col gap-1.5 p-[14px] text-[#141414] font-black uppercase text-[0.95rem] leading-[1.15] border-[3px] border-[#141414] rounded-xl ${bg} ${
+                    className={`hu-checker relative flex flex-col gap-1.5 p-[14px] text-[#141414] font-black uppercase text-[0.95rem] leading-[1.15] border-[3px] border-[#141414] rounded-xl ${bg} ${
                       i < STEPS.length - 1
                         ? "after:content-['→'] after:absolute after:-right-3 after:top-1/2 after:translate-x-1/2 after:-translate-y-1/2 after:text-white after:font-black after:z-[1] max-[1240px]:after:hidden"
                         : ''
@@ -867,7 +847,8 @@ export default function CreativePortfolio() {
                     data-reveal
                     data-in={shown ? 'true' : undefined}
                     onClick={() => openCase(i)}
-                    className={`group ${shown ? 'flex' : 'hidden'} flex-col gap-[14px] text-left cursor-pointer border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] hover:shadow-[9px_9px_0_#141414] p-[18px] bg-[#fffdf8] ${REVEAL}`}
+                    style={{ backgroundColor: '#fffdf8', backgroundImage: `repeating-conic-gradient(color-mix(in srgb, ${f.accent} 15%, transparent) 0% 25%, #fffdf8 0% 50%)`, backgroundSize: '48px 48px' }}
+                    className={`hu-checker group ${shown ? 'flex' : 'hidden'} flex-col gap-[14px] text-left cursor-pointer border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] hover:shadow-[9px_9px_0_#141414] p-[18px] bg-[#fffdf8] ${REVEAL}`}
                   >
                     <div className="flex gap-4 items-center">
                       <Logo slug={f.slug} name={f.name} className="flex-none w-[86px] h-[86px] border-[3px] border-[#141414] rounded-xl overflow-hidden" />
