@@ -29,6 +29,22 @@ const LOGO_ASSETS = {
   'sol-for-her': 'sOl.png',
   'nothing-else': 'nothingelse.png',
   'bare-logic': 'barelogic.png',
+  'shameers-cars': '/social-media/shameerscars.png',
+}
+
+// Social media examples shown inside each selected work's case detail.
+const WORK_GALLERIES = {
+  'moon-bliss': [
+    ['moonbliss-post.png', 'Moon Bliss social post'],
+    ['moonbliss-post2.png', 'Moon Bliss social post'],
+    ['moonbliss-reels.png', 'Moon Bliss reel cover'],
+  ],
+  zaati: [
+    ['zaati-insta.png', 'Zaati Instagram post'],
+  ],
+  'shameers-cars': [
+    ['shameers-reels.png', "Shameer's Cars reel cover"],
+  ],
 }
 
 function Logo({ slug, name, className = '', cover = false }) {
@@ -131,10 +147,19 @@ const FEATURED = [
     mkt: ['360° planning', 'Social strategy', 'Paid campaigns', 'Influencer / PR', 'Sales', 'Growth / revenue strategy'],
     note: 'Cross-disciplinary marketing across technology, professional community and creative engagement.',
   },
+  {
+    slug: 'shameers-cars', name: "Shameer's Cars", sector: 'Automotive', role: 'Marketing / Creative',
+    filter: 'marketing', accent: '#b9d9ff',
+    headline: 'Making the cars the story',
+    summary: 'Social media content for Shameer’s Cars, presenting its vehicles through clear, engaging automotive visuals.',
+    lead: ['Social content'],
+    mkt: ['Social media'],
+    note: 'Automotive social content featuring the cars and brand.',
+  },
 ]
 
 const WORK_FILTERS = [
-  ['all', 'All 8'],
+  ['all', 'All 9'],
   ['ceo', 'Business head'],
   ['founder', 'Founder'],
   ['marketing', 'Marketing lead'],
@@ -534,6 +559,7 @@ export default function CreativePortfolio() {
     if (e.target === dialogRef.current || e.target.closest('[data-close]')) dialogRef.current.close()
   }
   const c = FEATURED[current]
+  const workGallery = WORK_GALLERIES[c.slug] || []
 
   /* ---------- Project index ---------- */
   const visibleProjects = PROJECTS.map((p, i) => ({ p, i })).filter(({ p }) =>
@@ -1053,7 +1079,7 @@ export default function CreativePortfolio() {
         ref={dialogRef}
         aria-labelledby="caseName"
         onClick={onDialogClick}
-        className="m-auto w-[min(760px,calc(100%_-_28px))] max-h-[calc(100vh_-_40px)] p-0 border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[10px_10px_0_#141414] bg-[#fffdf8] text-[#141414] backdrop:bg-[rgba(20,20,20,0.55)] backdrop:backdrop-blur-[3px] open:animate-[pop_0.22s_ease-out]"
+        className="m-auto w-[min(900px,calc(100%_-_28px))] max-h-[calc(100vh_-_40px)] p-0 border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[10px_10px_0_#141414] bg-[#fffdf8] text-[#141414] backdrop:bg-[rgba(20,20,20,0.55)] backdrop:backdrop-blur-[3px] open:animate-[pop_0.22s_ease-out]"
       >
         <div className="relative p-[clamp(20px,3vw,34px)] flex flex-col gap-[14px]">
           <button
@@ -1088,6 +1114,34 @@ export default function CreativePortfolio() {
             </div>
           </div>
           <p className="text-[0.88rem] text-[#5b5b5b] italic">{c.note}</p>
+          {workGallery.length > 0 && (
+            <section aria-label={`${c.name} selected visuals`} className="flex flex-col gap-3">
+              <h4 className="text-[0.9rem] font-black uppercase">Selected visuals</h4>
+              <div className="grid grid-cols-3 max-[760px]:grid-cols-2 max-[480px]:grid-cols-1 items-stretch gap-3">
+                {workGallery.map(([file, label]) => (
+                  <a
+                    key={file}
+                    href={`/social-media/${file}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Open ${label} full size in a new tab`}
+                    className="group flex h-full w-full min-w-0 flex-col overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]"
+                  >
+                    <span className="flex h-[360px] shrink-0 items-center justify-center overflow-hidden bg-[#f3f0eb] sm:h-[420px]">
+                      <img
+                        src={`/social-media/${file}`}
+                        alt={label}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-contain transition-transform group-hover:scale-[1.03]"
+                      />
+                    </span>
+                    <span className="flex min-h-[52px] flex-1 items-start border-t-2 border-[#141414] px-2 py-2 text-[0.7rem] font-bold">{label} · Open full size ↗</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
           <div className="flex justify-between">
             <button type="button" className={`${BTN_CORE} ${BTN_DARK} bg-white px-4 py-2 text-[0.85rem]`} onClick={() => stepCase(-1)}>← Prev</button>
             <button type="button" className={`${BTN_CORE} ${BTN_DARK} bg-white px-4 py-2 text-[0.85rem]`} onClick={() => stepCase(1)}>Next →</button>
