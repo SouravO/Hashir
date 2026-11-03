@@ -315,17 +315,6 @@ const SIDE_NAV = [
   ['contact', '08', 'Work With Me'],
 ]
 
-const TOP_NAV = [
-  ['dashboard', 'Overview'],
-  ['work', 'Work'],
-  ['expertise', 'Expertise'],
-  ['brands', 'Brands'],
-  ['contact', 'Contact'],
-]
-
-// Top nav groups several sections under one link.
-const TOP_MAP = { dashboard: 'dashboard', profile: 'dashboard', expertise: 'expertise', promise: 'expertise', work: 'work', index: 'work', brands: 'brands', contact: 'contact' }
-
 const GROUPS = {
   lead: { dot: 'bg-[#ff5a52]', tag: 'text-[0.72rem] bg-[#ffe0dc]' },
   brand: { dot: 'bg-[#c9b8ff]', tag: 'text-[0.72rem] bg-[#ece6ff]' },
@@ -589,24 +578,8 @@ export default function CreativePortfolio() {
             </span>
           </a>
 
-          <nav className="flex gap-1.5 mx-auto max-[1240px]:hidden" aria-label="Primary">
-            {TOP_NAV.map(([id, label]) => (
-              <a
-                key={id}
-                href={`#${id}`}
-                className={`font-bold no-underline px-4 py-[7px] border-2 rounded-xl transition-[background-color,border-color] duration-150 ${
-                  TOP_MAP[active] === id
-                    ? 'bg-[#ffe14d] border-[#141414] shadow-[2px_2px_0_#141414]'
-                    : 'border-transparent hover:border-[#141414]'
-                }`}
-              >
-                {label}
-              </a>
-            ))}
-          </nav>
-
           <a
-            className={`${BTN_CORE} ${BTN_DARK} ${BTN_PAD} bg-[#ff5a52] max-[1240px]:ml-auto max-[760px]:px-[14px] max-[760px]:py-[9px] max-[760px]:text-[0.82rem]`}
+            className={`${BTN_CORE} ${BTN_DARK} ${BTN_PAD} ml-auto bg-[#ff5a52] max-[760px]:px-[14px] max-[760px]:py-[9px] max-[760px]:text-[0.82rem]`}
             href="#contact"
           >
             Let's talk <span aria-hidden="true">→</span>
@@ -625,11 +598,11 @@ export default function CreativePortfolio() {
             <span className={`w-5 h-[3px] bg-[#141414] rounded-[2px] transition-[transform,opacity] duration-200 ${menuOpen ? '-translate-y-2 -rotate-45' : ''}`} />
           </button>
         </div>
-        <div className="max-w-[1480px] mx-auto flex flex-wrap items-center justify-between gap-3 px-[clamp(16px,3vw,36px)] pb-2 text-[0.75rem] text-[#5b5b5b]">
-          <div>
+        <div className="max-w-[1480px] mx-auto relative flex flex-wrap items-center justify-between gap-3 px-[clamp(16px,3vw,36px)] pb-2 text-[0.75rem] text-[#5b5b5b] max-[1240px]:flex-col max-[1240px]:justify-center">
+          <div className="min-w-0 max-[1240px]:text-center">
             <a className="no-underline hover:underline" href="../">hashirusman.online</a> <span className="mx-1">/</span> hu-studio <span className="mx-1">/</span> <b className="text-[#141414]">creative-portfolio</b>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="absolute left-1/2 flex -translate-x-1/2 flex-wrap items-center justify-center gap-3 max-[1240px]:static max-[1240px]:translate-x-0">
             <span className="text-sm font-semibold text-[#141414]">Want to see who I really am?</span>
             <Link to="/ventures" className={`${BTN_CORE} ${BTN_DARK} px-4 py-2 text-[0.78rem] bg-[#ffe14d] text-[#141414]`}>
               View My Portfolio <span aria-hidden="true">→</span>

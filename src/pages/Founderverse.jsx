@@ -11,7 +11,7 @@ const LOGO_IMAGE = '/fv-logo.png'
 /* ---------- Offer settings: confirm these before launch ---------- */
 const ORDER = { physical: '/contact', digital: '/contact' } // point at real checkout links
 const DIGITAL_AVAILABLE = true
-const PRICE = { physical: '₹5,000', digital: '₹3,500' }
+const PRICE = { physical: '₹4,999', digital: '₹3,499' }
 const TERMS_PENDING = 'These details will be confirmed before launch.'
 
 /* ---------- Content ---------- */
@@ -454,7 +454,6 @@ function Problem() {
               <h3 className="m-0 text-[clamp(30px,4vw,58px)] font-extrabold leading-[1.02] tracking-[-.04em] md:col-span-8">
                 Ten books.<br /><span className="fv-accent">Every part of building a business.</span>
               </h3>
-              <div className="md:col-span-4 md:justify-self-end"><Cta to="#collection" tone="dark" track="cta-problem">See the collection</Cta></div>
             </div>
           </div>
         </div>
