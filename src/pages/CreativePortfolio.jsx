@@ -37,13 +37,13 @@ const WORK_GALLERIES = {
   'moon-bliss': [
     ['moonbliss-post.png', 'Moon Bliss social post'],
     ['moonbliss-post2.png', 'Moon Bliss social post'],
-    ['moonbliss-reels.png', 'Moon Bliss reel cover'],
+    ['moonbliss-reels.png', 'Moon Bliss content'],
   ],
   zaati: [
     ['zaati-insta.png', 'Zaati Instagram post'],
   ],
   'shameers-cars': [
-    ['shameers-reels.png', "Shameer's Cars reel cover"],
+    ['shameers-reels.png', "Shameer's Cars content"],
   ],
 }
 
@@ -1115,8 +1115,8 @@ export default function CreativePortfolio() {
           </div>
           <p className="text-[0.88rem] text-[#5b5b5b] italic">{c.note}</p>
           {workGallery.length > 0 && (
-            <section aria-label={`${c.name} selected visuals`} className="flex flex-col gap-3">
-              <h4 className="text-[0.9rem] font-black uppercase">Selected visuals</h4>
+            <section aria-label={`${c.name} gallery`} className="flex flex-col gap-3">
+              <h4 className="text-[0.9rem] font-black uppercase">Gallery</h4>
               <div className="grid grid-cols-3 max-[760px]:grid-cols-2 max-[480px]:grid-cols-1 items-stretch gap-3">
                 {workGallery.map(([file, label]) => (
                   <a
