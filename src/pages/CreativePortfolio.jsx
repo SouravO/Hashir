@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom'
 
 const LOGO_ASSETS = {
   dayone: 'davone.png',
+  founderverse: '/fv-logo.png',
   'start-x': 'START-x.png',
   'hey-dossa': 'heydossa.png',
   'moon-bliss': 'moonBLISS.png',
@@ -30,16 +31,16 @@ const LOGO_ASSETS = {
   'bare-logic': 'barelogic.png',
 }
 
-function Logo({ slug, name, className = '' }) {
+function Logo({ slug, name, className = '', cover = false }) {
   const asset = LOGO_ASSETS[slug]
   if (asset) {
     return (
       <img
-        src={`/ventures/${asset}`}
+        src={asset.startsWith('/') ? asset : `/ventures/${asset}`}
         alt={`${name} logo`}
         loading="lazy"
         decoding="async"
-        className={`bg-white object-contain ${className}`}
+        className={`bg-white ${cover ? 'object-cover' : 'object-contain'} ${className}`}
       />
     )
   }
@@ -139,6 +140,12 @@ const WORK_FILTERS = [
   ['marketing', 'Marketing lead'],
   ['creative', 'Creative director'],
   ['marketing360', '360 Degree Marketing'],
+]
+
+const MARKETING_STRATEGIES = [
+  { slug: 'bare-logic', name: 'Bare Logic', file: '/pdf/MARKETING%20STRATEGY_compressed.pdf' },
+  { slug: 'nothing-else', name: 'Nothing Else', file: '/pdf/MARKETING%20STRATEGY%20for%20Nothing%20else_compressed.pdf' },
+  { slug: 'moon-bliss', name: 'Moon Bliss', file: '/pdf/Safari_compressed.pdf' },
 ]
 
 const matchesWorkFilter = (item, filter) => {
@@ -828,13 +835,37 @@ export default function CreativePortfolio() {
             </header>
 
             <div className={`grid grid-cols-2 max-[760px]:grid-cols-1 ${GAP}`}>
-              {FEATURED.map((f, i) => {
+              {workFilter === 'marketing360' ? MARKETING_STRATEGIES.map((strategy) => (
+                <article
+                  key={strategy.slug}
+                  data-reveal
+                  data-in="true"
+                  className={`${CARD} ${REVEAL} flex flex-col gap-[14px] bg-[#fffdf8]`}
+                >
+                  <div className="flex items-center gap-4">
+                    <Logo slug={strategy.slug} name={strategy.name} className="size-[86px] shrink-0 overflow-hidden rounded-xl border-[3px] border-[#141414]" />
+                    <div>
+                      <p className="text-[0.74rem] font-extrabold uppercase tracking-[0.05em] text-[#5b5b5b]">Marketing strategy</p>
+                      <h3 className="mt-1 text-[length:clamp(1.25rem,2vw,1.6rem)] font-black uppercase leading-[1.05]">{strategy.name}</h3>
+                    </div>
+                  </div>
+                  <a
+                    href={strategy.file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`${BTN_CORE} ${BTN_DARK} mt-auto w-fit bg-[#ffe14d] px-4 py-2 text-[0.85rem] text-[#141414]`}
+                  >
+                    View strategy <span aria-hidden="true">↗</span>
+                  </a>
+                </article>
+              )) : FEATURED.map((f, i) => {
                 const shown = matchesWorkFilter(f, workFilter)
                 return (
                   <button
                     key={f.slug}
                     type="button"
                     data-reveal
+                    data-in={shown ? 'true' : undefined}
                     onClick={() => openCase(i)}
                     className={`group ${shown ? 'flex' : 'hidden'} flex-col gap-[14px] text-left cursor-pointer border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] hover:shadow-[9px_9px_0_#141414] p-[18px] bg-[#fffdf8] ${REVEAL}`}
                   >
@@ -884,7 +915,7 @@ export default function CreativePortfolio() {
                   data-reveal
                   className={`relative m-0 border-[3px] border-[#141414] rounded-[14px] overflow-hidden bg-white shadow-[4px_4px_0_#141414] hover:shadow-[7px_7px_0_#141414] ${REVEAL}`}
                 >
-                  <Logo slug={slug} name={name} className="w-full aspect-[453/293]" />
+                  <Logo slug={slug} name={name} cover={slug !== 'founderverse'} className="w-full aspect-[453/293]" />
                   <figcaption className="flex flex-col gap-px px-2.5 py-2 text-[0.76rem] font-extrabold uppercase border-t-[3px] border-[#141414] bg-[#fffdf8]">
                     {name}
                     <small className="font-semibold text-[#5b5b5b] normal-case">{sector}</small>
