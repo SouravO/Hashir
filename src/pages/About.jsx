@@ -1,5 +1,5 @@
 import { version, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowRight, Plus } from '@phosphor-icons/react'
+import { ArrowRight, MapPin, Plus } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 
 /* -------------------------------------------------------------------------------------------
@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 
    Hero        window opens on the photo · letters flip up one by one · focus-pull on the rest
    Story       scroll-scrubbed: words light up as you read, photo mask opens, thread line fills
+   Journey     a road you travel by scrolling: the line draws as you read, every chapter is a stop
    Principles  3D tilt: photos swing in from depth, copy slides in from the sides (scrubbed)
    Experience  stacking cards: each card slides over the last, which shrinks and dims behind it
    Start       headline "types" itself in lime · photos change with a slanted wipe
@@ -516,6 +517,301 @@ function Principles() {
   )
 }
 
+/* ----------------------------------- Journey --------------------------------------------- */
+/* A road you travel by scrolling. The lime line follows your reading position, a marker rides  */
+/* its tip, and every stop lights up as you reach it. Cards zig-zag and overlap so the whole    */
+/* route stays short. All copy comes from the "Built Along the Way" career journey PDF.         */
+
+const journeyChapters = [
+  {
+    place: 'Kerala, India',
+    org: 'Ice Grills / College Venture',
+    title: 'The first business instinct',
+    body: 'An early attempt to build something of my own introduced me to customers, everyday decisions and the gap between an interesting idea and an operating business.',
+    lesson: 'A venture begins when an idea meets reality.',
+  },
+  {
+    place: 'United Kingdom',
+    org: 'MBA / Healthcare Work',
+    title: 'Learning beyond the classroom',
+    body: 'I moved to the UK in 2019 for my MBA and also worked in healthcare. The experience taught me responsibility, communication and the value of understanding people.',
+    lesson: 'People come before processes.',
+  },
+  {
+    place: 'United Kingdom',
+    org: 'Asian Supermarket / Covid Period',
+    title: 'Operations, every single day',
+    body: 'Work in a supermarket brought me closer to stock, suppliers, accounts, customer expectations and closing responsibilities. I began to see the discipline behind daily business.',
+    lesson: 'Operations keep a business working.',
+  },
+  {
+    place: 'United Kingdom / Brighton',
+    org: 'Merryhands UK / Suite Spot',
+    title: 'Learning to win business',
+    body: 'Healthcare services, business development and hospitality-related marketing exposed me to client relationships, commercial thinking and the work required to create demand.',
+    lesson: 'Growth needs a dependable way to serve customers.',
+  },
+  {
+    place: 'Calicut, Kerala',
+    org: 'Chartered Accountancy Firm',
+    title: 'Reading the numbers',
+    body: 'Back in Calicut, I worked in business development at a CA firm. Finance, reporting, bookkeeping, internal controls and operating processes became part of my business education.',
+    lesson: 'Understand the business behind the sales.',
+  },
+  {
+    place: 'Kochi, Kerala',
+    org: 'Bramma Learning Solutions',
+    title: 'Diagnose before you prescribe',
+    body: 'Business development and consulting work broadened my exposure to business scanning, process improvement, SOPs and organisational systems.',
+    lesson: 'Good answers begin with better questions.',
+  },
+  {
+    place: 'India',
+    org: 'Nkreatives / Creative Director',
+    title: 'Making strategy visible',
+    body: 'Creative direction brought together positioning, brand communication, campaigns, social content and delivery teams. I learned to connect expression to commercial objectives.',
+    lesson: 'Creativity works harder with a clear purpose.',
+  },
+  {
+    place: 'India',
+    org: 'Moon Bliss / CEO',
+    title: 'Owning the decisions',
+    body: 'Leading a wellness venture meant bringing brand, product, marketing, operations and growth planning together, while taking responsibility beyond recommendations.',
+    lesson: 'Ownership turns a plan into action.',
+  },
+  {
+    place: 'India',
+    org: 'DayOne Venture Studio / Interim CEO',
+    title: 'Building with founders',
+    body: 'Venture-studio leadership combines founder support, execution systems, marketing, performance reviews and cross-functional teams across portfolio businesses.',
+    lesson: 'Leadership is alignment plus execution.',
+  },
+]
+
+const unit = (n) => Math.min(1, Math.max(0, n))
+const kicker = 'm-0 text-xs font-semibold uppercase tracking-[.2em] text-[#a4be2d]'
+
+function JourneyHead() {
+  const ref = useRef(null)
+  useProgress(ref, 'pass')
+  const rise = (v) => ({ transform: `translate3d(0,calc((1 - var(${v})) * 105%),0)` })
+  const line = 'block overflow-hidden pb-[.14em] -mb-[.14em]'
+  return (
+    <div ref={ref} style={{ '--h': REVEAL, '--h2': 'clamp(0, calc((var(--p,1) - .14) / .3), 1)' }}>
+      <div className="grid items-end gap-x-12 gap-y-8 lg:grid-cols-12">
+        <div className="lg:col-span-7">
+          <p className={kicker} style={{ opacity: 'var(--h)' }}>The story behind the work</p>
+          <h2 id="journey-heading" className="m-0 mt-5 text-[clamp(44px,7.4vw,116px)] font-extrabold leading-[.96] tracking-[-.058em]">
+            <span className="sr-only">Built Along the Way.</span>
+            <span aria-hidden className={line}>
+              <span className="block" style={rise('--h')}>
+                Built{' '}
+                <span className="relative inline-block">
+                  Along
+                  <span className="absolute inset-x-0 bottom-[.1em] h-[.055em] origin-left bg-[#a4be2d]" style={{ transform: 'scaleX(var(--h2))' }} />
+                </span>
+              </span>
+            </span>
+            <span aria-hidden className={line}>
+              <span className="block" style={rise('--h2')}>the Way.</span>
+            </span>
+          </h2>
+        </div>
+
+        <div className="border-white/20 lg:col-span-5 lg:border-l lg:pl-10" style={{ opacity: 'var(--h2)' }}>
+          <p className={kicker}>The premise</p>
+          <p className="m-0 mt-4 text-[clamp(24px,2.5vw,38px)] font-semibold leading-[1.12] tracking-[-.035em]">
+            <span className="block">Ideas built businesses.</span>
+            <span className="block">People built me.</span>
+          </p>
+          <p className="mt-4 max-w-[40ch] text-[15px] leading-[1.7] text-[#b9c7b2]">
+            I began with curiosity, learned through real work, and gradually connected people, numbers, brands, systems and execution.
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-10 grid items-baseline gap-x-12 gap-y-3 border-t border-white/20 pt-7 lg:mt-14 lg:grid-cols-12" style={{ opacity: 'var(--h2)' }}>
+        <h3 className="m-0 text-[clamp(24px,3vw,44px)] font-bold leading-[1.05] tracking-[-.045em] lg:col-span-5">Not a straight line.</h3>
+        <p className="m-0 max-w-[58ch] text-[15px] leading-[1.7] text-[#b9c7b2] md:text-[16px] lg:col-span-7">
+          A sequence of experiments and responsibilities that changed how I understand business. Each chapter below carries a place, an experience and a lesson.
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function Chapter({ c, i }) {
+  const left = i % 2 === 0
+  return (
+    <li data-stop className={`group relative pl-10 lg:flex lg:pl-0 ${left ? 'lg:justify-start' : 'lg:justify-end'} ${i ? 'mt-5 lg:-mt-[7rem]' : ''}`}>
+      {/* stop on the road */}
+      <span
+        aria-hidden
+        className={`absolute left-[7px] top-[30px] z-10 size-[15px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#a4be2d] bg-[#153B2B] transition-[background-color,box-shadow] duration-500 group-data-[on=true]:bg-[#a4be2d] group-data-[on=true]:shadow-[0_0_0_6px_rgba(164,190,45,.22)] lg:left-1/2`}
+      />
+      {/* short spur from the stop to its card */}
+      <span
+        aria-hidden
+        className={`absolute left-[7px] top-[30px] h-px w-[33px] origin-left bg-[#a4be2d]/60 lg:w-14 ${left ? 'lg:left-auto lg:right-1/2 lg:origin-left' : 'lg:left-1/2 lg:origin-right'}`}
+        style={{ transform: 'scaleX(var(--r,1))' }}
+      />
+
+      <article
+        aria-labelledby={`chapter-${i + 1}`}
+        className={`relative w-full border border-white/10 bg-[#101310]/35 p-4 transition-colors duration-700 group-data-[on=true]:border-[#a4be2d]/50 md:p-5 lg:w-[calc(50%-3.5rem)] [--dx:0px] ${left ? 'lg:[--dx:-56px]' : 'lg:[--dx:56px]'}`}
+        style={{ opacity: 'var(--r,1)', transform: 'translate3d(calc((1 - var(--r,1)) * var(--dx)),calc((1 - var(--r,1)) * 28px),0)' }}
+      >
+        <div className="flex items-end justify-between gap-4">
+          <span
+            aria-hidden
+            className="text-[clamp(34px,3.4vw,50px)] font-extrabold leading-[.8] tracking-[-.06em] text-transparent transition-colors duration-700 [-webkit-text-stroke:1px_#a4be2d] group-data-[on=true]:text-[#a4be2d]"
+          >
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <span className="flex items-center gap-1.5 pb-0.5 text-right text-[11px] font-semibold uppercase tracking-[.16em] text-[#a4be2d]">
+            <MapPin size={14} weight="fill" aria-hidden className="shrink-0" />
+            {c.place}
+          </span>
+        </div>
+
+        <h3 id={`chapter-${i + 1}`} className="m-0 mt-4 text-[clamp(20px,2vw,28px)] font-bold leading-[1.08] tracking-[-.04em]">
+          {c.title}
+        </h3>
+        <p className="m-0 mt-1.5 text-[10.5px] font-semibold uppercase tracking-[.14em] text-white/60">{c.org}</p>
+        <p className="m-0 mt-2.5 text-[14px] leading-[1.6] text-[#b9c7b2]">{c.body}</p>
+
+        <div className="mt-3.5 border-l-2 border-[#a4be2d] pl-3.5">
+          <p className="m-0 text-[10px] font-semibold uppercase tracking-[.2em] text-[#a4be2d]">The lesson</p>
+          <p className="m-0 mt-0.5 text-[16px] font-medium leading-[1.3] text-[#e3e9dc]">{c.lesson}</p>
+        </div>
+      </article>
+    </li>
+  )
+}
+
+function Journey() {
+  const road = useRef(null)
+
+  useIso(() => {
+    const el = road.current
+    if (!el) return undefined
+    const stops = Array.from(el.querySelectorAll('[data-stop]'))
+
+    if (prefersReduced()) {
+      el.style.setProperty('--fill', '100%')
+      el.dataset.done = 'true'
+      stops.forEach((s) => { s.dataset.on = 'true' })
+      return undefined
+    }
+
+    let lastFill = -1
+    let lastDone = ''
+    const lastR = stops.map(() => '')
+    const lastOn = stops.map(() => '')
+
+    return subscribe({
+      read: (vh) => {
+        const line = vh * 0.6 // the "reading line" the road is drawn up to
+        const box = el.getBoundingClientRect()
+        return {
+          fill: Math.round(unit((line - box.top) / Math.max(1, box.height)) * box.height),
+          done: line - box.top >= box.height ? 'true' : 'false',
+          stops: stops.map((s) => {
+            const top = s.getBoundingClientRect().top
+            return { r: unit((vh * 0.94 - top) / (vh * 0.2)).toFixed(3), on: top + 30 < line ? 'true' : 'false' }
+          }),
+        }
+      },
+      write: (v) => {
+        if (v.fill !== lastFill) {
+          lastFill = v.fill
+          el.style.setProperty('--fill', `${v.fill}px`)
+        }
+        if (v.done !== lastDone) {
+          lastDone = v.done
+          el.dataset.done = v.done
+        }
+        stops.forEach((s, i) => {
+          const { r, on } = v.stops[i]
+          if (r !== lastR[i]) {
+            lastR[i] = r
+            s.style.setProperty('--r', r)
+          }
+          if (on !== lastOn[i]) {
+            lastOn[i] = on
+            s.dataset.on = on
+          }
+        })
+      },
+    })
+  }, [])
+
+  return (
+    <section id="journey" aria-labelledby="journey-heading" className={`bg-[#153B2B] text-white ${sectionPad}`}>
+      <div className={wrap}>
+        <JourneyHead />
+
+        <div className="mb-7 mt-12 flex items-center gap-4 lg:mb-9 lg:mt-14">
+          <p className={kicker}>
+            Nine chapters <span aria-hidden className="mx-1.5 opacity-60">/</span> Places, work and lessons
+          </p>
+          <span aria-hidden className="hidden h-px flex-1 bg-white/20 sm:block" />
+        </div>
+
+        {/* The road */}
+        <div ref={road} className="group/road relative pb-12" style={{ '--fill': '0px' }}>
+          <span
+            aria-hidden
+            className="absolute bottom-0 left-[7px] top-0 w-[2px] -translate-x-1/2 bg-[repeating-linear-gradient(to_bottom,rgba(255,255,255,.28)_0_7px,transparent_7px_15px)] lg:left-1/2"
+          />
+          <span
+            aria-hidden
+            className="absolute left-[7px] top-0 w-[3px] -translate-x-1/2 bg-[#a4be2d] shadow-[0_0_14px_rgba(164,190,45,.55)] lg:left-1/2"
+            style={{ height: 'var(--fill)' }}
+          />
+          {/* the traveller */}
+          <span
+            aria-hidden
+            className="absolute left-[7px] top-0 z-20 size-5 motion-reduce:hidden lg:left-1/2"
+            style={{ transform: 'translate3d(-50%,calc(var(--fill) - 50%),0)' }}
+          >
+            <span className="absolute inset-0 rounded-full bg-[#a4be2d]/60 motion-safe:animate-ping" />
+            <span className="absolute inset-[3px] rounded-full border-[3px] border-[#153B2B] bg-[#a4be2d]" />
+          </span>
+          {/* the destination */}
+          <span
+            aria-hidden
+            className="absolute bottom-0 left-[7px] z-10 size-6 -translate-x-1/2 translate-y-1/2 rounded-full border-2 border-[#a4be2d] bg-[#153B2B] transition-[background-color,box-shadow] duration-500 group-data-[done=true]/road:bg-[#a4be2d] group-data-[done=true]/road:shadow-[0_0_0_8px_rgba(164,190,45,.22)] lg:left-1/2"
+          />
+
+          <ol className="relative m-0 list-none p-0">
+            {journeyChapters.map((c, i) => (
+              <Chapter key={c.title} c={c} i={i} />
+            ))}
+          </ol>
+        </div>
+
+        {/* Arrival */}
+        <div className="pl-10 pt-10 lg:pl-0 lg:pt-14 lg:text-center">
+          <p className={kicker}>What all the chapters added up to</p>
+          <Scrub
+            as="h3"
+            text="People. Operations. Numbers. Brands. Systems. Leadership."
+            className="m-0 mt-5 text-[clamp(28px,4.4vw,68px)] font-extrabold leading-[1] tracking-[-.055em] lg:mx-auto lg:max-w-[20ch]"
+          />
+          <Fade as="p" className="mt-6 max-w-[56ch] text-[15px] leading-[1.7] text-[#b9c7b2] md:text-[17px] lg:mx-auto">
+            Different places. Different responsibilities. One growing conviction: strong businesses connect clear thinking, good people, good systems and the willingness to execute.
+          </Fade>
+          <p className="m-0 mt-8 inline-flex items-center gap-3 text-xs font-semibold uppercase tracking-[.2em] text-[#a4be2d]">
+            <span aria-hidden className="size-2 rounded-full bg-[#a4be2d] motion-safe:animate-pulse" />
+            Still building.
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 /* ---------------------------------- Experience ------------------------------------------- */
 /* Cards stack: each slides over the previous one, which shrinks and dims behind it.           */
 
@@ -768,6 +1064,7 @@ export default function AboutPage() {
 
       <Hero />
       <Story />
+      <Journey />
       <Principles />
       <Experience />
       <Start />
