@@ -38,6 +38,12 @@ const LOGO_ASSETS = {
 
 // Social media examples shown inside each selected work's case detail.
 const WORK_GALLERIES = {
+  nkreatives: [
+    ['nkreactives-insta-prof.jpeg', 'NKreatives Instagram profile'],
+  ],
+  oxtel: [
+    ['oxtelinstaprof.jpeg', 'Oxtel Instagram profile'],
+  ],
   carzo: [
     ['carzoinsta.png', 'Carzo Instagram profile'],
     ['carzoreels.png', 'Carzo Instagram reels'],
@@ -62,7 +68,20 @@ const WORK_GALLERIES = {
   ],
 }
 
+const WORK_PACKAGING = {
+  'bare-logic': [['barelogic.png', 'Bare Logic product packaging']],
+  'nothing-else': [['nothingelse.png', 'Nothing Else product packaging']],
+}
+
 const WORK_VIDEOS = {
+  nkreatives: [
+    { src: 'https://www.instagram.com/reel/DXt4ZYLgP2J/embed', title: 'NKreatives Instagram reel 1' },
+    { src: 'https://www.instagram.com/reel/DV8ogXLEbcC/embed', title: 'NKreatives Instagram reel 2' },
+  ],
+  oxtel: [
+    { src: 'https://www.instagram.com/reel/C6S8Ei4rGV-/embed', title: 'Oxtel Instagram reel 1' },
+    { src: 'https://www.instagram.com/reel/DBRHBrZyo0F/embed', title: 'Oxtel Instagram reel 2' },
+  ],
   carzo: [
     { src: 'https://www.instagram.com/reel/Db8QT0Tznb1/embed', title: 'Carzo Instagram reel' },
   ],
@@ -106,6 +125,48 @@ function Logo({ slug, name, className = '', cover = false }) {
       className={`grid place-items-center bg-[#eee] text-[0.8rem] font-black uppercase text-[#5b5b5b] ${className}`}
     >
       {name.slice(0, 2)}
+    </div>
+  )
+}
+
+function DeferredInstagramEmbed({ src, title }) {
+  const [loaded, setLoaded] = useState(false)
+
+  return (
+    <div className="w-full">
+      {loaded ? (
+        <iframe
+          src={src}
+          title={title}
+          allow="encrypted-media; picture-in-picture; web-share"
+          allowFullScreen
+          className="block h-[min(68vh,680px)] min-h-[480px] w-full"
+        />
+      ) : (
+        <button
+          type="button"
+          onClick={() => setLoaded(true)}
+          className="grid min-h-32 w-full place-items-center bg-[#141414] px-5 py-6 text-center text-sm font-extrabold uppercase text-white transition-colors hover:bg-[#282828]"
+        >
+          Play Instagram reel
+        </button>
+      )}
+    </div>
+  )
+}
+
+function SocialAssetGrid({ items }) {
+  return (
+    <div
+      className="grid gap-0 overflow-hidden border-[3px] border-[#141414] bg-[#141414]"
+      style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))' }}
+    >
+      {items.map(([file, label]) => (
+        <figure key={file} className="m-0 min-w-0 bg-[#f3f0eb]">
+          <img src={`/social-media/${file}`} alt={label} loading="lazy" decoding="async" className="block aspect-[9/16] w-full object-contain" />
+          <figcaption className="flex min-h-12 items-center border-t border-[#141414] bg-[#fffdf8] px-3 py-2 text-[0.78rem] font-bold">{label}</figcaption>
+        </figure>
+      ))}
     </div>
   )
 }
@@ -244,7 +305,7 @@ const BRANDS = [
   ['nothing-else', 'Nothing Else', 'FMCG'], ['bare-logic', 'Bare Logic', 'Skincare'],
 ].sort((a, b) => a[1].localeCompare(b[1], 'en', { sensitivity: 'base' }))
 
-/* ---------- Data: full project index (32) ---------- */
+/* ---------- Data: full project index ---------- */
 
 // Shared scope sets — several projects carry the complete range.
 const L_ALL = ['CEO / business leadership', 'Marketing leadership', 'Team leadership', 'Operations / SOPs']
@@ -269,14 +330,15 @@ const PROJECTS = [
     ['Marketing leadership', 'Operations / SOPs'], ['Naming & identity', 'Brand architecture'], ['Social strategy', '360° marketing', 'Go-to-market', 'Sales & BD']),
   P('Hey Dossa', 'Food & beverage', 'food', 'Consultant / Advisor', 'advisor',
     ['Operations / SOPs'], ['Brand strategy', 'Naming & identity', 'Brand architecture', 'Social design'], ['Social strategy', 'Go-to-market']),
+  P('Oxtel', 'Accommodation technology', 'venture', 'Consultant / Advisor', 'advisor',
+    [], [], [], 'Instagram profile and reels.'),
   P('Moon Bliss', "Women's wellness", 'style', 'CEO / Business Head', 'ceo', L_ALL, B_ALL, M_ALL),
   P('Zaati', 'Restaurant', 'food', 'CMO / Head of Marketing', 'marketing',
     ['Marketing leadership', 'Operations / SOPs'], B_ALL, ['Social strategy', '360° marketing', 'Sales & BD', 'Influencers / PR']),
   P('De Coff', 'Café', 'food', 'Founder / Co-founder', 'founder',
     ['CEO / business leadership', 'Team leadership'], ['Brand strategy', 'Naming & identity', 'Brand voice', 'Brand architecture'],
     ['Paid media', '360° marketing', 'Go-to-market', 'Growth & revenue', 'Sales & BD']),
-  P('House of Bliss', 'Lifestyle / concept', 'style', 'Event Head', 'event-head', [], [], [],
-    'Portfolio reference only; role and contribution scope not detailed.'),
+  P('House of Bliss', 'Lifestyle / concept', 'style', 'Event Head', 'event-head', [], [], []),
   P('Hungry Potato', 'Food & beverage', 'food', 'Founder / Co-founder', 'founder',
     ['CEO / business leadership', 'Marketing leadership', 'Operations / SOPs'],
     ['Brand strategy', 'Naming & identity', 'Brand voice', 'Brand architecture', 'Creative direction', 'Content production'], ['360° marketing', 'Growth & revenue']),
@@ -425,7 +487,6 @@ const HL = 'px-[0.12em] box-decoration-clone'
 const BTN_CORE =
   'inline-flex items-center gap-2.5 font-extrabold uppercase tracking-[0.02em] no-underline border-[3px] rounded-[14px] cursor-pointer transition-[transform,box-shadow] duration-150 ease-[ease] hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-[3px] active:translate-y-[3px]'
 const BTN_DARK = 'border-[#141414] shadow-[4px_4px_0_#141414] hover:shadow-[6px_6px_0_#141414] active:shadow-[1px_1px_0_#141414]'
-const BTN_GHOST = 'border-white bg-transparent text-white shadow-[4px_4px_0_#fff] hover:shadow-[6px_6px_0_#fff]'
 const BTN_PAD = 'px-[22px] py-3'
 
 const CHIP =
@@ -514,10 +575,11 @@ export default function CreativePortfolio() {
   const topbarRef = useRef(null)
   const dialogRef = useRef(null)
 
-  const [menuOpen, setMenuOpen] = useState(false)
   const [active, setActive] = useState('dashboard')
+  const [headerVisible, setHeaderVisible] = useState(true)
   const [workFilter, setWorkFilter] = useState('all')
   const [current, setCurrent] = useState(0)
+  const [caseOpen, setCaseOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [indFilter, setIndFilter] = useState('all')
   const [openRows, setOpenRows] = useState(() => new Set())
@@ -548,11 +610,46 @@ export default function CreativePortfolio() {
     }
   }, [])
 
-  /* ---------- Mobile menu: close on Escape ---------- */
+  /* Hide the sticky header while moving down; reveal it as soon as the visitor scrolls up. */
   useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') setMenuOpen(false) }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
+    let lastY = window.scrollY
+    let direction = 0
+    let travel = 0
+    let raf = 0
+
+    const update = () => {
+      const y = window.scrollY
+      const delta = y - lastY
+      lastY = y
+
+      if (y < 80) {
+        direction = 0
+        travel = 0
+        setHeaderVisible(true)
+      } else if (Math.abs(delta) > 0) {
+        const nextDirection = Math.sign(delta)
+        if (nextDirection !== direction) {
+          direction = nextDirection
+          travel = delta
+        } else {
+          travel += delta
+        }
+
+        if (travel > 12) setHeaderVisible(false)
+        if (travel < -12) setHeaderVisible(true)
+      }
+
+      raf = 0
+    }
+    const onScroll = () => {
+      if (!raf) raf = window.requestAnimationFrame(update)
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (raf) window.cancelAnimationFrame(raf)
+    }
   }, [])
 
   /* ---------- Scroll spy ---------- */
@@ -570,6 +667,7 @@ export default function CreativePortfolio() {
 
   const openCase = (i) => {
     setCurrent(i)
+    setCaseOpen(true)
     dialogRef.current.showModal()
   }
   const stepCase = (dir) => {
@@ -581,6 +679,7 @@ export default function CreativePortfolio() {
   }
   const c = FEATURED[current]
   const workGallery = WORK_GALLERIES[c.slug] || []
+  const workPackaging = WORK_PACKAGING[c.slug] || []
   const workVideos = WORK_VIDEOS[c.slug] || []
 
   /* ---------- Project index ---------- */
@@ -610,13 +709,13 @@ export default function CreativePortfolio() {
       `}</style>
 
       {/* ============ TOP BAR ============ */}
-      <header ref={topbarRef} className="sticky top-0 z-50 bg-[#fffdf8] border-b-[3px] border-[#141414]" id="top">
+      <header ref={topbarRef} className={`sticky top-0 z-50 border-b-[3px] border-[#141414] bg-[#fffdf8] transition-transform duration-300 ease-out ${headerVisible ? 'translate-y-0' : '-translate-y-full'}`} id="top">
         <div className="max-w-[1920px] mx-auto relative grid grid-cols-[1fr_auto] items-center gap-6 px-[clamp(16px,3vw,36px)] py-3">
           <a className="flex items-center gap-3 no-underline" href="https://hashirusman.com" target="_blank" rel="noopener noreferrer" aria-label="Visit hashirusman.com">
             <span className="grid place-items-center w-[58px] h-[52px] text-[1.6rem] font-black bg-[#ffe14d] border-[3px] border-[#141414] rounded-xl shadow-[3px_3px_0_#141414]">HU</span>
-            <span className="flex flex-col leading-[1.05] max-[420px]:hidden">
+            <span className="flex flex-col leading-[1.05]">
               <strong className="text-[1.6rem] font-black tracking-[0.02em]">STUDIO</strong>
-              <small className="text-[0.72rem] font-semibold uppercase max-[760px]:hidden">Hashir Usman / Creative &amp; Portfolio</small>
+              <small className="text-[0.72rem] font-semibold uppercase max-[760px]:hidden">Hashir Usman / Creative Portfolio</small>
             </span>
           </a>
 
@@ -629,29 +728,19 @@ export default function CreativePortfolio() {
 
           <div className="col-start-2 row-start-1 flex items-center gap-3">
             <a
-              className={`${BTN_CORE} ${BTN_DARK} ${BTN_PAD} bg-[#ff5a52] max-[760px]:px-[14px] max-[760px]:py-[9px] max-[760px]:text-[0.82rem]`}
+              className={`${BTN_CORE} ${BTN_DARK} ${BTN_PAD} bg-[#ff5a52] max-[760px]:hidden`}
               href="#contact"
             >
               Let's talk <span aria-hidden="true">→</span>
             </a>
 
-            <button
-              className="hidden max-[1024px]:flex w-12 h-11 flex-col justify-center items-center gap-[5px] border-[3px] border-[#141414] rounded-xl bg-[#ffe14d] shadow-[3px_3px_0_#141414] cursor-pointer"
-              type="button"
-              aria-expanded={menuOpen}
-              aria-controls="sidenav"
-              aria-label={menuOpen ? 'Close section menu' : 'Open section menu'}
-              onClick={() => setMenuOpen((o) => !o)}
+            <Link
+              to="/"
+              aria-label="Go to homepage"
+              className="hidden h-11 items-center justify-center rounded-xl border-[3px] border-[#141414] bg-[#ffe14d] px-3 text-[0.78rem] font-black uppercase no-underline shadow-[3px_3px_0_#141414] max-[1024px]:flex"
             >
-              <span className={`w-5 h-[3px] bg-[#141414] rounded-[2px] transition-[transform,opacity] duration-200 ${menuOpen ? 'translate-y-2 rotate-45' : ''}`} />
-              <span className={`w-5 h-[3px] bg-[#141414] rounded-[2px] transition-[transform,opacity] duration-200 ${menuOpen ? 'opacity-0' : ''}`} />
-              <span className={`w-5 h-[3px] bg-[#141414] rounded-[2px] transition-[transform,opacity] duration-200 ${menuOpen ? '-translate-y-2 -rotate-45' : ''}`} />
-            </button>
-          </div>
-        </div>
-        <div className="max-w-[1920px] mx-auto relative flex flex-wrap items-center justify-between gap-3 px-[clamp(16px,3vw,36px)] pb-2 text-[0.75rem] text-[#5b5b5b] max-[1240px]:flex-col max-[1240px]:justify-center">
-          <div className="min-w-0 max-[1240px]:text-center">
-            <a className="no-underline hover:underline" href="https://hashirusman.com" target="_blank" rel="noopener noreferrer">hashirusman.com</a> <span className="mx-1">/</span> hu-studio <span className="mx-1">/</span> <b className="text-[#141414]">creative-portfolio</b>
+              Home
+            </Link>
           </div>
         </div>
       </header>
@@ -661,20 +750,9 @@ export default function CreativePortfolio() {
         <aside
           id="sidenav"
           aria-label="Sections"
-          onClick={(e) => { if (e.target.closest('a')) setMenuOpen(false) }}
-          className={`relative max-[1024px]:fixed max-[1024px]:z-40 max-[1024px]:top-[var(--topbar-h)] max-[1024px]:inset-x-0 max-[1024px]:px-[clamp(16px,3vw,36px)] max-[1024px]:py-3 max-[1024px]:transition-transform max-[1024px]:duration-[250ms] max-[1024px]:ease-[ease] ${
-            menuOpen
-              ? 'max-[1024px]:translate-y-0 max-[1024px]:pointer-events-auto'
-              : 'max-[1024px]:-translate-y-[120%] max-[1024px]:pointer-events-none'
-          }`}
+          className="relative max-[1024px]:hidden"
         >
           <div className="hu-checker sticky top-[calc(var(--topbar-h)_+_20px)] flex flex-col max-h-[calc(100vh_-_var(--topbar-h)_-_40px)] bg-[#ffe14d] border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] pt-[22px] px-4 pb-4 overflow-y-auto max-[1024px]:static max-[1024px]:max-h-[calc(100vh_-_var(--topbar-h)_-_30px)]">
-            <div className="mb-4 hidden items-center justify-between gap-3 rounded-xl border-[2px] border-[#141414] bg-white/70 p-3 max-[1024px]:flex max-[760px]:flex-col max-[760px]:items-stretch">
-              <span className="text-sm font-semibold text-[#141414]">More about me?</span>
-              <a href="/" target="_blank" rel="noopener noreferrer" className={`${BTN_CORE} ${BTN_DARK} justify-center px-4 py-2 text-[0.78rem] bg-[#fffdf8] text-[#141414]`}>
-                Visit Hashirusman.com <span aria-hidden="true">→</span>
-              </a>
-            </div>
             <p className="font-black text-[1rem] tracking-[0.04em] uppercase px-2 pb-3">Navigation</p>
             <ol>
               {SIDE_NAV.map(([id, no, label], i) => (
@@ -706,7 +784,7 @@ export default function CreativePortfolio() {
             <div className={`grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] max-[1024px]:grid-cols-1 ${GAP}`}>
               <article
                 data-reveal
-                className={`${CARD} ${REVEAL} order-2 max-[1024px]:order-1 relative min-h-[520px] overflow-hidden bg-[#ffcfae] flex flex-col gap-[18px] max-[760px]:min-h-[460px]`}
+                className={`${CARD} ${REVEAL} order-2 relative min-h-[520px] overflow-hidden bg-[#ffcfae] flex flex-col gap-[18px] max-[760px]:min-h-[460px]`}
               >
                 <span className={`${PILL} bg-[#ffe14d] self-start`}>01 / The creative leadership dashboard</span>
                 <h1 id="dash-title" className="text-[length:clamp(2.4rem,5.3vw,5.8rem)] font-black [font-stretch:82%] leading-[0.92] tracking-[-0.02em] uppercase">
@@ -729,7 +807,7 @@ export default function CreativePortfolio() {
 
               <article
                 data-reveal
-                className={`${CARD} ${REVEAL} order-1 max-[1024px]:order-2 relative isolate min-h-[360px] overflow-hidden bg-cover bg-center`}
+                className={`${CARD} ${REVEAL} order-1 relative isolate min-h-[360px] overflow-hidden bg-cover bg-center max-[760px]:min-h-[min(112vw,460px)]`}
                 style={{ backgroundImage: "url('/hashir.PNG')", backgroundPosition: 'center 38%' }}
               >
                 <span className="absolute right-4 top-4 z-10 grid size-14 place-items-center rounded-xl border-[3px] border-[#141414] bg-[#ffe14d] text-xl font-black shadow-[3px_3px_0_#141414]">01</span>
@@ -959,7 +1037,7 @@ export default function CreativePortfolio() {
             <header data-reveal className={REVEAL}>
               <span className={EYEBROW_WHITE}>06 / Project contribution directory</span>
               <h2 id="index-title" className={H2}>Full project index.</h2>
-              <p className={LEAD}>All 32 projects, with responsibilities grouped by leadership, brand &amp; creative and marketing &amp; growth scope.</p>
+              <p className={LEAD}>All {PROJECTS.length} projects, with responsibilities grouped by leadership, brand &amp; creative and marketing &amp; growth scope.</p>
             </header>
 
             <div data-reveal className={`${CARD} ${REVEAL} bg-[#fffdf8] flex flex-col gap-4`}>
@@ -992,6 +1070,7 @@ export default function CreativePortfolio() {
                   const open = openRows.has(i)
                   const projectSlug = p.name.toLowerCase().replaceAll(' ', '-')
                   const projectGallery = p.name === 'Carzo' ? [] : (WORK_GALLERIES[projectSlug] || [])
+                  const projectPackaging = WORK_PACKAGING[projectSlug] || []
                   const projectVideos = p.name === 'Carzo' ? [] : (WORK_VIDEOS[projectSlug] || [])
                   return (
                     <li key={p.name} className={`border-2 border-[#141414] rounded-xl bg-[#fffdf8] overflow-hidden ${open ? 'shadow-[4px_4px_0_#141414]' : ''}`}>
@@ -1041,23 +1120,29 @@ export default function CreativePortfolio() {
                         {projectGallery.length > 0 && (
                           <section aria-label={`${p.name} image gallery`} className="col-span-full flex flex-col gap-3">
                             <h5 className="text-[0.9rem] font-black uppercase">Social media</h5>
+                            <SocialAssetGrid items={projectGallery} />
+                          </section>
+                        )}
+                        {projectPackaging.length > 0 && (
+                          <section aria-label={`${p.name} packaging`} className="col-span-full flex flex-col gap-3">
+                            <h5 className="text-[0.9rem] font-black uppercase">Product packaging</h5>
                             <div className="flex flex-wrap justify-center gap-4">
-                              {projectGallery.map(([file, label]) => (
+                              {projectPackaging.map(([file, label]) => (
                                 <figure key={file} className="w-fit max-w-full overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]">
-                                  <img src={`/social-media/${file}`} alt={label} loading="lazy" decoding="async" className="block h-auto w-auto max-h-[min(68vh,680px)] max-w-full object-contain" />
+                                  <img src={`/packaging/${file}`} alt={label} loading="lazy" decoding="async" className="block h-auto w-auto max-h-[min(68vh,680px)] max-w-full object-contain" />
                                   <figcaption className="border-t-2 border-[#141414] px-3 py-2 text-[0.85rem] font-bold">{label}</figcaption>
                                 </figure>
                               ))}
                             </div>
                           </section>
                         )}
-                        {projectVideos.length > 0 && (
+                        {open && projectVideos.length > 0 && (
                           <section aria-label={`${p.name} video gallery`} className="col-span-full flex flex-col gap-3">
                             <h5 className="text-[0.9rem] font-black uppercase">Videos</h5>
-                            <div className="flex flex-wrap justify-center gap-4">
+                            <div className="grid grid-cols-1 gap-0 overflow-hidden border-[3px] border-[#141414] bg-[#141414] sm:grid-cols-2">
                               {projectVideos.map(({ src, title }) => (
-                                <div key={src} className="w-full max-w-[400px] overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]">
-                                  <iframe src={src} title={title} loading="lazy" allow="encrypted-media; picture-in-picture; web-share" allowFullScreen className="block h-[min(68vh,680px)] min-h-[480px] w-full" />
+                                <div key={src} className="min-w-0 overflow-hidden bg-white">
+                                  <DeferredInstagramEmbed src={src} title={title} />
                                 </div>
                               ))}
                             </div>
@@ -1117,10 +1202,12 @@ export default function CreativePortfolio() {
       <dialog
         ref={dialogRef}
         aria-labelledby="caseName"
+        data-lenis-prevent
+        onClose={() => setCaseOpen(false)}
         onClick={onDialogClick}
-        className="m-auto w-[min(1040px,calc(100%_-_28px))] max-h-[calc(100vh_-_40px)] p-0 border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[10px_10px_0_#141414] bg-[#fffdf8] text-[#141414] backdrop:bg-[rgba(20,20,20,0.55)] backdrop:backdrop-blur-[3px] open:animate-[pop_0.22s_ease-out]"
+        className="m-auto w-[min(1040px,calc(100%_-_28px))] max-h-[calc(100dvh_-_24px)] overflow-y-auto overscroll-contain touch-pan-y p-0 border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[10px_10px_0_#141414] bg-[#fffdf8] text-[#141414] backdrop:bg-[rgba(20,20,20,0.55)] backdrop:backdrop-blur-[3px] open:animate-[pop_0.22s_ease-out]"
       >
-        <div className="relative p-[clamp(20px,3vw,34px)] flex flex-col gap-[14px]">
+        {caseOpen && <div key={current} className="relative flex flex-col gap-[14px] p-[clamp(20px,3vw,34px)]">
           <button
             type="button"
             data-close
@@ -1156,23 +1243,18 @@ export default function CreativePortfolio() {
           {workGallery.length > 0 && (
             <section aria-label={`${c.name} gallery`} className="flex flex-col gap-3">
               <h4 className="text-[0.9rem] font-black uppercase">Gallery</h4>
+              <SocialAssetGrid items={workGallery} />
+            </section>
+          )}
+          {workPackaging.length > 0 && (
+            <section aria-label={`${c.name} packaging`} className="flex flex-col gap-3">
+              <h4 className="text-[0.9rem] font-black uppercase">Product packaging</h4>
               <div className="flex flex-wrap justify-center gap-4">
-                {workGallery.map(([file, label]) => (
-                  <div
-                    key={file}
-                    className="flex h-fit w-fit max-w-full min-w-0 flex-col overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]"
-                  >
-                    <span className="flex w-fit max-w-full shrink-0 items-center justify-center overflow-hidden bg-[#f3f0eb]">
-                      <img
-                        src={`/social-media/${file}`}
-                        alt={label}
-                        loading="lazy"
-                        decoding="async"
-                        className="block h-auto w-auto max-h-[min(68vh,680px)] max-w-full object-contain"
-                      />
-                    </span>
-                    <span className="flex min-h-[52px] flex-1 items-start border-t-2 border-[#141414] px-2 py-2 text-[0.7rem] font-bold">{label}</span>
-                  </div>
+                {workPackaging.map(([file, label]) => (
+                  <figure key={file} className="w-fit max-w-full overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]">
+                    <img src={`/packaging/${file}`} alt={label} loading="lazy" decoding="async" className="block h-auto w-auto max-h-[min(68vh,680px)] max-w-full object-contain" />
+                    <figcaption className="border-t-2 border-[#141414] px-3 py-2 text-[0.85rem] font-bold">{label}</figcaption>
+                  </figure>
                 ))}
               </div>
             </section>
@@ -1180,17 +1262,10 @@ export default function CreativePortfolio() {
           {workVideos.length > 0 && (
             <section aria-label={`${c.name} videos`} className="flex flex-col gap-3">
               <h4 className="text-[0.9rem] font-black uppercase">Videos</h4>
-              <div className="flex flex-wrap justify-center gap-4">
+              <div className="grid grid-cols-1 gap-0 overflow-hidden border-[3px] border-[#141414] bg-[#141414] sm:grid-cols-2">
                 {workVideos.map(({ src, title }) => (
-                  <div key={src} className="mx-auto w-full max-w-[400px] overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]">
-                    <iframe
-                      src={src}
-                      title={title}
-                      loading="lazy"
-                      allow="encrypted-media; picture-in-picture; web-share"
-                      allowFullScreen
-                      className="block h-[min(68vh,680px)] min-h-[480px] w-full"
-                    />
+                  <div key={src} className="min-w-0 overflow-hidden bg-white">
+                    <DeferredInstagramEmbed src={src} title={title} />
                   </div>
                 ))}
               </div>
@@ -1200,7 +1275,7 @@ export default function CreativePortfolio() {
             <button type="button" className={`${BTN_CORE} ${BTN_DARK} bg-white px-4 py-2 text-[0.85rem]`} onClick={() => stepCase(-1)}>← Prev</button>
             <button type="button" className={`${BTN_CORE} ${BTN_DARK} bg-white px-4 py-2 text-[0.85rem]`} onClick={() => stepCase(1)}>Next →</button>
           </div>
-        </div>
+        </div>}
       </dialog>
     </div>
   )

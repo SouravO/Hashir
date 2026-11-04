@@ -4,7 +4,7 @@
 // Content comes from the HU. blueprint (Startups & Businesses): approved names, categories, descriptions and scope.
 // No years, outcomes or client metrics are listed, because the blueprint does not include them.
 //
-// Images live in /public/ventures/. `file` must match the file name exactly (including capital letters),
+// Images live in /public/ventures/ unless `file` starts with `/` for an asset in /public root. `file` must match the file name exactly (including capital letters),
 // because production servers are case-sensitive even though macOS is not.
 // Xyklon and Hand Revolution do not have source images yet; their cards
 // use a designed text treatment until those image files are added.
@@ -12,7 +12,7 @@
 
 export const BRAND_DIR = '/ventures/'
 // encodeURIComponent keeps odd characters in file names safe (for example the bullet in Hosther•hostels.png).
-export const brandImage = (file) => `${BRAND_DIR}${encodeURIComponent(file)}`
+export const brandImage = (file) => file.startsWith('/') ? file : `${BRAND_DIR}${encodeURIComponent(file)}`
 
 export const groups = ['Food & Drink', 'Retail & Lifestyle', 'Beauty & Wellness', 'Hospitality', 'Business & Tech']
 
@@ -126,11 +126,11 @@ export const brands = [
     short: 'Supporting an accessories business through management structures, product planning, SOPs, and operational systems.',
     scope: ['Operations', 'Management', 'Products', 'SOPs'] },
 
-  { id: 'xyklon', name: 'Xyklon', file: 'xyklon.png', category: 'Mobile Accessories / GCC', group: 'Retail & Lifestyle', url: null,
+  { id: 'xyklon', name: 'Xyklon', file: '/xyklon.png', category: 'Mobile Accessories / GCC', group: 'Retail & Lifestyle', url: null,
     short: 'Working on product structure, management strategy, business processes, and operational systems.',
     scope: ['Management', 'Products', 'Operations', 'SOPs'] },
 
-  { id: 'hand-revolution', name: 'Hand Revolution', file: 'hand-revolution.png', category: 'Footwear / E-Commerce', group: 'Retail & Lifestyle', url: null,
+  { id: 'hand-revolution', name: 'Hand Revolution', file: '/hand-revolution.jpeg', category: 'Footwear / E-Commerce', group: 'Retail & Lifestyle', url: null,
     short: 'Working on scaling plans, business valuation, operational structure, workflow automation, and AI integration planning.',
     scope: ['Scaling', 'Valuation', 'Operations', 'AI'] },
 ]

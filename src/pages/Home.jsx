@@ -13,6 +13,7 @@ const styledWords = (text) => {
     return [token.replaceAll('*', ''), start > end]
   })
 }
+const positioningWords = styledWords(statement)
 
 const expertise = [
   { title: 'Venture Architecture', desc: 'Making startup ideas more practical, testable, and ready to build.', tags: ['Idea validation', 'Business models', 'Venture strategy'] },
@@ -42,13 +43,13 @@ const impact = [
 /* ---------- Motion + style helpers (kept local to this page) ---------- */
 const EASE = 'cubic-bezier(0.16,1,0.3,1)'
 const calm = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-const rise = (on, d = 0, y = 26) => ({ opacity: on ? 1 : 0, transform: on ? 'none' : `translateY(${y}px)`, transition: `opacity 900ms ${EASE} ${d}ms, transform 900ms ${EASE} ${d}ms` })
+const rise = (on, d = 0, y = 16) => ({ opacity: on ? 1 : 0, transform: on ? 'none' : `translateY(${y}px)`, transition: `opacity 480ms ${EASE} ${d}ms, transform 480ms ${EASE} ${d}ms` })
 const wrap = 'mx-auto w-full max-w-[1280px] px-5 sm:px-7'
 const eyebrow = 'mb-5 flex items-center gap-3 text-[13px] font-semibold text-[#617319] before:h-px before:w-8 before:bg-[#7c9318]'
 const h2cls = 'text-[clamp(34px,5vw,66px)] font-extrabold leading-[1.02] tracking-[-.045em]'
 const dotted = '[background-image:radial-gradient(#d5e48145_.8px,transparent_1px)] [background-size:12px_12px]'
 
-function useInView(margin = '0px 0px -12% 0px') {
+function useInView(margin = '0px 0px 280px 0px') {
   const ref = useRef(null)
   const [seen, setSeen] = useState(calm)
   useEffect(() => {
@@ -95,8 +96,8 @@ function Heading({ lines, tag: Tag = 'h2', id, className = '', delay = 0, on }) 
   return (
     <Tag id={id} ref={ref} className={className}>
       {lines.map((line, i) => (
-        <span key={i} className="block overflow-hidden py-[.07em] -my-[.07em]">
-          <span className="block" style={{ transform: go ? 'none' : 'translateY(110%)', transition: `transform 1100ms ${EASE} ${delay + i * 110}ms` }}>{line}</span>
+          <span key={i} className="block overflow-hidden py-[.07em] -my-[.07em]">
+          <span className="block" style={{ transform: go ? 'none' : 'translateY(110%)', transition: `transform 520ms ${EASE} ${delay + i * 55}ms` }}>{line}</span>
         </span>
       ))}
     </Tag>
@@ -112,7 +113,7 @@ function CountUp({ to, suffix = '' }) {
     let t0
     const step = (t) => {
       t0 ??= t
-      const k = Math.min(1, (t - t0) / 1300)
+      const k = Math.min(1, (t - t0) / 700)
       setN(Math.round(to * (1 - (1 - k) ** 3)))
       if (k < 1) raf = requestAnimationFrame(step)
     }
@@ -617,12 +618,30 @@ function MobileVentureCarousel() {
     let rafId
     let previousTime
     let visible = false
+    let touchStart = null
     const pause = () => {
       pauseRef.current = true
       previousTime = undefined
       window.clearTimeout(resumeTimer)
       resumeTimer = window.setTimeout(() => { pauseRef.current = false }, 1400)
     }
+    const onPointerDown = (event) => { if (event.pointerType !== 'touch') pause() }
+    const onTouchStart = (event) => {
+      const touch = event.touches[0]
+      touchStart = touch ? { x: touch.clientX, y: touch.clientY } : null
+    }
+    const onTouchMove = (event) => {
+      if (!touchStart) return
+      const touch = event.touches[0]
+      if (!touch) return
+      const dx = Math.abs(touch.clientX - touchStart.x)
+      const dy = Math.abs(touch.clientY - touchStart.y)
+      if (dx > 8 && dx > dy) {
+        touchStart = null
+        pause()
+      }
+    }
+    const onWheel = (event) => { if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) pause() }
     const wrap = () => {
       const loopStart = rail.querySelector('[data-venture-loop]')
       const loopPoint = loopStart && loopStart.offsetLeft - Number.parseFloat(window.getComputedStyle(rail).paddingLeft || '0')
@@ -631,7 +650,7 @@ function MobileVentureCarousel() {
     const tick = (time) => {
       if (!visible) return
       if (previousTime !== undefined && !pauseRef.current) {
-        rail.scrollLeft += Math.min(time - previousTime, 40) * 0.09
+        rail.scrollLeft += Math.min(time - previousTime, 40) * 0.105
         wrap()
       }
       previousTime = time
@@ -648,24 +667,26 @@ function MobileVentureCarousel() {
     }, { rootMargin: '100px' })
     observer.observe(rail)
     rail.addEventListener('scroll', wrap, { passive: true })
-    rail.addEventListener('touchstart', pause, { passive: true })
-    rail.addEventListener('pointerdown', pause)
-    rail.addEventListener('wheel', pause, { passive: true })
+    rail.addEventListener('touchstart', onTouchStart, { passive: true })
+    rail.addEventListener('touchmove', onTouchMove, { passive: true })
+    rail.addEventListener('pointerdown', onPointerDown)
+    rail.addEventListener('wheel', onWheel, { passive: true })
     rail.addEventListener('focusin', pause)
     return () => {
       window.cancelAnimationFrame(rafId)
       window.clearTimeout(resumeTimer)
       observer.disconnect()
       rail.removeEventListener('scroll', wrap)
-      rail.removeEventListener('touchstart', pause)
-      rail.removeEventListener('pointerdown', pause)
-      rail.removeEventListener('wheel', pause)
+      rail.removeEventListener('touchstart', onTouchStart)
+      rail.removeEventListener('touchmove', onTouchMove)
+      rail.removeEventListener('pointerdown', onPointerDown)
+      rail.removeEventListener('wheel', onWheel)
       rail.removeEventListener('focusin', pause)
     }
   }, [])
 
   return (
-    <div ref={carouselRef} role="region" aria-label="Venture brands" aria-roledescription="carousel" className="relative -mx-5 flex overflow-x-auto overscroll-x-contain px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [touch-action:pan-x] sm:-mx-7 sm:px-7">
+    <div ref={carouselRef} role="region" aria-label="Venture brands" aria-roledescription="carousel" className="relative -mx-5 flex touch-auto overflow-x-auto overscroll-x-contain px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-7 sm:px-7">
       {[0, 1].map((copy) => (
         <div key={copy} data-venture-loop={copy === 1 ? '' : undefined} className="relative flex w-max shrink-0 gap-5 pr-5" aria-hidden={copy === 1}>
           {VENTURES.map(({ id, brand }, index) => (
@@ -1109,8 +1130,9 @@ function useRoadmapProgress() {
       if (!el) return
       const r = el.getBoundingClientRect()
       const vh = window.innerHeight
-      const v = (vh * 0.7 - r.top) / Math.max(1, r.height - vh * 0.2)
-      setP(Math.round(Math.min(1, Math.max(0, v)) * 200) / 200)
+      const mobileGain = window.matchMedia('(max-width: 767px)').matches ? 1.25 : 1
+      const v = ((vh * 0.7 - r.top) / Math.max(1, r.height - vh * 0.2)) * mobileGain
+      setP(Math.round(Math.min(1, Math.max(0, v)) * 100) / 100)
     }
     const queue = () => { if (!raf) raf = requestAnimationFrame(run) }
     queue()
@@ -1128,9 +1150,11 @@ const XP_CSS = `
 @keyframes xp-ping{0%{transform:scale(.75);opacity:.75}100%{transform:scale(1.9);opacity:0}}
 .xp-headping{transform-box:fill-box;transform-origin:center;animation:xp-headping 2.2s ease-out infinite}
 @keyframes xp-headping{0%{transform:scale(.5);opacity:.8}100%{transform:scale(1.7);opacity:0}}
+.xp-road{filter:drop-shadow(0 0 7px rgba(164,190,45,.45))}
 .xp-pop{animation:xp-pop 460ms cubic-bezier(.16,1,.3,1) both}
 @keyframes xp-pop{from{opacity:0;transform:translateY(12px) scale(.96)}}
 .xp-node:focus-visible{outline:2px solid #a4be2d;outline-offset:2px}
+@media (max-width:767px){.xp-spin,.xp-ping,.xp-headping{animation:none}.xp-road{filter:none}}
 @media (prefers-reduced-motion:reduce){.xp-spin,.xp-ping,.xp-headping,.xp-pop{animation:none}}
 `
 
@@ -1139,14 +1163,14 @@ function Scribble({ className = 'mx-auto' }) {
   const [ref, seen] = useInView()
   return (
     <svg ref={ref} viewBox="0 0 240 14" className={`${className} mt-4 block h-3.5 w-[min(60%,240px)] overflow-visible`} fill="none" stroke="#a4be2d" strokeWidth="3" strokeLinecap="round" aria-hidden>
-      <path d="M3 9C48 3 92 12 140 6S214 5 237 8" pathLength="1" strokeDasharray="1 2" style={{ strokeDashoffset: seen ? 0 : 1, transition: `stroke-dashoffset 1400ms ${EASE} 500ms` }} />
+      <path d="M3 9C48 3 92 12 140 6S214 5 237 8" pathLength="1" strokeDasharray="1 2" style={{ strokeDashoffset: seen ? 0 : 1, transition: `stroke-dashoffset 550ms ${EASE}` }} />
     </svg>
   )
 }
 
 /* The detail card for one milestone. It sits just below the milestone, or just above it near the bottom of the roadmap,
    and never leaves the roadmap sideways. */
-function Peek({ item, node, i }) {
+function Peek({ item, node }) {
   const flip = node.y > 72
   const half = `min(${CARD_W}px, 100%) / 2`
   const facts = [item.role, item.place].filter(Boolean)
@@ -1231,16 +1255,16 @@ function Experience() {
         <div className="relative mt-8 rounded-[28px] border border-white/10 bg-white/[.025] p-3 shadow-[0_36px_90px_-58px_rgba(164,190,45,.42)] sm:mt-10 sm:rounded-[36px] sm:p-6">
         <div ref={box} className="relative isolate mx-auto" style={{ width: wide ? 'min(100%, 1080px)' : 'min(100%, 460px)', aspectRatio: `${g.W} / ${g.H}` }}>
           {/* soft light that follows the head of the line */}
-          <span aria-hidden className="pointer-events-none absolute z-0 size-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full md:size-[680px]" style={{ left: `${(head.x / g.W) * 100}%`, top: `${(head.y / g.H) * 100}%`, background: 'radial-gradient(circle, rgba(164,190,45,.17), transparent 65%)', opacity: f > 0.004 ? 1 : 0, transition: 'left 300ms linear, top 300ms linear, opacity 600ms ease' }} />
+          <span aria-hidden className="pointer-events-none absolute z-0 hidden size-[680px] -translate-x-1/2 -translate-y-1/2 rounded-full md:block" style={{ left: `${(head.x / g.W) * 100}%`, top: `${(head.y / g.H) * 100}%`, background: 'radial-gradient(circle, rgba(164,190,45,.17), transparent 65%)', opacity: f > 0.004 ? 1 : 0, transition: 'left 180ms linear, top 180ms linear, opacity 350ms ease' }} />
 
           <svg viewBox={`0 0 ${g.W} ${g.H}`} className="absolute inset-0 z-10 h-full w-full overflow-visible" fill="none" aria-hidden>
             {/* the road ahead: a dotted track */}
             <path d={g.d} stroke="#f8f9f6" strokeOpacity=".24" strokeWidth={sw * 0.62} strokeLinecap="round" strokeDasharray={`0.1 ${wide ? 12 : 17}`} />
             {/* the road travelled: a glowing lime line that draws itself */}
-            <path d={g.d} pathLength="1" stroke="#a4be2d" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 2" style={{ strokeDashoffset: 1 - f, opacity: f > 0.003 ? 1 : 0, transition: 'stroke-dashoffset 300ms linear', filter: 'drop-shadow(0 0 7px rgba(164,190,45,.55))' }} />
+            <path className="xp-road" d={g.d} pathLength="1" stroke="#a4be2d" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 2" style={{ strokeDashoffset: 1 - f, opacity: f > 0.003 ? 1 : 0, transition: 'stroke-dashoffset 140ms linear' }} />
             {/* the head of the line */}
             {f > 0.004 && f < 0.985 && (
-              <g style={{ transform: `translate(${head.x}px, ${head.y}px)`, transition: 'transform 300ms linear' }}>
+              <g style={{ transform: `translate(${head.x}px, ${head.y}px)`, transition: 'transform 140ms linear' }}>
                 {!still && <circle r={hr * 2.2} fill="#a4be2d" className="xp-headping" />}
                 <circle r={hr} fill="#a4be2d" />
                 <circle r={hr * 0.42} fill="#171a1b" />
@@ -1248,7 +1272,7 @@ function Experience() {
             )}
             {/* the arrow: the story keeps going */}
             <g transform={`translate(${g.end.x.toFixed(1)} ${g.end.y.toFixed(1)}) rotate(${g.end.ang.toFixed(1)})`}>
-              <path d={`M${-arrow} ${-arrow * 0.72}L0 0L${-arrow} ${arrow * 0.72}`} stroke="#a4be2d" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" style={{ opacity: f > 0.97 ? 1 : 0, transition: 'opacity 500ms ease', filter: 'drop-shadow(0 0 7px rgba(164,190,45,.55))' }} />
+              <path d={`M${-arrow} ${-arrow * 0.72}L0 0L${-arrow} ${arrow * 0.72}`} stroke="#a4be2d" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" style={{ opacity: f > 0.97 ? 1 : 0, transition: 'opacity 250ms ease' }} />
             </g>
           </svg>
 
@@ -1264,7 +1288,7 @@ function Experience() {
               ...(i === 3 ? { bottom: `calc(${100 - n.y}% + 2px)` } : { top: mid ? `${n.y}%` : `calc(${n.y}% + 6px)` }),
               opacity: on ? 1 : 0,
               transform: `translate(${on ? 0 : right ? -14 : 14}px, ${mid ? `calc(-50% + ${off}px)` : `${off}px`})`,
-              transition: `opacity 800ms ${EASE}, transform 900ms ${EASE}`,
+              transition: `opacity 420ms ${EASE}, transform 480ms ${EASE}`,
             }
             return (
               <div key={item.name}>
@@ -1291,8 +1315,30 @@ function Experience() {
             )
           })}
 
-          {open !== null && <Peek key={open} item={journey[open]} node={g.nodes[open]} i={open} />}
+          {open !== null && <Peek key={open} item={journey[open]} node={g.nodes[open]} />}
         </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Positioning() {
+  const [statRef, progress] = useScrollProgress()
+
+  return (
+    <section id="positioning" aria-labelledby="positioning-title" className="bg-[#171a1b] py-28 text-[#f8f9f6] sm:py-40">
+      <div className={`${wrap} grid gap-10 lg:grid-cols-12`}>
+        <div className="lg:col-span-3">
+          <div className="lg:sticky lg:top-28">
+            <p className="mb-4 text-[13px] font-semibold text-[#a4be2d]">A little about me</p>
+            <div className="h-px w-full max-w-[160px] bg-white/15"><div className="h-px origin-left bg-[#a4be2d]" style={{ transform: `scaleX(${progress})`, transition: 'transform 180ms linear' }} /></div>
+          </div>
+        </div>
+        <div ref={statRef} className="lg:col-span-9">
+          <h2 id="positioning-title" className="text-[clamp(30px,4.8vw,68px)] font-bold leading-[1.1] tracking-[-.04em]">
+            {positioningWords.map(([word, hot], i) => <span key={i} style={{ color: i / positioningWords.length < progress ? (hot ? '#a4be2d' : '#f8f9f6') : '#5d6558', transition: 'color 220ms ease' }}>{word} </span>)}
+          </h2>
         </div>
       </div>
     </section>
@@ -1301,14 +1347,12 @@ function Experience() {
 
 export default function Home() {
   const [ready, setReady] = useState(calm)
-  const [statRef, p] = useScrollProgress()
   useEffect(() => {
     document.title = 'Hashir Usman | Startup Architect, Venture Builder & Business Consultant'
-    const t = setTimeout(() => setReady(true), 80)
-    return () => clearTimeout(t)
+    const frame = requestAnimationFrame(() => setReady(true))
+    return () => cancelAnimationFrame(frame)
   }, [])
-  const words = styledWords(statement)
-  const line = (d) => ({ strokeDashoffset: ready ? 0 : 1, transition: `stroke-dashoffset 1800ms ${EASE} ${d}ms` })
+  const line = (d) => ({ strokeDashoffset: ready ? 0 : 1, transition: `stroke-dashoffset 850ms ${EASE} ${d}ms` })
 
   return (
     <main id="main" className="overflow-x-clip font-sans text-[#171a17]">
@@ -1320,23 +1364,23 @@ export default function Home() {
               <div style={rise(ready)}>
                 <h1 id="hero-title" className="text-[clamp(60px,7.8vw,138px)] font-extrabold leading-[.88] tracking-[-.075em]">Hashir Usman</h1>
               </div>
-              <Heading tag="h2" on={ready} delay={120} className="mt-7 text-[clamp(40px,5vw,88px)] font-extrabold leading-[.94] tracking-[-.065em]" lines={['Is your business growing?', <span className="text-[#7c9318]">Or just getting busier?</span>]} />
-              <div className="order-1 mt-6 max-w-[600px] lg:order-none" style={rise(ready, 500)}>
+              <Heading tag="h2" on={ready} delay={40} className="mt-7 text-[clamp(40px,5vw,88px)] font-extrabold leading-[.94] tracking-[-.065em]" lines={['Is your business growing?', <span className="text-[#7c9318]">Or just getting busier?</span>]} />
+              <div className="order-1 mt-6 max-w-[600px] lg:order-none" style={rise(ready, 100)}>
                 <h3 className="m-0 text-xl font-bold leading-tight tracking-[-.02em] text-[#65751b] sm:text-2xl">Startup architect. Venture builder. Business consultant.</h3>
                 <p className="m-0 mt-3 text-base leading-[1.6] text-[#2f332e] sm:text-lg xl:text-xl">I help people start businesses, fix what’s not working, and build systems that make growth a little less chaotic.</p>
               </div>
-              <div className="order-3 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 lg:order-none" style={rise(ready, 620)}>
+              <div className="order-3 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 lg:order-none" style={rise(ready, 160)}>
                 <Link to="/contact" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4be2d] bg-[#a4be2d] px-6 text-[13px] font-semibold text-[#1e2618] transition-colors duration-300 hover:border-[#b3cc35] hover:bg-[#b3cc35] active:scale-[.97]">Book a Strategy Call <Arrow /></Link>
                 <Link to="/ventures" className="group inline-flex min-h-12 items-center gap-3 rounded border-[1.5px] border-[#a4aaa0] px-6 text-[13px] font-semibold transition-colors duration-300 hover:border-[#171a1b] hover:bg-[#171a1b] hover:text-white active:scale-[.97]">See My Work <Arrow /></Link>
               </div>
             </div>
             <div className="order-2 lg:order-none lg:col-span-5">
-              <div className="relative mx-auto aspect-[4/5] w-full max-w-[520px] lg:ml-auto lg:max-h-[min(72svh,820px)] lg:max-w-none" style={{ clipPath: ready ? 'inset(0 0 0 0)' : 'inset(100% 0 0 0)', transition: `clip-path 1500ms ${EASE} 200ms` }}>
+              <div className="relative mx-auto aspect-[4/5] w-full max-w-[520px] lg:ml-auto lg:max-h-[min(72svh,820px)] lg:max-w-none" style={{ clipPath: ready ? 'inset(0 0 0 0)' : 'inset(100% 0 0 0)', transition: `clip-path 650ms ${EASE} 80ms` }}>
                 <div className={`absolute inset-0 left-[10%] top-[8%] rounded-tl-[20px] bg-[#adca2d] ${dotted}`} aria-hidden />
                 <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full" fill="none" stroke="#171a1b" aria-hidden>
                   <g strokeOpacity=".22">{[100, 200, 300].map((x) => <path key={x} d={`M${x} 0V500`} />)}{[120, 230, 340, 450].map((y) => <path key={y} d={`M0 ${y}H400`} />)}</g>
-                  <path d="M0 450H100V340H200V230H300V120H400" pathLength="1" strokeDasharray="1" strokeWidth="2" style={line(700)} />
-                  {[[100, 340], [200, 230], [300, 120]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="7" fill="#f8f9f6" strokeWidth="1.5" style={{ opacity: ready ? 1 : 0, transition: `opacity 700ms ease ${1100 + i * 350}ms` }} />)}
+                  <path d="M0 450H100V340H200V230H300V120H400" pathLength="1" strokeDasharray="1" strokeWidth="2" style={line(80)} />
+                  {[[100, 340], [200, 230], [300, 120]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="7" fill="#f8f9f6" strokeWidth="1.5" style={{ opacity: ready ? 1 : 0, transition: `opacity 350ms ease ${120 + i * 80}ms` }} />)}
                   <path d="M12 36V12H36M364 12H388V36" strokeOpacity=".7" />
                 </svg>
                 <img className="absolute inset-0 h-full w-full max-w-none object-cover object-top" src="/images/hashir-portrait.webp" srcSet="/images/hashir-portrait-small.webp 480w, /images/hashir-portrait-medium.webp 800w, /images/hashir-portrait.webp 1120w" sizes="(max-width:1023px) 94vw, 40vw" width="1120" height="1400" alt="Portrait of Hashir Usman" fetchPriority="high" />
@@ -1347,21 +1391,7 @@ export default function Home() {
       </section>
 
       {/* 2. Positioning statement: words light up as you scroll */}
-      <section id="positioning" aria-labelledby="positioning-title" className="bg-[#171a1b] py-28 text-[#f8f9f6] sm:py-40">
-        <div className={`${wrap} grid gap-10 lg:grid-cols-12`}>
-          <div className="lg:col-span-3">
-            <div className="lg:sticky lg:top-28">
-              <p className="mb-4 text-[13px] font-semibold text-[#a4be2d]">A little about me</p>
-              <div className="h-px w-full max-w-[160px] bg-white/15"><div className="h-px origin-left bg-[#a4be2d]" style={{ transform: `scaleX(${p})`, transition: 'transform 300ms linear' }} /></div>
-            </div>
-          </div>
-          <div ref={statRef} className="lg:col-span-9">
-            <h2 id="positioning-title" className="text-[clamp(30px,4.8vw,68px)] font-bold leading-[1.1] tracking-[-.04em]">
-              {words.map(([w, hot], i) => <span key={i} style={{ color: i / words.length < p ? (hot ? '#a4be2d' : '#f8f9f6') : '#5d6558', transition: 'color 500ms ease' }}>{w} </span>)}
-            </h2>
-          </div>
-        </div>
-      </section>
+      <Positioning />
 
       {/* 3. Core expertise */}
       <section id="services" aria-labelledby="expertise-heading" className="bg-[#f2f3ef] pb-16 pt-20 sm:py-28">

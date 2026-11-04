@@ -1,18 +1,19 @@
-import { useLayoutEffect } from 'react'
+import { lazy, Suspense, useLayoutEffect } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { ReactLenis, useLenis } from 'lenis/react'
 import 'lenis/dist/lenis.css'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
-import About from './pages/About'
-import Ventures from './pages/Ventures'
-import Contact from './pages/Contact'
-import Founderverse from './pages/Founderverse'
-import Admin from './pages/Admin'
-import Privacy from './pages/Privacy'
-import Opportunities from './pages/Opportunities'
-import CreativePortfolio from './pages/CreativePortfolio'
+
+const About = lazy(() => import('./pages/About'))
+const Ventures = lazy(() => import('./pages/Ventures'))
+const Contact = lazy(() => import('./pages/Contact'))
+const Founderverse = lazy(() => import('./pages/Founderverse'))
+const Admin = lazy(() => import('./pages/Admin'))
+const Privacy = lazy(() => import('./pages/Privacy'))
+const Opportunities = lazy(() => import('./pages/Opportunities'))
+const CreativePortfolio = lazy(() => import('./pages/CreativePortfolio'))
 
 function ScrollToRouteTarget() {
   const { pathname, hash } = useLocation()
@@ -40,19 +41,21 @@ export default function App() {
         <ScrollToRouteTarget />
         {pathname !== '/creative-portfolio' && <Navbar />}
         <div key={pathname} className="flex-1 animate-page-enter motion-reduce:animate-none">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/ventures" element={<Ventures />} />
-            <Route path="/founderverse" element={<Founderverse />} />
-            <Route path="/opportunities" element={<Opportunities />} />
-            <Route path="/creative-portfolio" element={<CreativePortfolio />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/portfolio" element={<Navigate to="/ventures" replace />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <Suspense fallback={<div aria-hidden className="min-h-[calc(100svh-5rem)]" />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/ventures" element={<Ventures />} />
+              <Route path="/founderverse" element={<Founderverse />} />
+              <Route path="/opportunities" element={<Opportunities />} />
+              <Route path="/creative-portfolio" element={<CreativePortfolio />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/portfolio" element={<Navigate to="/ventures" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </div>
         <Footer />
       </div>

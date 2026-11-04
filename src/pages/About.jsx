@@ -184,14 +184,11 @@ function useProgress(ref, mode = 'pass', name = '--p') {
 // Fires once when an element enters the viewport.
 function useInView(threshold = 0.15) {
   const ref = useRef(null)
-  const [on, setOn] = useState(false)
+  const [on, setOn] = useState(() => typeof window !== 'undefined' && !('IntersectionObserver' in window))
   useEffect(() => {
     const el = ref.current
     if (!el) return undefined
-    if (!('IntersectionObserver' in window)) {
-      setOn(true)
-      return undefined
-    }
+    if (!('IntersectionObserver' in window)) return undefined
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting || entry.boundingClientRect.bottom < 0) {
@@ -320,20 +317,6 @@ function Scrub({ as: Tag = 'p', text, className = '', ...rest }) {
 }
 
 // EXPERIENCE · a left-to-right wipe, once.
-function Wipe({ as: Tag = 'div', delay = 0, className = '', children, ...rest }) {
-  const [ref, on] = useInView(0.2)
-  return (
-    <Tag
-      ref={ref}
-      style={{ transitionDelay: `${delay}ms`, clipPath: on ? 'inset(-10% -2% -10% -2%)' : 'inset(-10% 100% -10% -2%)' }}
-      className={`transition-[clip-path] duration-[1200ms] ease-[cubic-bezier(0.77,0,0.18,1)] motion-reduce:transition-none ${className}`}
-      {...rest}
-    >
-      {children}
-    </Tag>
-  )
-}
-
 function Fade({ as: Tag = 'div', delay = 0, className = '', children }) {
   const [ref, on] = useInView(0.15)
   return (
