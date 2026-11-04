@@ -9,6 +9,8 @@ import { Link } from 'react-router-dom'
    ========================================================= */
 
 const LOGO_ASSETS = {
+  admos: '/Admos.png',
+  oxtel: '/oxtel.png',
   dayone: 'davone.png',
   nkreatives: '/nk.png',
   carzo: '/carzo.jpeg',
@@ -36,6 +38,10 @@ const LOGO_ASSETS = {
 
 // Social media examples shown inside each selected work's case detail.
 const WORK_GALLERIES = {
+  carzo: [
+    ['carzoinsta.png', 'Carzo Instagram profile'],
+    ['carzoreels.png', 'Carzo Instagram reels'],
+  ],
   dayone: [
     ['dayoneinsta.png', 'DayOne Instagram post'],
   ],
@@ -57,6 +63,9 @@ const WORK_GALLERIES = {
 }
 
 const WORK_VIDEOS = {
+  carzo: [
+    { src: 'https://www.instagram.com/reel/Db8QT0Tznb1/embed', title: 'Carzo Instagram reel' },
+  ],
   dayone: [
     { src: 'https://www.instagram.com/reel/De3mc-kNwdD/embed', title: 'DayOne Instagram reel' },
   ],
@@ -83,7 +92,7 @@ function Logo({ slug, name, className = '', cover = false }) {
       <img
         src={asset.startsWith('/') ? asset : `/ventures/${asset}`}
         alt={`${name} logo`}
-        loading="lazy"
+        loading="eager"
         decoding="async"
         className={`bg-white ${cover ? 'object-cover' : 'object-contain'} ${className}`}
       />
@@ -104,6 +113,15 @@ function Logo({ slug, name, className = '', cover = false }) {
 /* ---------- Data: featured case studies ---------- */
 
 const FEATURED = [
+  {
+    slug: 'carzo', name: 'Carzo', sector: 'Automotive / car selling', role: 'Creative Director',
+    filter: 'creative', accent: '#80dcea',
+    headline: 'A faster way to sell a car',
+    summary: 'Creative direction for a car-selling service built around a quick, hassle-free sale and instant payment.',
+    lead: ['Creative direction'],
+    mkt: [],
+    note: 'Instagram profile, reels and featured video.',
+  },
   {
     slug: 'dayone', name: 'DayOne Venture Studio', sector: 'Venture studio', role: 'CEO / Business Head',
     filter: 'ceo', accent: '#ffe14d',
@@ -159,7 +177,7 @@ const FEATURED = [
     note: 'A culinary brand with an Indian–Arabic identity direction and a premium visual expression.',
   },
   {
-    slug: 'start-x', name: 'START-X', sector: 'Startup ecosystem', role: 'Marketing / Growth Lead',
+    slug: 'start-x', name: 'Start-X', sector: 'Startup ecosystem', role: 'Marketing / Growth Lead',
     filter: 'marketing', accent: '#ff5a52',
     headline: 'Building visibility around opportunity',
     summary: 'Marketing and growth leadership scope for a startup ecosystem brand, spanning brand foundations, market launch, channel strategy and commercial outreach.',
@@ -188,13 +206,11 @@ const FEATURED = [
 ]
 
 const WORK_FILTERS = [
-  ['all', 'All 9'],
+  ['all', `All ${FEATURED.length}`],
   ['ceo', 'Business head'],
   ['founder', 'Founder'],
   ['marketing', 'Marketing lead'],
   ['creative', 'Creative director'],
-  ['advisor', 'Advisor'],
-  ['event-head', 'Event head'],
   ['marketing360', '360 Degree Marketing'],
 ]
 
@@ -213,18 +229,20 @@ const matchesWorkFilter = (item, filter) => {
 /* ---------- Data: brand universe (logo wall) ---------- */
 
 const BRANDS = [
-  ['start-x', 'START-X', 'Startup ecosystem'], ['hey-dossa', 'Hey Dossa', 'Food & beverage'],
+  ['admos', 'Admos', 'Consumer electronics / GCC'],
+  ['oxtel', 'Oxtel', 'Accommodation technology'],
+  ['start-x', 'Start-X', 'Startup ecosystem'], ['hey-dossa', 'Hey Dossa', 'Food & beverage'],
   ['moon-bliss', 'Moon Bliss', "Women's wellness"], ['zaati', 'Zaati', 'Restaurant'],
   ['de-coff', 'De Coff', 'Café'], ['house-of-bliss', 'House of Bliss', 'Lifestyle'],
   ['hungry-potato', 'Hungry Potato', 'Food & beverage'], ['carbroker', 'CarBroker', 'Automotive'],
-  ['carzo', 'Carzo', 'Automotive'],
+  ['carzo', 'Carzo', 'Automotive / car selling'],
   ['curry-bag', 'Curry Bag', 'Food & takeaway'], ['suite-spot', 'Suite Spot', 'Hospitality'],
   ['founderverse', 'The Founderverse', 'Startup education'], ['hyzo', 'Hyzo', 'Brand concept'],
   ['ezka', 'Ezka', 'Fashion & lifestyle'], ['dayone', 'DayOne', 'Venture studio'],
-  ['no-two', 'NO TWO', 'Skincare'], ['hosther-hostels', 'Hosther Hostels', 'Hospitality'],
+  ['no-two', 'No Two', 'Skincare'], ['hosther-hostels', 'Hosther Hostels', 'Hospitality'],
   ['ai-designers', 'AI Designers', 'Tech community'], ['sol-for-her', 'Sol.', "Women's fashion"],
   ['nothing-else', 'Nothing Else', 'FMCG'], ['bare-logic', 'Bare Logic', 'Skincare'],
-]
+].sort((a, b) => a[1].localeCompare(b[1], 'en', { sensitivity: 'base' }))
 
 /* ---------- Data: full project index (32) ---------- */
 
@@ -245,7 +263,9 @@ const INDUSTRIES = {
 const P = (name, sector, ind, role, roleKey, l, b, m, note) => ({ name, sector, ind, role, roleKey, l, b, m, note })
 
 const PROJECTS = [
-  P('START-X', 'Startup ecosystem', 'venture', 'Marketing / Growth Lead', 'marketing',
+  P('Carzo', 'Automotive / car selling', 'consumer', 'Creative Director', 'creative',
+    [], [], [], 'Creative direction for a car-selling service focused on a fast, hassle-free sale and instant payment.'),
+  P('Start-X', 'Startup ecosystem', 'venture', 'Marketing / Growth Lead', 'marketing',
     ['Marketing leadership', 'Operations / SOPs'], ['Naming & identity', 'Brand architecture'], ['Social strategy', '360° marketing', 'Go-to-market', 'Sales & BD']),
   P('Hey Dossa', 'Food & beverage', 'food', 'Consultant / Advisor', 'advisor',
     ['Operations / SOPs'], ['Brand strategy', 'Naming & identity', 'Brand architecture', 'Social design'], ['Social strategy', 'Go-to-market']),
@@ -275,7 +295,7 @@ const PROJECTS = [
     [], ['Brand strategy', 'Naming & identity', 'Brand voice', 'Brand architecture', 'Creative direction', 'Content production', 'Social design'],
     ['Social strategy', 'Paid media', '360° marketing', 'Growth & revenue', 'Sales & BD', 'Influencers / PR']),
   P('DayOne Venture Studio', 'Venture studio', 'venture', 'CEO / Business Head', 'ceo', L_ALL, B_ALL, M_ALL),
-  P('NO TWO', 'Skincare', 'style', 'Founder / Co-founder', 'founder',
+  P('No Two', 'Skincare', 'style', 'Founder / Co-founder', 'founder',
     ['Marketing leadership', 'Team leadership', 'Operations / SOPs'],
     ['Brand strategy', 'Naming & identity', 'Brand voice', 'Brand architecture', 'Content production', 'Social design', 'Brand QA'],
     ['Paid media', '360° marketing', 'Go-to-market', 'Growth & revenue', 'Sales & BD', 'Influencers / PR', 'Web / digital']),
@@ -316,7 +336,7 @@ const PROJECTS = [
     [], [], ['Social strategy', 'Paid media', '360° marketing', 'Sales & BD', 'Influencers / PR']),
   P('Tanza Opticals', 'Optical / retail healthcare', 'consumer', 'Consultant / Advisor', 'advisor',
     [], ['Creative direction', 'Content production'], ['360° marketing']),
-].map((p) => ({
+].sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })).map((p) => ({
   ...p,
   search: [p.name, p.sector, p.role, INDUSTRIES[p.ind], ...p.l, ...p.b, ...p.m].join(' ').toLowerCase(),
 }))
@@ -385,9 +405,8 @@ const pad = (n) => String(n).padStart(2, '0')
 const GAP = 'gap-[clamp(14px,1.8vw,24px)]'
 const SECTION = `flex flex-col ${GAP}`
 
-// Scroll-reveal: .reveal → data-reveal; the page-level effect sets data-in="true" once visible.
-const REVEAL =
-  'opacity-0 translate-y-[18px] transition-[opacity,transform] duration-500 ease-[ease] data-[in=true]:opacity-100 data-[in=true]:translate-y-0 motion-reduce:opacity-100 motion-reduce:translate-y-0 motion-reduce:transition-none'
+// Keep page content visible immediately; image assets begin loading on mount.
+const REVEAL = 'opacity-100 translate-y-0'
 
 const FRAME = 'hu-checker relative border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px]'
 const PAD = 'p-[clamp(18px,2.2vw,28px)]'
@@ -546,25 +565,6 @@ export default function CreativePortfolio() {
     return () => spy.disconnect()
   }, [])
 
-  /* ---------- Reveal on scroll ---------- */
-  useEffect(() => {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((en) => {
-          if (!en.isIntersecting) return
-          en.target.setAttribute('data-in', 'true')
-          io.unobserve(en.target)
-        })
-      },
-      { threshold: 0, rootMargin: '0px 0px -8% 0px' },
-    )
-    rootRef.current.querySelectorAll('[data-reveal]').forEach((el, i) => {
-      el.style.transitionDelay = `${(i % 4) * 60}ms`
-      io.observe(el)
-    })
-    return () => io.disconnect()
-  }, [])
-
   /* ---------- Case dialog ---------- */
   const visibleCases = FEATURED.map((_, i) => i).filter((i) => matchesWorkFilter(FEATURED[i], workFilter))
 
@@ -612,7 +612,7 @@ export default function CreativePortfolio() {
       {/* ============ TOP BAR ============ */}
       <header ref={topbarRef} className="sticky top-0 z-50 bg-[#fffdf8] border-b-[3px] border-[#141414]" id="top">
         <div className="max-w-[1480px] mx-auto relative grid grid-cols-[1fr_auto] items-center gap-6 px-[clamp(16px,3vw,36px)] py-3">
-          <a className="flex items-center gap-3 no-underline" href="../" aria-label="Back to hashirusman.online">
+          <a className="flex items-center gap-3 no-underline" href="https://hashirusman.com" target="_blank" rel="noopener noreferrer" aria-label="Visit hashirusman.com">
             <span className="grid place-items-center w-[58px] h-[52px] text-[1.6rem] font-black bg-[#ffe14d] border-[3px] border-[#141414] rounded-xl shadow-[3px_3px_0_#141414]">HU</span>
             <span className="flex flex-col leading-[1.05] max-[420px]:hidden">
               <strong className="text-[1.6rem] font-black tracking-[0.02em]">STUDIO</strong>
@@ -621,10 +621,10 @@ export default function CreativePortfolio() {
           </a>
 
           <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-wrap items-center justify-center gap-3 max-[1240px]:relative max-[1240px]:left-auto max-[1240px]:top-auto max-[1240px]:col-span-2 max-[1240px]:col-start-1 max-[1240px]:row-start-2 max-[1240px]:translate-x-0 max-[1240px]:translate-y-0 max-[1024px]:hidden">
-            <span className="text-sm font-semibold text-[#141414]">Want to see who I really am?</span>
-            <Link to="/ventures" className={`${BTN_CORE} ${BTN_DARK} px-4 py-2 text-[0.78rem] bg-[#ffe14d] text-[#141414]`}>
-              View My Portfolio <span aria-hidden="true">→</span>
-            </Link>
+            <span className="text-sm font-semibold text-[#141414]">More about me?</span>
+            <a href="/" target="_blank" rel="noopener noreferrer" className={`${BTN_CORE} ${BTN_DARK} px-4 py-2 text-[0.78rem] bg-[#ffe14d] text-[#141414]`}>
+              Visit Hashirusman.com <span aria-hidden="true">→</span>
+            </a>
           </div>
 
           <div className="col-start-2 row-start-1 flex items-center gap-3">
@@ -651,7 +651,7 @@ export default function CreativePortfolio() {
         </div>
         <div className="max-w-[1480px] mx-auto relative flex flex-wrap items-center justify-between gap-3 px-[clamp(16px,3vw,36px)] pb-2 text-[0.75rem] text-[#5b5b5b] max-[1240px]:flex-col max-[1240px]:justify-center">
           <div className="min-w-0 max-[1240px]:text-center">
-            <a className="no-underline hover:underline" href="../">hashirusman.online</a> <span className="mx-1">/</span> hu-studio <span className="mx-1">/</span> <b className="text-[#141414]">creative-portfolio</b>
+            <a className="no-underline hover:underline" href="https://hashirusman.com" target="_blank" rel="noopener noreferrer">hashirusman.com</a> <span className="mx-1">/</span> hu-studio <span className="mx-1">/</span> <b className="text-[#141414]">creative-portfolio</b>
           </div>
         </div>
       </header>
@@ -670,10 +670,10 @@ export default function CreativePortfolio() {
         >
           <div className="hu-checker sticky top-[calc(var(--topbar-h)_+_20px)] flex flex-col max-h-[calc(100vh_-_var(--topbar-h)_-_40px)] bg-[#ffe14d] border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] pt-[22px] px-4 pb-4 overflow-y-auto max-[1024px]:static max-[1024px]:max-h-[calc(100vh_-_var(--topbar-h)_-_30px)]">
             <div className="mb-4 hidden items-center justify-between gap-3 rounded-xl border-[2px] border-[#141414] bg-white/70 p-3 max-[1024px]:flex max-[760px]:flex-col max-[760px]:items-stretch">
-              <span className="text-sm font-semibold text-[#141414]">Want to see who I really am?</span>
-              <Link to="/ventures" className={`${BTN_CORE} ${BTN_DARK} justify-center px-4 py-2 text-[0.78rem] bg-[#fffdf8] text-[#141414]`}>
-                View My Portfolio <span aria-hidden="true">→</span>
-              </Link>
+              <span className="text-sm font-semibold text-[#141414]">More about me?</span>
+              <a href="/" target="_blank" rel="noopener noreferrer" className={`${BTN_CORE} ${BTN_DARK} justify-center px-4 py-2 text-[0.78rem] bg-[#fffdf8] text-[#141414]`}>
+                Visit Hashirusman.com <span aria-hidden="true">→</span>
+              </a>
             </div>
             <p className="font-black text-[1rem] tracking-[0.04em] uppercase px-2 pb-3">Navigation</p>
             <ol>
@@ -873,7 +873,7 @@ export default function CreativePortfolio() {
                     <Logo slug={strategy.slug} name={strategy.name} className="size-[86px] shrink-0 overflow-hidden rounded-xl border-[3px] border-[#141414]" />
                     <div>
                       <p className="text-[0.74rem] font-extrabold uppercase tracking-[0.05em] text-[#5b5b5b]">Marketing strategy</p>
-                      <h3 className="mt-1 text-[length:clamp(1.25rem,2vw,1.6rem)] font-black uppercase leading-[1.05]">{strategy.name}</h3>
+                      <h3 className="mt-1 text-[length:clamp(1.25rem,2vw,1.6rem)] font-black leading-[1.05]">{strategy.name}</h3>
                     </div>
                   </div>
                   <a
@@ -901,7 +901,7 @@ export default function CreativePortfolio() {
                       <Logo slug={f.slug} name={f.name} className="flex-none w-[86px] h-[86px] border-[3px] border-[#141414] rounded-xl overflow-hidden" />
                       <div>
                         <p className="text-[0.74rem] font-extrabold uppercase tracking-[0.05em] text-[#5b5b5b]">{pad(i + 1)} / {f.sector}</p>
-                        <h3 className="text-[length:clamp(1.25rem,2vw,1.6rem)] font-black uppercase leading-[1.05] [font-stretch:90%]">{f.name}</h3>
+                        <h3 className="text-[length:clamp(1.25rem,2vw,1.6rem)] font-black leading-[1.05] [font-stretch:90%]">{f.name}</h3>
                         <span
                           className="inline-block mt-1.5 text-[0.74rem] font-extrabold uppercase px-2.5 py-[3px] border-2 border-[#141414] rounded-full"
                           style={{ background: f.accent }}
@@ -942,8 +942,8 @@ export default function CreativePortfolio() {
                   key={slug}
                   className="relative m-0 border-[3px] border-[#141414] rounded-[14px] overflow-hidden bg-white shadow-[4px_4px_0_#141414] hover:shadow-[7px_7px_0_#141414]"
                 >
-                  <Logo slug={slug} name={name} cover={!['founderverse', 'carzo'].includes(slug)} className="w-full aspect-[453/293]" />
-                  <figcaption className="flex flex-col gap-px px-2.5 py-2 text-[0.76rem] font-extrabold uppercase border-t-[3px] border-[#141414] bg-[#fffdf8]">
+                  <Logo slug={slug} name={name} cover={!['admos', 'founderverse', 'carzo'].includes(slug)} className="w-full aspect-[453/293]" />
+                  <figcaption className="flex flex-col gap-px px-2.5 py-2 text-[0.76rem] font-extrabold border-t-[3px] border-[#141414] bg-[#fffdf8]">
                     {name}
                     <small className="font-semibold text-[#5b5b5b] normal-case">{sector}</small>
                   </figcaption>
@@ -991,8 +991,8 @@ export default function CreativePortfolio() {
                 {visibleProjects.map(({ p, i }) => {
                   const open = openRows.has(i)
                   const projectSlug = p.name.toLowerCase().replaceAll(' ', '-')
-                  const projectGallery = WORK_GALLERIES[projectSlug] || []
-                  const projectVideos = WORK_VIDEOS[projectSlug] || []
+                  const projectGallery = p.name === 'Carzo' ? [] : (WORK_GALLERIES[projectSlug] || [])
+                  const projectVideos = p.name === 'Carzo' ? [] : (WORK_VIDEOS[projectSlug] || [])
                   return (
                     <li key={p.name} className={`border-2 border-[#141414] rounded-xl bg-[#fffdf8] overflow-hidden ${open ? 'shadow-[4px_4px_0_#141414]' : ''}`}>
                       <button
@@ -1003,7 +1003,7 @@ export default function CreativePortfolio() {
                         className="w-full grid grid-cols-[44px_minmax(0,1.4fr)_minmax(0,1fr)_150px_30px] max-[760px]:grid-cols-[34px_minmax(0,1fr)_26px] items-center gap-3 px-[14px] py-3 text-left cursor-pointer bg-transparent border-0 hover:bg-[#fff8ec]"
                       >
                         <span className="font-black text-[0.9rem]">{pad(i + 1)}</span>
-                        <span className="font-black uppercase text-[0.98rem] leading-[1.15]">
+                        <span className="font-black text-[0.98rem] leading-[1.15]">
                           {p.name}
                           <span className="block font-semibold text-[length:clamp(0.9rem,1vw,1rem)] text-[#5b5b5b] normal-case">{p.sector}</span>
                         </span>
@@ -1097,25 +1097,19 @@ export default function CreativePortfolio() {
           <section className={SECTION} id="contact" aria-labelledby="contact-title">
             <article
               data-reveal
-              className={`${FRAME} ${REVEAL} bg-[#141414] text-white shadow-[6px_6px_0_#ffe14d] flex flex-col gap-2.5 p-[clamp(26px,4vw,48px)] overflow-hidden after:content-['H/U'] after:absolute after:-right-2.5 after:-bottom-10 after:text-[length:clamp(8rem,18vw,15rem)] after:font-black after:leading-none after:text-white/[0.06] after:pointer-events-none`}
+              className={`${FRAME} ${REVEAL} bg-[#f4f4f4] text-[#141414] shadow-[6px_6px_0_#ffe14d] flex flex-col gap-2.5 p-[clamp(26px,4vw,48px)] overflow-hidden`}
             >
-              <span className={`${EYEBROW_LIME} self-start`}>08 / Work with me</span>
+              <span className={`${EYEBROW} bg-[#ffe14d] border-[#ffe14d] self-start`}>08 / Work with me</span>
               <h2 id="contact-title" className="text-[length:clamp(2rem,4.6vw,3.8rem)] font-black uppercase leading-none [font-stretch:85%]">
-                Let's build with clarity.<br /><span className={`${HL} bg-[#c6f24e] text-[#141414]`}>Scale with intention.</span>
+                Let's build with clarity.<br /><span className={`${HL} bg-[#5468ff] text-white`}>Scale with intention.</span>
               </h2>
               <p className="text-[1.6rem] font-black mt-4">Hashir Usman</p>
-              <p className="text-white/80">Business &amp; Marketing Leadership · Creative Direction · Venture Building</p>
+              <p className="text-[#141414]/75">Business &amp; Marketing Leadership · Creative Direction · Venture Building</p>
               <div className="flex flex-wrap gap-[14px] mt-[18px] relative z-[1]">
-                <a className={`${BTN_CORE} ${BTN_DARK} ${BTN_PAD} bg-[#ffe14d] text-[#141414]`} href="../">Visit hashirusman.online <span aria-hidden="true">→</span></a>
-                <a className={`${BTN_CORE} ${BTN_GHOST} ${BTN_PAD}`} href="#top">Back to top <span aria-hidden="true">↑</span></a>
+                <a className={`${BTN_CORE} ${BTN_DARK} ${BTN_PAD} bg-[#ffe14d] text-[#141414]`} href="#top">Back to top <span aria-hidden="true">↑</span></a>
               </div>
             </article>
-            <p className={FINE}>Portfolio note: project-specific responsibilities are shown according to the scope of involvement. Quantitative results and campaign case evidence can be added where documented.</p>
           </section>
-
-          <footer className="flex flex-wrap justify-between gap-2.5 pt-[18px] border-t-[3px] border-[#141414] text-[0.8rem] font-bold uppercase">
-            <span>hashirusman.online</span><span>Selected work / 2026</span><span>H/U — Business. Marketing. Creative.</span>
-          </footer>
         </main>
       </div>
 
@@ -1142,7 +1136,7 @@ export default function CreativePortfolio() {
             <Logo slug={c.slug} name={c.name} className="w-24 h-24 shrink-0 border-[3px] border-[#141414] rounded-xl overflow-hidden" />
             <div>
               <p className="text-[0.78rem] font-extrabold uppercase tracking-[0.05em]">{pad(current + 1)} / {c.sector}</p>
-              <h3 id="caseName" className="text-[length:clamp(1.5rem,3vw,2.2rem)] font-black uppercase leading-none">{c.name}</h3>
+              <h3 id="caseName" className="text-[length:clamp(1.5rem,3vw,2.2rem)] font-black leading-none">{c.name}</h3>
               <p className="font-extrabold uppercase text-[0.85rem] mt-1">{c.role}</p>
             </div>
           </div>

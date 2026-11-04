@@ -16,7 +16,7 @@ export default function BrandArtwork({ b, alt = '', className = '', imgClass = '
   const initials = initialsFor(b.name)
 
   return (
-    <div className={`relative overflow-hidden bg-[#f2f3ef] ${className}`}>
+    <div className={`relative overflow-hidden ${['admos', 'carzo', 'oxtel'].includes(b.id) ? 'bg-white' : 'bg-[#f2f3ef]'} ${className}`}>
       {bad ? (
         <div aria-hidden="true" className="absolute inset-0 grid place-items-center overflow-hidden bg-[radial-gradient(circle_at_85%_15%,rgba(164,190,45,.22),transparent_36%),linear-gradient(145deg,#f5f4eb,#e7eadc)] text-[#1b3028]">
           <span className="absolute -right-3 -top-8 select-none text-[clamp(4rem,14vw,9rem)] font-black leading-none tracking-[-.1em] text-[#173a2b]/[.06]">
@@ -29,13 +29,13 @@ export default function BrandArtwork({ b, alt = '', className = '', imgClass = '
         </div>
       ) : (
         <img
-          src={brandImage(b.file)}
+          src={b.id === 'admos' ? '/Admos.png' : b.id === 'carzo' ? '/carzo.jpeg' : b.id === 'oxtel' ? '/oxtel.png' : brandImage(b.file)}
           alt={alt}
           loading="lazy"
           decoding="async"
           draggable={false}
           onError={() => setBad(true)}
-          className={`absolute inset-0 size-full object-cover ${imgClass}`}
+          className={`absolute inset-0 size-full ${['admos', 'carzo', 'oxtel'].includes(b.id) ? 'object-contain p-1' : 'object-cover'} ${imgClass}`}
         />
       )}
     </div>

@@ -6,7 +6,7 @@
 //
 // Images live in /public/ventures/. `file` must match the file name exactly (including capital letters),
 // because production servers are case-sensitive even though macOS is not.
-// START-X, Oxtel, Admos, Xyklon and Hand Revolution do not have source images yet; their cards
+// Xyklon and Hand Revolution do not have source images yet; their cards
 // use a designed text treatment until those image files are added.
 // Add a real link in `url` and a "Visit" button appears on the Ventures page.
 
@@ -50,7 +50,7 @@ export const brands = [
     short: 'Exploring research-led skincare concepts through brand strategy, product thinking, and technology.',
     scope: ['Venture Concept', 'Brand Strategy'] },
 
-  { id: 'start-x', name: 'START-X', file: 'start-x.png', category: 'Startup Ecosystem', group: 'Business & Tech', url: null,
+  { id: 'start-x', name: 'START-X', file: 'START-x.png', category: 'Startup Ecosystem', group: 'Business & Tech', url: null,
     short: 'A networking concept designed to connect founders with venture capital professionals and new opportunities.',
     scope: ['Concept Development', 'Networking'] },
 
@@ -90,6 +90,10 @@ export const brands = [
     short: 'A used-car marketplace idea exploring a more structured experience through inspections, information, and buyer confidence.',
     scope: ['Marketplace Concept', 'Business Strategy'] },
 
+  { id: 'carzo', name: 'Carzo', file: 'carzo.jpeg', category: 'Automotive / Car selling', group: 'Business & Tech', url: null,
+    short: 'A car-selling service built around a 60-minute sale, a hassle-free process, and instant payment.',
+    scope: ['Car Selling', 'Customer Experience', 'Instant Payment'] },
+
   { id: 'curry-bag', name: 'Curry Bag', file: 'curry-bag.jpeg', category: 'Food / Business Setup', group: 'Food & Drink', url: null,
     short: 'A food business developed across branding, business setup, legal coordination, website planning, and founder preparation.',
     scope: ['Venture Setup', 'Branding', 'Founder Support'] },
@@ -118,7 +122,7 @@ export const brands = [
     short: 'A hostel discovery platform for students and working professionals, supported through brand identity and visual direction.',
     scope: ['Branding', 'Identity'] },
 
-  { id: 'admos', name: 'Admos', file: 'admos.png', category: 'Consumer Electronics / GCC', group: 'Retail & Lifestyle', url: null,
+  { id: 'admos', name: 'Admos', file: 'Admos.png', category: 'Consumer Electronics / GCC', group: 'Retail & Lifestyle', url: null,
     short: 'Supporting an accessories business through management structures, product planning, SOPs, and operational systems.',
     scope: ['Operations', 'Management', 'Products', 'SOPs'] },
 

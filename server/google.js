@@ -184,7 +184,7 @@ export async function notifyOpportunityApplication(accessToken, application) {
 export async function notifyContactInquiry(accessToken, inquiry) {
   const subject = `Website contact: ${inquiry.topic} — ${inquiry.name}`
   const body = [
-    'A new contact message was submitted through hashirusman.online.',
+    'A new contact message was submitted through hashirusman.com.',
     '',
     `Name: ${inquiry.name}`,
     `Email: ${inquiry.email}`,
