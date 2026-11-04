@@ -566,21 +566,21 @@ const journeyChapters = [
     lesson: 'Good answers begin with better questions.',
   },
   {
-    place: 'India',
+    place: 'Kerala, India',
     org: 'Nkreatives / Creative Director',
     title: 'Making strategy visible',
     body: 'Creative direction brought together positioning, brand communication, campaigns, social content and delivery teams. I learned to connect expression to commercial objectives.',
     lesson: 'Creativity works harder with a clear purpose.',
   },
   {
-    place: 'India',
+    place: 'Kerala, India',
     org: 'Moon Bliss / CEO',
     title: 'Owning the decisions',
     body: 'Leading a wellness venture meant bringing brand, product, marketing, operations and growth planning together, while taking responsibility beyond recommendations.',
     lesson: 'Ownership turns a plan into action.',
   },
   {
-    place: 'India',
+    place: 'Kerala, India',
     org: 'DayOne Venture Studio / Interim CEO',
     title: 'Building with founders',
     body: 'Venture-studio leadership combines founder support, execution systems, marketing, performance reviews and cross-functional teams across portfolio businesses.',
@@ -589,8 +589,6 @@ const journeyChapters = [
 ]
 
 const unit = (n) => Math.min(1, Math.max(0, n))
-const kicker = 'm-0 text-xs font-semibold uppercase tracking-[.2em] text-[#a4be2d]'
-
 function JourneyHead() {
   const ref = useRef(null)
   useProgress(ref, 'pass')
@@ -600,8 +598,7 @@ function JourneyHead() {
     <div ref={ref} style={{ '--h': REVEAL, '--h2': 'clamp(0, calc((var(--p,1) - .14) / .3), 1)' }}>
       <div className="grid items-end gap-x-12 gap-y-8 lg:grid-cols-12">
         <div className="lg:col-span-7">
-          <p className={kicker} style={{ opacity: 'var(--h)' }}>The story behind the work</p>
-          <h2 id="journey-heading" className="m-0 mt-5 text-[clamp(44px,7.4vw,116px)] font-extrabold leading-[.96] tracking-[-.058em]">
+          <h2 id="journey-heading" className="m-0 text-[clamp(44px,7.4vw,116px)] font-extrabold leading-[.96] tracking-[-.058em]">
             <span className="sr-only">Built Along the Way.</span>
             <span aria-hidden className={line}>
               <span className="block" style={rise('--h')}>
@@ -619,7 +616,6 @@ function JourneyHead() {
         </div>
 
         <div className="border-white/20 lg:col-span-5 lg:border-l lg:pl-10" style={{ opacity: 'var(--h2)' }}>
-          <p className={kicker}>The premise</p>
           <p className="m-0 mt-4 text-[clamp(24px,2.5vw,38px)] font-semibold leading-[1.12] tracking-[-.035em]">
             <span className="block">Ideas built businesses.</span>
             <span className="block">People built me.</span>
@@ -658,8 +654,12 @@ function Chapter({ c, i }) {
 
       <article
         aria-labelledby={`chapter-${i + 1}`}
-        className={`relative w-full border border-white/10 bg-[#101310]/35 p-4 transition-colors duration-700 group-data-[on=true]:border-[#a4be2d]/50 md:p-5 lg:w-[calc(50%-3.5rem)] [--dx:0px] ${left ? 'lg:[--dx:-56px]' : 'lg:[--dx:56px]'}`}
-        style={{ opacity: 'var(--r,1)', transform: 'translate3d(calc((1 - var(--r,1)) * var(--dx)),calc((1 - var(--r,1)) * 28px),0)' }}
+        className={`relative w-full border border-white/10 bg-[#101310]/35 p-4 transition-colors duration-700 group-data-[on=true]:border-[#a4be2d]/50 md:p-5 lg:w-[calc(50%-3.5rem)] motion-reduce:transform-none motion-reduce:opacity-100`}
+        style={{
+          '--dx': left ? 'clamp(-180px, -12vw, -48px)' : 'clamp(48px, 12vw, 180px)',
+          opacity: 'var(--r,1)',
+          transform: 'translate3d(calc((1 - var(--r,1)) * var(--dx)), calc((1 - var(--r,1)) * 24px), 0)',
+        }}
       >
         <div className="flex items-end justify-between gap-4">
           <span
@@ -751,15 +751,8 @@ function Journey() {
       <div className={wrap}>
         <JourneyHead />
 
-        <div className="mb-7 mt-12 flex items-center gap-4 lg:mb-9 lg:mt-14">
-          <p className={kicker}>
-            Nine chapters <span aria-hidden className="mx-1.5 opacity-60">/</span> Places, work and lessons
-          </p>
-          <span aria-hidden className="hidden h-px flex-1 bg-white/20 sm:block" />
-        </div>
-
         {/* The road */}
-        <div ref={road} className="group/road relative pb-12" style={{ '--fill': '0px' }}>
+        <div ref={road} className="group/road relative mt-12 pb-12 lg:mt-14" style={{ '--fill': '0px' }}>
           <span
             aria-hidden
             className="absolute bottom-0 left-[7px] top-0 w-[2px] -translate-x-1/2 bg-[repeating-linear-gradient(to_bottom,rgba(255,255,255,.28)_0_7px,transparent_7px_15px)] lg:left-1/2"
@@ -793,19 +786,14 @@ function Journey() {
 
         {/* Arrival */}
         <div className="pl-10 pt-10 lg:pl-0 lg:pt-14 lg:text-center">
-          <p className={kicker}>What all the chapters added up to</p>
           <Scrub
             as="h3"
             text="People. Operations. Numbers. Brands. Systems. Leadership."
-            className="m-0 mt-5 text-[clamp(28px,4.4vw,68px)] font-extrabold leading-[1] tracking-[-.055em] lg:mx-auto lg:max-w-[20ch]"
+            className="m-0 text-[clamp(28px,4.4vw,68px)] font-extrabold leading-[1] tracking-[-.055em] lg:mx-auto lg:max-w-[20ch]"
           />
           <Fade as="p" className="mt-6 max-w-[56ch] text-[15px] leading-[1.7] text-[#b9c7b2] md:text-[17px] lg:mx-auto">
             Different places. Different responsibilities. One growing conviction: strong businesses connect clear thinking, good people, good systems and the willingness to execute.
           </Fade>
-          <p className="m-0 mt-8 inline-flex items-center gap-3 text-xs font-semibold uppercase tracking-[.2em] text-[#a4be2d]">
-            <span aria-hidden className="size-2 rounded-full bg-[#a4be2d] motion-safe:animate-pulse" />
-            Still building.
-          </p>
         </div>
       </div>
     </section>
@@ -1039,36 +1027,13 @@ function Closing() {
 /* ------------------------------------- Page ---------------------------------------------- */
 
 export default function AboutPage() {
-  const root = useRef(null)
-  useProgress(root, 'pin', '--sp')
-
   useEffect(() => {
     document.title = 'About | Hashir Usman'
   }, [])
 
   return (
-    <main id="main" ref={root} className="overflow-x-clip">
-      <style>{`
-        @keyframes about-window { from { clip-path: inset(24% 28% 24% 28%); } to { clip-path: inset(0 0 0 0); } }
-        @keyframes about-focus { from { opacity: 0; filter: blur(12px); transform: translateY(8px); } to { opacity: 1; filter: blur(0); transform: none; } }
-        .about-window { animation: about-window 1.7s cubic-bezier(.77,0,.18,1) .1s both; }
-        .about-focus { animation: about-focus 1.1s cubic-bezier(.16,1,.3,1) both; }
-        @media (prefers-reduced-motion: reduce) {
-          .about-window, .about-focus { animation: none; }
-        }
-      `}</style>
-
-      <div aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[3px] motion-reduce:hidden">
-        <span className="block h-full origin-left bg-[#a4be2d]" style={{ transform: 'scaleX(var(--sp,0))' }} />
-      </div>
-
-      <Hero />
-      <Story />
+    <main id="main" className="overflow-x-clip">
       <Journey />
-      <Principles />
-      <Experience />
-      <Start />
-      <Closing />
     </main>
   )
 }
