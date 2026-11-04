@@ -6,18 +6,22 @@ import BrandArtwork from '../components/BrandArtwork'
 
 // One image for every placement. Swap this (or give a venture its own `image`) when real photos exist.
 const VENTURE_IMAGE = '/image.png'
-const HERO_ALT = 'Featured photograph for the Ventures page'
 // React 19 reads `fetchPriority`; React 18 only passes the lowercase attribute through without a warning.
 const FETCH_PRIORITY_PROP = Number.parseInt(version, 10) >= 19 ? 'fetchPriority' : 'fetchpriority'
 const NO_METRICS = 'No outcome metrics are published for this project.'
 
 // The featured build. The full collection lives in src/data/brands.js.
 const featured = { id: 'dayone', name: 'Dayone Venture Studio', category: 'Venture Building', url: null, crop: { pos: '50% 35%', zoom: 1.1 }, statement: 'Building startups, founders, and the systems behind them.', context: 'A startup studio where my work spans venture strategy, founder development, operational systems, and business execution.', role: 'Venture Leadership, Strategy, and Operations.' }
-const nameRow = `${brands.map((b) => b.name).join('   \u2014   ')}   \u2014   `
+const titleCaseName = (name) => name.toLowerCase().replace(/(^|[\s-])([a-z])/g, (_, boundary, letter) => `${boundary}${letter.toUpperCase()}`)
+const ventureBrands = brands
+  .filter((brand) => brand.id !== 'start-x')
+  .map((brand) => ({ ...brand, name: brand.id === 'sol' ? 'Sol.' : titleCaseName(brand.name) }))
+  .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+const nameRow = `${ventureBrands.map((b) => b.name).join('   \u2014   ')}   \u2014   `
 
 // Each stage only points to projects documented in the collection above.
 const stages = [
-  { no: '01', title: 'Start from scratch', text: 'Some projects began as ideas: a coffee business concept, a used-car marketplace, and a networking concept for founders and venture capital professionals.', refs: ['DE COFF', 'CarBroker', 'START-X'], image: '/ven1.png', crop: { pos: '50% 50%', zoom: 1.05 }, tone: 'natural' },
+  { no: '01', title: 'Start from scratch', text: 'Some projects began as ideas: a coffee business concept and a used-car marketplace.', refs: ['DE COFF', 'CarBroker'], image: '/ven1.png', crop: { pos: '50% 50%', zoom: 1.05 }, tone: 'natural' },
   { no: '02', title: 'Find the right direction', text: 'Others needed a clear identity and positioning: a women-focused hostel brand, a premium fashion identity, and a hostel discovery platform.', refs: ['Hosther Hostels', 'Ezkaa', 'Oxtel'], image: '/ven2.png', crop: { pos: '50% 50%', zoom: 1.5, tx: 8, ty: -4 }, tone: 'tint' },
   { no: '03', title: 'Build the venture', text: 'Some needed venture structure: Moonbliss across strategy, positioning, brand, and go-to-market, NO TWO across architecture and product strategy, and Dayone across strategy and operations.', refs: ['Moonbliss', 'NO TWO', 'Dayone Venture Studio'], image: '/ven3.png', crop: { pos: '50% 50%', zoom: 1.7, tx: -8, ty: 6 }, tone: 'muted' },
   { no: '04', title: 'Make it run', text: 'The operation behind the brand: kitchen and dish SOPs for Zaati, operational SOPs and menu engineering for Hungry Potato, and scaling, valuation, and AI planning for Hand Revolution.', refs: ['Zaati', 'Hungry Potato', 'Hand Revolution'], image: '/ven4.png', crop: { pos: '50% 50%', zoom: 1.3, tx: 4, ty: 8 }, tone: 'accent' },
@@ -121,16 +125,6 @@ function Chars({ as: Tag = 'div', text, delay = 0, className = '', ...rest }) {
   )
 }
 
-// Statement whose words light up as it scrolls through the reading zone.
-function Scrub({ text, className = '' }) {
-  const words = text.split(' ')
-  return (
-    <p data-p="read" className={className}>
-      {words.map((word, i) => <span key={i} style={{ opacity: `clamp(.18, calc(.18 + (var(--p, 1) * ${words.length * 1.4} - ${i}) * .82), 1)` }}>{word}{' '}</span>)}
-    </p>
-  )
-}
-
 function Cover({ crop, tone = 'natural', on = true, priority = false, alt = '', image = VENTURE_IMAGE, className = '', mobileHeader = false, children }) {
   const { pos, zoom = 1, tx = 0, ty = 0 } = crop
   const priorityProps = priority ? { [FETCH_PRIORITY_PROP]: 'high' } : {}
@@ -169,9 +163,9 @@ function VentureLink({ venture, className = '' }) {
 function Directory() {
   const { hash } = useLocation()
   const [filter, setFilter] = useState('All')
-  const [open, setOpen] = useState(brands[0].id)
+  const [open, setOpen] = useState(ventureBrands[0].id)
   const timer = useRef(0)
-  const list = filter === 'All' ? brands : brands.filter((b) => b.group === filter)
+  const list = filter === 'All' ? ventureBrands : ventureBrands.filter((b) => b.group === filter)
   const sectorChips = ['All', ...groups]
 
   const reveal = (id, delay, force) => {
@@ -190,7 +184,7 @@ function Directory() {
   }
   const pick = (g) => {
     setFilter(g)
-    setOpen((g === 'All' ? brands : brands.filter((b) => b.group === g))[0].id)
+    setOpen((g === 'All' ? ventureBrands : ventureBrands.filter((b) => b.group === g))[0].id)
   }
 
   useEffect(() => {
@@ -198,7 +192,7 @@ function Directory() {
     const id = hash.slice('#brand-'.length)
     // A deep link selects and opens the matching project in the directory.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (brands.some((b) => b.id === id)) { setFilter('All'); setOpen(id); reveal(id, 700, true) }
+    if (ventureBrands.some((b) => b.id === id)) { setFilter('All'); setOpen(id); reveal(id, 700, true) }
   }, [hash])
   useEffect(() => () => clearTimeout(timer.current), [])
 
@@ -207,7 +201,7 @@ function Directory() {
       {/* Sector filters */}
       <div role="group" aria-label="Filter projects by sector" className="mt-10 flex flex-wrap gap-2">
         {sectorChips.map((g) => {
-          const count = g === 'All' ? brands.length : brands.filter((b) => b.group === g).length
+          const count = g === 'All' ? ventureBrands.length : ventureBrands.filter((b) => b.group === g).length
           const on = filter === g
           return (
             <button key={g} type="button" aria-pressed={on} onClick={() => pick(g)} className={`${pill} inline-flex min-h-10 items-center gap-2 px-4 text-sm transition-colors duration-300 ${on ? 'border-[#a4be2d] bg-[#a4be2d] text-[#101310]' : 'border-white/25 text-white/80 hover:border-[#a4be2d] hover:text-[#a4be2d]'} ${focus}`}>
@@ -221,7 +215,7 @@ function Directory() {
       <ul className="m-0 mt-8 list-none border-b border-white/15 p-0">
         {list.map((b) => {
           const on = open === b.id
-          const no = String(brands.indexOf(b) + 1).padStart(2, '0')
+          const no = String(ventureBrands.indexOf(b) + 1).padStart(2, '0')
           return (
             <li key={b.id}>
               <article id={`brand-${b.id}`} className="scroll-mt-24 border-t border-white/15">
@@ -237,7 +231,7 @@ function Directory() {
                     <BrandArtwork b={b} alt={`${b.name} brand artwork`} className="size-14 shrink-0 rounded-xl sm:size-[72px]" imgClass={`transition-transform duration-700 ${ease} group-hover/row:scale-110`} />
                     <span className="min-w-0 flex-1">
                       <span className="block text-xs font-semibold tabular-nums text-[#a4be2d]">{no}<span className="font-medium text-white/60"> · {b.category}</span></span>
-                      <span className={`mt-1 block truncate text-[clamp(24px,3.6vw,48px)] font-extrabold leading-[1.05] tracking-[-.045em] transition-colors duration-300 ${on ? 'text-[#a4be2d]' : 'text-white group-hover/row:text-[#a4be2d]'}`}>{b.name}</span>
+                      <span className={`mt-1 block truncate text-[22px] font-extrabold leading-[1.15] tracking-[-.025em] transition-colors duration-300 sm:text-[26px] ${on ? 'text-[#a4be2d]' : 'text-white group-hover/row:text-[#a4be2d]'}`}>{b.name}</span>
                     </span>
                     <span aria-hidden className={`grid size-9 shrink-0 place-items-center rounded-full border text-lg leading-none transition-[transform,background-color,border-color,color] duration-500 ${on ? 'rotate-45 border-[#a4be2d] bg-[#a4be2d] text-[#101310]' : 'border-white/40 text-white'}`}>+</span>
                   </button>
@@ -293,36 +287,13 @@ export default function Ventures() {
 
   return (
     <main id="main" ref={root} className="overflow-x-clip">
-      {/* 01 Hero: the image starts as an inset card and opens to full width as you scroll */}
+      {/* 01 Hero: a concise introduction before the featured venture */}
       <section data-p="top" aria-labelledby="ventures-title" className="bg-[#101310] pb-6 text-white">
        
         <div className={`${wrap} grid items-end gap-x-10 gap-y-5 pb-8 pt-6 lg:grid-cols-12`}>
           <Chars as="h1" id="ventures-title" text="A few things I’ve had my hands in." delay={150} className="max-w-[13ch] text-[clamp(42px,6.2vw,104px)] font-extrabold leading-[.98] tracking-[-.055em] lg:col-span-8" />
           <p className="m-0 max-w-[38ch] pb-2 text-[15px] leading-[1.7] text-[#dfe6d8] lg:col-span-4">Some started from scratch. Some needed a new direction. Others needed better operations, sales systems, or room to grow.</p>
         </div>
-        <div
-          style={{ marginInline: 'calc((1 - var(--p, 1)) * 4vw)', borderRadius: 'calc((1 - var(--p, 1)) * 36px)' }}
-          className="relative h-[clamp(360px,64svh,680px)] overflow-hidden bg-[#153B2B]"
-        >
-          <div style={{ transform: 'scale(calc(1.22 - .22 * var(--p, 1)))' }} className="absolute inset-0 will-change-transform">
-            <Cover crop={{ pos: '50% 30%', zoom: 1 }} tone="natural" priority alt={HERO_ALT} image="/ventureshero.png" />
-          </div>
-          <div aria-hidden className="absolute inset-0 bg-[linear-gradient(to_top,#101310b3,#10131000_45%)]" />
-          <div className="absolute inset-x-0 bottom-0 z-10 flex flex-wrap items-end justify-between gap-4 p-5 md:p-8">
-            <span className={`${pill} border-white/40 bg-[#101310]/40 text-white`}>Startups & businesses</span>
-          </div>
-        </div>
-        <nav aria-label="Ventures index" className={`${wrap} mt-5`}>
-          <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
-            {[['#featured', `Featured build: ${featured.name}`, ''], ['#collection', `All ${brands.length} startups & businesses`, ''], ['#value', 'How the work creates value', '']].map(([href, label, meta]) => (
-              <li key={href}>
-                <a href={href} className={`inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 px-4 text-sm text-white/85 no-underline transition-colors hover:border-[#a4be2d] hover:text-[#a4be2d] ${focus}`}>
-                  {meta ? <span className="text-xs tabular-nums text-[#a4be2d]">{meta}</span> : null}{label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
       </section>
 
       {/* 02 Featured venture: a scrubbed statement and a timeline that draws itself */}
@@ -342,13 +313,13 @@ export default function Ventures() {
             </div>
             <div className="lg:col-span-7">
               <p className="m-0 mb-3 text-xs font-semibold text-[#617319]">{featured.name}</p>
-              <Scrub text={featured.statement} className="m-0 text-[clamp(28px,3.4vw,52px)] font-extrabold leading-[1.05] tracking-[-.05em]" />
-              <ol data-p="read" className="relative m-0 mt-10 list-none p-0 pl-9">
+              <p className="m-0 text-[clamp(28px,3.4vw,52px)] font-extrabold leading-[1.05] tracking-[-.05em]">{featured.statement}</p>
+              <ol className="relative m-0 mt-10 list-none p-0 pl-9">
                 <span aria-hidden className="absolute left-[6px] top-1 h-[calc(100%-8px)] w-px bg-[#101310]/15" />
-                <span aria-hidden style={{ transform: 'scaleY(var(--p, 1))' }} className="absolute left-[6px] top-1 h-[calc(100%-8px)] w-px origin-top bg-[#617319]" />
+                <span aria-hidden className="absolute left-[6px] top-1 h-[calc(100%-8px)] w-px bg-[#617319]" />
                 {steps.map(([label, text], i) => (
-                  <li key={label} style={{ opacity: `clamp(.35, calc(.35 + var(--p, 1) * ${steps.length + 1} - ${i}), 1)` }} className="relative pb-7 last:pb-0">
-                    <span aria-hidden style={{ opacity: `clamp(0, calc(var(--p, 1) * ${steps.length + 1} - ${i}), 1)` }} className="absolute -left-9 top-1 size-[13px] rounded-full bg-[#617319]" />
+                  <li key={label} className="relative pb-7 last:pb-0">
+                    <span aria-hidden className="absolute -left-9 top-1 size-[13px] rounded-full bg-[#617319]" />
                     <span aria-hidden className="absolute -left-9 top-1 size-[13px] rounded-full border border-[#617319]" />
                     <h3 className="m-0 text-[15px] font-bold"><span className="mr-2 tabular-nums text-[#617319]">0{i + 1}</span>{label}</h3>
                     <p className="m-0 mt-1 max-w-[60ch] text-[15px] leading-[1.7] text-[#3a4137]">{text}</p>
@@ -369,7 +340,7 @@ export default function Ventures() {
               <p className="m-0 mb-3 text-xs font-semibold text-[#a4be2d]">03 / The collection</p>
               <Chars as="h2" id="collection-title" text="Here’s a little look around." className="text-[clamp(34px,5vw,72px)] font-extrabold leading-[.98] tracking-[-.055em]" />
             </div>
-              <p className="m-0 max-w-[38ch] text-[15px] leading-[1.7] text-[#b9c7b2] lg:col-span-4">{brands.length} startups and businesses. Filter by sector or open a row to see what I worked on.</p>
+              <p className="m-0 max-w-[38ch] text-[15px] leading-[1.7] text-[#b9c7b2] lg:col-span-4">{ventureBrands.length} startups and businesses. Filter by sector or open a row to see what I worked on.</p>
           </div>
           <Directory />
         </div>

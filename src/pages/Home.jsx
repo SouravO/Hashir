@@ -387,9 +387,9 @@ function Framework() {
           <Reveal className={eyebrow}>From idea to actual business</Reveal>
           <Heading id="framework-title" lines={['That idea in your head?', 'Give it somewhere to go.']} className={h2cls} />
         </header>
-        {/* Mobile/tablet: the visual and the stages share one grid cell, the visual pins to the top while the stages scroll under it. Desktop: two columns. */}
+        {/* Phones show the stages without the animated visual; tablet and desktop keep the pinned building. */}
         <div className="grid lg:grid-cols-12 lg:gap-16">
-          <div className="pointer-events-none z-20 col-start-1 row-start-1 lg:pointer-events-auto lg:z-auto lg:col-span-5">
+          <div className="pointer-events-none z-20 col-start-1 row-start-1 max-[767px]:hidden lg:pointer-events-auto lg:z-auto lg:col-span-5">
             <div ref={stickyRef} className="pointer-events-auto sticky top-16 -mx-5 bg-[#f2f3ef] px-5 pb-3 pt-2 sm:-mx-7 sm:px-7 md:top-[72px] lg:top-28 lg:mx-0 lg:bg-transparent lg:p-0">
               <div className="h-[min(42svh,340px)] bg-[#171a1b] p-3 sm:p-5 md:h-[min(46svh,460px)] lg:aspect-square lg:h-auto lg:p-6">
                 <Building s={calm() ? CALM[active] : progress} />
@@ -401,11 +401,11 @@ function Framework() {
               </div>
             </div>
           </div>
-          <ol className="col-start-1 row-start-1 pt-[calc(min(42svh,340px)_+_3rem)] md:pt-[calc(min(46svh,460px)_+_3rem)] lg:col-span-7 lg:col-start-6 lg:pt-0">
+          <ol className="col-start-1 row-start-1 pt-[calc(min(42svh,340px)_+_3rem)] md:pt-[calc(min(46svh,460px)_+_3rem)] max-[767px]:pt-0 lg:col-span-7 lg:col-start-6 lg:pt-0">
             {stages.map(([name, desc, out], i) => {
               const reached = active >= i
               return (
-                <li key={name} ref={(el) => { refs.current[i] = el }} className="relative min-h-[38svh] pb-14 pl-14 lg:min-h-[48vh] lg:pb-0">
+                <li key={name} ref={(el) => { refs.current[i] = el }} className="relative min-h-0 pb-10 pl-12 sm:min-h-[38svh] sm:pb-14 sm:pl-14 lg:min-h-[48vh] lg:pb-0">
                   <span className={`absolute left-0 top-1 z-10 grid size-7 place-items-center rounded-full border text-[11px] font-bold transition-colors duration-700 ${reached ? 'border-[#a4be2d] bg-[#a4be2d] text-[#1e2618]' : 'border-[#c4c9b9] bg-[#f2f3ef] text-[#72766f]'}`}>{i + 1}</span>
                   {i < stages.length - 1 && (
                     <span className="absolute bottom-0 left-[13px] top-9 w-px bg-[#d0d5c6]" aria-hidden>

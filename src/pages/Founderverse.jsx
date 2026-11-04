@@ -46,7 +46,7 @@ const books = [
   { title: 'Scaling & Long-Term Growth', text: 'Grow in a way that lasts.' },
 ]
 const faqs = [
-  { q: 'Who is Founder Versa for?', a: 'Aspiring and early-stage founders who want to make better decisions. No prior experience needed.' },
+  { q: 'Who is Founderverse for?', a: 'Aspiring and early-stage founders who want to make better decisions. No prior experience needed.' },
   { q: 'Physical, digital, or both?', a: DIGITAL_AVAILABLE ? `A physical collection at ${PRICE.physical} and a digital collection at ${PRICE.digital}.` : `A physical collection at ${PRICE.physical}.` },
   { q: 'How is this different from free resources?', a: 'Free resources can be great. This is an organised starting point: the essentials in one place, with case studies and frameworks to return to.' },
   { q: 'How do delivery, payment and refunds work?', a: TERMS_PENDING },
@@ -134,7 +134,7 @@ function Cta({ to, children, track, tone = 'lime', full = false, className = '' 
 
 function Book({ className = '' }) {
   return (
-    <img src={BOOK_IMAGE} alt="Founder Versa book cover" decoding="async" draggable={false} onError={(event) => { event.currentTarget.style.visibility = 'hidden' }} style={{ filter: 'drop-shadow(0 36px 40px rgba(0,0,0,.5))' }} className={`block h-auto w-full rounded-[6px] ${className}`} />
+    <img src={BOOK_IMAGE} alt="Founderverse book cover" decoding="async" draggable={false} onError={(event) => { event.currentTarget.style.visibility = 'hidden' }} style={{ filter: 'drop-shadow(0 36px 40px rgba(0,0,0,.5))' }} className={`block h-auto w-full rounded-[6px] ${className}`} />
   )
 }
 
@@ -169,7 +169,7 @@ function Seal() {
     <div aria-hidden className="absolute -right-2 -top-3 z-30 grid size-24 place-items-center rounded-full bg-[#a4be2d] text-[#101310] shadow-[0_16px_40px_rgba(0,0,0,.45)] sm:size-28 lg:-right-8 lg:top-2">
       <svg viewBox="0 0 200 200" className="fv-orbit absolute inset-0 size-full">
         <defs><path id="fv-seal" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0" /></defs>
-        <text fill="currentColor" fontSize="14" fontWeight="800"><textPath href="#fv-seal" textLength="496" lengthAdjust="spacing">Founder Versa · 10 books · Founder Versa · 10 books ·</textPath></text>
+        <text fill="currentColor" fontSize="14" fontWeight="800"><textPath href="#fv-seal" textLength="496" lengthAdjust="spacing">Founderverse · 10 books · Founderverse · 10 books ·</textPath></text>
       </svg>
       <span className="fv-accent text-[34px] leading-none sm:text-[40px]">10</span>
     </div>
@@ -288,7 +288,7 @@ function Hero() {
   }
 
   return (
-    <section aria-label="Founder Versa" onPointerMove={onMove} className="relative isolate flex h-[calc(100svh-80px)] min-h-0 flex-col overflow-hidden bg-[#101310] text-white max-[768px]:h-[calc(100svh-64px)]">
+    <section aria-label="Founderverse" onPointerMove={onMove} className="relative isolate flex h-[calc(100svh-80px)] min-h-0 flex-col overflow-hidden bg-[#101310] text-white max-[768px]:h-[calc(100svh-64px)]">
       <div className="absolute inset-0 -z-20">
         <img src={HERO_IMAGE} alt="" decoding="async" draggable={false} onError={(event) => { event.currentTarget.style.visibility = 'hidden' }} className="size-full object-cover saturate-[.8]" />
       </div>
@@ -296,7 +296,7 @@ function Hero() {
       <motion.div aria-hidden style={{ background: glow }} className="absolute inset-0 -z-10" />
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 opacity-[.09] mix-blend-overlay" style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")" }} />
 
-      <div className={`${wrap} shrink-0 pt-3 sm:pt-5`}><img src={LOGO_IMAGE} alt="Founder Versa" className="h-10 w-auto object-contain sm:h-14" /></div>
+      <div className={`${wrap} shrink-0 pt-3 sm:pt-5`}><img src={LOGO_IMAGE} alt="Founderverse" className="h-10 w-auto object-contain sm:h-14" /></div>
 
       <div className={`${wrap} flex min-h-0 flex-1 items-center py-2 sm:py-[clamp(12px,3svh,28px)]`}>
         <AnimatePresence mode="wait">
@@ -634,7 +634,7 @@ function Word({ progress, range, accent, children }) {
 function RoundBuy({ to }) {
   return (
     <Magnetic className="inline-flex">
-      <Link to={to} data-track="cta-final" aria-label="Buy the Founder Versa collection" className={`group relative grid size-[170px] place-items-center rounded-full bg-[#a4be2d] text-[#101310] no-underline sm:size-[210px] ${focus}`}>
+      <Link to={to} data-track="cta-final" aria-label="Buy the Founderverse collection" className={`group relative grid size-[170px] place-items-center rounded-full bg-[#a4be2d] text-[#101310] no-underline sm:size-[210px] ${focus}`}>
         <svg aria-hidden viewBox="0 0 200 200" className="fv-orbit absolute inset-0 size-full">
           <defs><path id="fv-circ" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0" /></defs>
           <text fill="currentColor" fontSize="15" fontWeight="800"><textPath href="#fv-circ" textLength="496" lengthAdjust="spacing">Buy now · 10 books · Buy now · 10 books ·</textPath></text>
@@ -727,7 +727,7 @@ function StickyBuy() {
 export default function Founderverse() {
   const { scrollYProgress } = useScroll()
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 24, restDelta: 0.001 })
-  useEffect(() => { document.title = 'Founder Versa | Hashir Usman' }, [])
+  useEffect(() => { document.title = 'Founderverse | Hashir Usman' }, [])
   return (
     <main id="main" className="fv-root overflow-x-clip bg-[#101310] text-white">
       <style>{CSS}</style>

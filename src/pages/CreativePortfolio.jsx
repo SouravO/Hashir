@@ -10,6 +10,8 @@ import { Link } from 'react-router-dom'
 
 const LOGO_ASSETS = {
   dayone: 'davone.png',
+  nkreatives: '/nk.png',
+  carzo: '/carzo.jpeg',
   founderverse: '/fv-logo.png',
   'start-x': 'START-x.png',
   'hey-dossa': 'heydossa.png',
@@ -34,6 +36,9 @@ const LOGO_ASSETS = {
 
 // Social media examples shown inside each selected work's case detail.
 const WORK_GALLERIES = {
+  dayone: [
+    ['dayoneinsta.png', 'DayOne Instagram post'],
+  ],
   'moon-bliss': [
     ['moonbliss-post.png', 'Moon Bliss social post'],
     ['moonbliss-post2.png', 'Moon Bliss social post'],
@@ -44,6 +49,30 @@ const WORK_GALLERIES = {
   ],
   'shameers-cars': [
     ['shameers-reels.png', "Shameer's Cars content"],
+  ],
+  'aisen-studio': [
+    ['aisen-posts.png', 'Aisen Studio social posts'],
+    ['aisenstudio-insta-prof.png', 'Aisen Studio Instagram profile'],
+  ],
+}
+
+const WORK_VIDEOS = {
+  dayone: [
+    { src: 'https://www.instagram.com/reel/De3mc-kNwdD/embed', title: 'DayOne Instagram reel' },
+  ],
+  'moon-bliss': [
+    { src: 'https://www.instagram.com/reel/DfCb-eBAwIj/embed', title: 'Moon Bliss Instagram reel' },
+    { src: 'https://www.instagram.com/reel/DYZd31XttAK/embed', title: 'Moon Bliss Instagram reel 2' },
+  ],
+  'house-of-bliss': [
+    { src: 'https://www.instagram.com/reel/DV-S-H-D1SJ/embed', title: 'House of Bliss Instagram reel' },
+  ],
+  'aisen-studio': [
+    { src: 'https://www.instagram.com/reel/DVm70zikRKw/embed', title: 'Aisen Studio Instagram reel' },
+  ],
+  'shameers-cars': [
+    { src: 'https://www.instagram.com/reel/DGVwJYTTFV_/embed', title: "Shameer's Cars Instagram reel" },
+    { src: 'https://www.instagram.com/reel/DHaVnHiy-SF/embed', title: "Shameer's Cars Instagram reel 2" },
   ],
 }
 
@@ -186,11 +215,12 @@ const BRANDS = [
   ['moon-bliss', 'Moon Bliss', "Women's wellness"], ['zaati', 'Zaati', 'Restaurant'],
   ['de-coff', 'De Coff', 'Café'], ['house-of-bliss', 'House of Bliss', 'Lifestyle'],
   ['hungry-potato', 'Hungry Potato', 'Food & beverage'], ['carbroker', 'CarBroker', 'Automotive'],
+  ['carzo', 'Carzo', 'Automotive'],
   ['curry-bag', 'Curry Bag', 'Food & takeaway'], ['suite-spot', 'Suite Spot', 'Hospitality'],
   ['founderverse', 'The Founderverse', 'Startup education'], ['hyzo', 'Hyzo', 'Brand concept'],
   ['ezka', 'Ezka', 'Fashion & lifestyle'], ['dayone', 'DayOne', 'Venture studio'],
   ['no-two', 'NO TWO', 'Skincare'], ['hosther-hostels', 'Hosther Hostels', 'Hospitality'],
-  ['ai-designers', 'AI Designers', 'Tech community'], ['sol-for-her', 'Sol. for Her', "Women's fashion"],
+  ['ai-designers', 'AI Designers', 'Tech community'], ['sol-for-her', 'Sol.', "Women's fashion"],
   ['nothing-else', 'Nothing Else', 'FMCG'], ['bare-logic', 'Bare Logic', 'Skincare'],
 ]
 
@@ -248,7 +278,7 @@ const PROJECTS = [
   P('The Founderverse', 'Startup education', 'venture', 'Founder / Co-founder', 'founder', L_ALL, B_ALL, M_ALL),
   P('Hyzo', 'Brand concept', 'consumer', 'Consultant / Advisor', 'advisor',
     [], ['Naming & identity', 'Brand architecture', 'Creative direction', 'Content production', 'Social design'], []),
-  P('Ezka by Fousiya Shameer', 'Fashion & lifestyle', 'style', 'Role not specified', 'none',
+  P('Ezka', 'Fashion & lifestyle', 'style', 'Role not specified', 'none',
     [], ['Brand strategy', 'Naming & identity', 'Brand voice', 'Brand architecture', 'Creative direction', 'Content production', 'Social design'],
     ['Social strategy', 'Paid media', '360° marketing', 'Growth & revenue', 'Sales & BD', 'Influencers / PR']),
   P('DayOne Venture Studio', 'Venture studio', 'venture', 'CEO / Business Head', 'ceo', L_ALL, B_ALL, M_ALL),
@@ -260,7 +290,7 @@ const PROJECTS = [
     [], ['Naming & identity', 'Brand architecture', 'Creative direction', 'Content production', 'Social design'], ['360° marketing']),
   P('AI Designers Ecosystem', 'Technology / community', 'venture', 'CMO / Head of Marketing', 'marketing',
     ['Marketing leadership'], B_ALL, ['Social strategy', 'Paid media', '360° marketing', 'Growth & revenue', 'Sales & BD', 'Influencers / PR']),
-  P('Sol. for Her', "Women's fashion", 'style', 'Consultant / Advisor', 'advisor',
+  P('Sol.', "Women's fashion", 'style', 'Consultant / Advisor', 'advisor',
     [], ['Brand strategy', 'Naming & identity', 'Brand architecture', 'Creative direction', 'Content production', 'Social design'],
     ['Social strategy', '360° marketing', 'Growth & revenue', 'Influencers / PR']),
   P('Nothing Else', 'FMCG', 'consumer', 'Founder / Co-founder', 'founder', L_ALL, B_ALL, M_ALL),
@@ -378,7 +408,7 @@ const EYEBROW_WHITE = `${EYEBROW} bg-white border-[#141414]`
 const EYEBROW_LIME = `${EYEBROW} bg-[#c6f24e] text-[#141414] border-[#c6f24e]`
 const H2 = 'text-[length:clamp(1.9rem,4vw,3.1rem)] font-black leading-[1.02] tracking-[-0.01em] [font-stretch:85%] uppercase max-w-[22ch]'
 const LEAD = 'text-[#5b5b5b] text-[1.05rem] max-w-[62ch] mt-2.5'
-const FINE = 'text-[0.82rem] text-[#5b5b5b] mt-[18px] max-w-[90ch]'
+const FINE = 'text-[length:clamp(0.9rem,1vw,1rem)] leading-[1.5] text-[#5b5b5b] mt-[18px] max-w-[90ch]'
 const HL = 'px-[0.12em] box-decoration-clone'
 
 const BTN_CORE =
@@ -560,6 +590,7 @@ export default function CreativePortfolio() {
   }
   const c = FEATURED[current]
   const workGallery = WORK_GALLERIES[c.slug] || []
+  const workVideos = WORK_VIDEOS[c.slug] || []
 
   /* ---------- Project index ---------- */
   const visibleProjects = PROJECTS.map((p, i) => ({ p, i })).filter(({ p }) =>
@@ -746,7 +777,7 @@ export default function CreativePortfolio() {
             <div className={`grid grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] max-[1024px]:grid-cols-1 ${GAP}`}>
               <article data-reveal className={`${CARD} ${REVEAL} bg-[#fffdf8] flex flex-col gap-4`}>
                 <p className="text-[length:clamp(1.15rem,1.8vw,1.45rem)] font-extrabold leading-[1.35]">I bring together the perspective of a business head, the judgement of a marketing leader and the creative direction required to make an idea visible in the market.</p>
-                <p className="text-[#5b5b5b]">My work has involved leading venture-level priorities, defining brand systems, planning and coordinating 360° marketing, directing content and campaigns, supporting paid acquisition, shaping go-to-market activity, and connecting marketing choices with revenue objectives.</p>
+                <p className="text-[length:clamp(1rem,1.15vw,1.125rem)] leading-[1.55] text-[#5b5b5b]">My work has involved leading venture-level priorities, defining brand systems, planning and coordinating 360° marketing, directing content and campaigns, supporting paid acquisition, shaping go-to-market activity, and connecting marketing choices with revenue objectives.</p>
                 <div className="grid grid-cols-3 max-[760px]:grid-cols-1 gap-3 mt-auto">
                   {[
                     ['32', 'Brand entries & concepts'],
@@ -762,12 +793,12 @@ export default function CreativePortfolio() {
               </article>
 
               <article data-reveal className={`${CARD} ${REVEAL} bg-[#ffe14d]`}>
-                <h3 className="text-[1rem] font-extrabold uppercase tracking-[0.04em] mb-[14px]">The leadership range</h3>
+                <h3 className="text-[length:clamp(1rem,1.15vw,1.125rem)] font-extrabold uppercase tracking-[0.04em] mb-[14px]">The leadership range</h3>
                 <ul className="flex flex-col gap-3">
                   {RANGE.map(([b, s]) => (
-                    <li key={b} className="flex flex-col gap-[3px] px-[14px] py-3 bg-white border-2 border-[#141414] rounded-xl">
-                      <b className="uppercase text-[0.88rem] font-black">{b}</b>
-                      <span className="text-[0.9rem]">{s}</span>
+                    <li key={b} className="flex flex-col gap-1 px-4 py-3.5 bg-white border-2 border-[#141414] rounded-xl">
+                      <b className="uppercase text-[length:clamp(0.9rem,1vw,1rem)] font-black">{b}</b>
+                      <span className="text-[length:clamp(0.98rem,1.1vw,1.1rem)] leading-[1.5]">{s}</span>
                     </li>
                   ))}
                 </ul>
@@ -793,7 +824,7 @@ export default function CreativePortfolio() {
                 <article key={no} data-reveal className={`${CARD} ${REVEAL} ${bg} flex flex-col gap-2 hover:shadow-[9px_9px_0_#141414]`}>
                   <span className="self-start text-[0.8rem] font-black px-2.5 py-0.5 border-2 border-[#141414] rounded-lg bg-white">{no}</span>
                   <h3 className="text-[1.2rem] font-black uppercase leading-[1.15] mt-1.5">{title}</h3>
-                  <p className="text-[0.95rem]">{text}</p>
+                  <p className="text-[length:clamp(1rem,1.1vw,1.1rem)] leading-[1.5]">{text}</p>
                 </article>
               ))}
             </div>
@@ -890,7 +921,7 @@ export default function CreativePortfolio() {
                       </div>
                     </div>
                     <p className="font-extrabold text-[1.02rem]">{f.headline}</p>
-                    <p className="text-[0.92rem] text-[#5b5b5b]">{f.summary}</p>
+                    <p className="text-[length:clamp(1rem,1.1vw,1.1rem)] leading-[1.5] text-[#5b5b5b]">{f.summary}</p>
                     <span className="mt-auto flex justify-between items-center pt-3 border-t-2 border-dashed border-[#141414] text-[0.8rem] font-black uppercase">
                       View case scope{' '}
                       <span
@@ -919,10 +950,9 @@ export default function CreativePortfolio() {
               {BRANDS.map(([slug, name, sector]) => (
                 <figure
                   key={slug}
-                  data-reveal
-                  className={`relative m-0 border-[3px] border-[#141414] rounded-[14px] overflow-hidden bg-white shadow-[4px_4px_0_#141414] hover:shadow-[7px_7px_0_#141414] ${REVEAL}`}
+                  className="relative m-0 border-[3px] border-[#141414] rounded-[14px] overflow-hidden bg-white shadow-[4px_4px_0_#141414] hover:shadow-[7px_7px_0_#141414]"
                 >
-                  <Logo slug={slug} name={name} cover={slug !== 'founderverse'} className="w-full aspect-[453/293]" />
+                  <Logo slug={slug} name={name} cover={!['founderverse', 'carzo'].includes(slug)} className="w-full aspect-[453/293]" />
                   <figcaption className="flex flex-col gap-px px-2.5 py-2 text-[0.76rem] font-extrabold uppercase border-t-[3px] border-[#141414] bg-[#fffdf8]">
                     {name}
                     <small className="font-semibold text-[#5b5b5b] normal-case">{sector}</small>
@@ -971,6 +1001,9 @@ export default function CreativePortfolio() {
               <ul className="flex flex-col gap-2.5">
                 {visibleProjects.map(({ p, i }) => {
                   const open = openRows.has(i)
+                  const projectSlug = p.name.toLowerCase().replaceAll(' ', '-')
+                  const projectGallery = WORK_GALLERIES[projectSlug] || []
+                  const projectVideos = WORK_VIDEOS[projectSlug] || []
                   return (
                     <li key={p.name} className={`border-2 border-[#141414] rounded-xl bg-[#fffdf8] overflow-hidden ${open ? 'shadow-[4px_4px_0_#141414]' : ''}`}>
                       <button
@@ -983,7 +1016,7 @@ export default function CreativePortfolio() {
                         <span className="font-black text-[0.9rem]">{pad(i + 1)}</span>
                         <span className="font-black uppercase text-[0.98rem] leading-[1.15]">
                           {p.name}
-                          <span className="block font-semibold text-[0.8rem] text-[#5b5b5b] normal-case">{p.sector}</span>
+                          <span className="block font-semibold text-[length:clamp(0.9rem,1vw,1rem)] text-[#5b5b5b] normal-case">{p.sector}</span>
                         </span>
                         <span
                           className={`justify-self-start text-[0.72rem] font-extrabold uppercase px-[9px] py-[3px] border-2 border-[#141414] rounded-full max-[760px]:col-start-2 ${
@@ -1009,7 +1042,7 @@ export default function CreativePortfolio() {
                         className={`${open ? 'grid' : 'hidden'} pt-1 pr-[14px] pb-4 pl-[70px] max-[760px]:pl-[14px] gap-3 grid-cols-3 max-[760px]:grid-cols-1`}
                       >
                         {p.note ? (
-                          <p className="col-span-full text-[0.85rem] text-[#5b5b5b]">{p.note}</p>
+                          <p className="col-span-full text-[length:clamp(0.98rem,1.05vw,1.08rem)] leading-[1.5] text-[#5b5b5b]">{p.note}</p>
                         ) : (
                           [['lead', 'Leadership', p.l], ['brand', 'Brand & creative', p.b], ['mkt', 'Marketing & growth', p.m]].map(([k, title, items]) => (
                             <div key={k}>
@@ -1017,6 +1050,31 @@ export default function CreativePortfolio() {
                               {items.length ? <Tags items={items} itemClass={GROUPS[k].tag} /> : <p className="text-[0.82rem] text-[#5b5b5b]">—</p>}
                             </div>
                           ))
+                        )}
+                        {projectGallery.length > 0 && (
+                          <section aria-label={`${p.name} image gallery`} className="col-span-full flex flex-col gap-3">
+                            <h5 className="text-[0.9rem] font-black uppercase">Social media</h5>
+                            <div className="flex flex-wrap justify-center gap-4">
+                              {projectGallery.map(([file, label]) => (
+                                <figure key={file} className="w-fit max-w-full overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]">
+                                  <img src={`/social-media/${file}`} alt={label} loading="lazy" decoding="async" className="block h-auto w-auto max-h-[min(68vh,680px)] max-w-full object-contain" />
+                                  <figcaption className="border-t-2 border-[#141414] px-3 py-2 text-[0.85rem] font-bold">{label}</figcaption>
+                                </figure>
+                              ))}
+                            </div>
+                          </section>
+                        )}
+                        {projectVideos.length > 0 && (
+                          <section aria-label={`${p.name} video gallery`} className="col-span-full flex flex-col gap-3">
+                            <h5 className="text-[0.9rem] font-black uppercase">Videos</h5>
+                            <div className="flex flex-wrap justify-center gap-4">
+                              {projectVideos.map(({ src, title }) => (
+                                <div key={src} className="w-full max-w-[400px] overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]">
+                                  <iframe src={src} title={title} loading="lazy" allow="encrypted-media; picture-in-picture; web-share" allowFullScreen className="block h-[min(68vh,680px)] min-h-[480px] w-full" />
+                                </div>
+                              ))}
+                            </div>
+                          </section>
                         )}
                       </div>
                     </li>
@@ -1042,7 +1100,7 @@ export default function CreativePortfolio() {
                 <article key={no} data-reveal className={`${CARD} ${REVEAL} ${bg} flex flex-col gap-2.5`}>
                   <span className="text-[2.6rem] font-black leading-none [font-stretch:80%]">{no}</span>
                   <h3 className="text-[1.2rem] font-black uppercase">{title}</h3>
-                  <p className="text-[0.94rem]">{text}</p>
+                  <p className="text-[length:clamp(1rem,1.1vw,1.1rem)] leading-[1.5]">{text}</p>
                 </article>
               ))}
             </div>
@@ -1079,7 +1137,7 @@ export default function CreativePortfolio() {
         ref={dialogRef}
         aria-labelledby="caseName"
         onClick={onDialogClick}
-        className="m-auto w-[min(900px,calc(100%_-_28px))] max-h-[calc(100vh_-_40px)] p-0 border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[10px_10px_0_#141414] bg-[#fffdf8] text-[#141414] backdrop:bg-[rgba(20,20,20,0.55)] backdrop:backdrop-blur-[3px] open:animate-[pop_0.22s_ease-out]"
+        className="m-auto w-[min(1040px,calc(100%_-_28px))] max-h-[calc(100vh_-_40px)] p-0 border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[10px_10px_0_#141414] bg-[#fffdf8] text-[#141414] backdrop:bg-[rgba(20,20,20,0.55)] backdrop:backdrop-blur-[3px] open:animate-[pop_0.22s_ease-out]"
       >
         <div className="relative p-[clamp(20px,3vw,34px)] flex flex-col gap-[14px]">
           <button
@@ -1113,31 +1171,46 @@ export default function CreativePortfolio() {
               <Tags items={c.mkt} />
             </div>
           </div>
-          <p className="text-[0.88rem] text-[#5b5b5b] italic">{c.note}</p>
+          <p className="text-[length:clamp(0.98rem,1.05vw,1.08rem)] leading-[1.5] text-[#5b5b5b] italic">{c.note}</p>
           {workGallery.length > 0 && (
             <section aria-label={`${c.name} gallery`} className="flex flex-col gap-3">
               <h4 className="text-[0.9rem] font-black uppercase">Gallery</h4>
-              <div className="grid grid-cols-3 max-[760px]:grid-cols-2 max-[480px]:grid-cols-1 items-stretch gap-3">
+              <div className="flex flex-wrap justify-center gap-4">
                 {workGallery.map(([file, label]) => (
-                  <a
+                  <div
                     key={file}
-                    href={`/social-media/${file}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Open ${label} full size in a new tab`}
-                    className="group flex h-full w-full min-w-0 flex-col overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]"
+                    className="flex h-fit w-fit max-w-full min-w-0 flex-col overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]"
                   >
-                    <span className="flex h-[360px] shrink-0 items-center justify-center overflow-hidden bg-[#f3f0eb] sm:h-[420px]">
+                    <span className="flex w-fit max-w-full shrink-0 items-center justify-center overflow-hidden bg-[#f3f0eb]">
                       <img
                         src={`/social-media/${file}`}
                         alt={label}
                         loading="lazy"
                         decoding="async"
-                        className="h-full w-full object-contain transition-transform group-hover:scale-[1.03]"
+                        className="block h-auto w-auto max-h-[min(68vh,680px)] max-w-full object-contain"
                       />
                     </span>
-                    <span className="flex min-h-[52px] flex-1 items-start border-t-2 border-[#141414] px-2 py-2 text-[0.7rem] font-bold">{label} · Open full size ↗</span>
-                  </a>
+                    <span className="flex min-h-[52px] flex-1 items-start border-t-2 border-[#141414] px-2 py-2 text-[0.7rem] font-bold">{label}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+          {workVideos.length > 0 && (
+            <section aria-label={`${c.name} videos`} className="flex flex-col gap-3">
+              <h4 className="text-[0.9rem] font-black uppercase">Videos</h4>
+              <div className="flex flex-wrap justify-center gap-4">
+                {workVideos.map(({ src, title }) => (
+                  <div key={src} className="mx-auto w-full max-w-[400px] overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]">
+                    <iframe
+                      src={src}
+                      title={title}
+                      loading="lazy"
+                      allow="encrypted-media; picture-in-picture; web-share"
+                      allowFullScreen
+                      className="block h-[min(68vh,680px)] min-h-[480px] w-full"
+                    />
+                  </div>
                 ))}
               </div>
             </section>

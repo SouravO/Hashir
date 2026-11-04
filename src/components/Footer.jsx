@@ -4,7 +4,7 @@ import { ArrowUpRight, EnvelopeSimple, InstagramLogo, LinkedinLogo, MapPin, Phon
 const email = 'connect@hashirusman.online'
 const groups = [
   { title: 'Explore', links: [['My Work', '/ventures'], ['About', '/about'], ['Founderverse', '/founderverse']] },
-  { title: 'Opportunities', links: [['We’re Hiring', '/opportunities#hiring'], ['Internships', '/opportunities#internships'], ['Become a Co-Founder', '/opportunities#co-founder']] },
+  { title: 'Opportunities', links: [['Join my team', '/opportunities#hiring'], ['Internships', '/opportunities#internships'], ['Become a Co-Founder', '/opportunities#co-founder']] },
 ]
 const socials = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/', Icon: LinkedinLogo },

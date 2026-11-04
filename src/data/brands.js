@@ -18,7 +18,7 @@ export const groups = ['Food & Drink', 'Retail & Lifestyle', 'Beauty & Wellness'
 
 // Same order as the blueprint. `group` drives the filter chips, `category` is the label shown on each card.
 export const brands = [
-  { id: 'ezkaa', name: 'Ezkaa by Fousiya Shameer', file: 'ezka.jpeg', category: 'Fashion / Branding', group: 'Retail & Lifestyle', url: null,
+  { id: 'ezkaa', name: 'Ezkaa', file: 'ezka.jpeg', category: 'Fashion / Branding', group: 'Retail & Lifestyle', url: null,
     short: 'A premium fashion identity developed through brand direction, visual identity, and packaging concepts.',
     scope: ['Branding', 'Identity', 'Packaging'] },
 
@@ -38,7 +38,7 @@ export const brands = [
     short: 'Connecting design, AI, education, technology, and professional development through a larger business ecosystem.',
     scope: ['Ecosystem Design', 'Business Strategy'] },
 
-  { id: 'sol', name: 'sol. — for her', file: 'sOl.png', category: 'Fashion / Retail', group: 'Retail & Lifestyle', url: null,
+  { id: 'sol', name: 'sol.', file: 'sOl.png', category: 'Fashion / Retail', group: 'Retail & Lifestyle', url: null,
     short: 'A women’s fashion concept built around retail positioning, brand identity, and community experience.',
     scope: ['Brand Direction', 'Retail Strategy'] },
 
