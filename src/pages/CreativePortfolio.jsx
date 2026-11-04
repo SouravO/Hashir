@@ -36,6 +36,11 @@ const LOGO_ASSETS = {
   'shameers-cars': '/social-media/shameerscars.png',
 }
 
+const LOGO_SCALE = {
+  nkreatives: 1.45,
+  'shameers-cars': 1.15,
+}
+
 // Social media examples shown inside each selected work's case detail.
 const WORK_GALLERIES = {
   nkreatives: [
@@ -45,11 +50,13 @@ const WORK_GALLERIES = {
     ['oxtelinstaprof.jpeg', 'Oxtel Instagram profile'],
   ],
   carzo: [
-    ['carzoinsta.png', 'Carzo Instagram profile'],
-    ['carzoreels.png', 'Carzo Instagram reels'],
+    ['carzo.jpeg', 'Carzo brand logo', '/carzo.jpeg'],
+  ],
+  'bare-logic': [
+    ['barelogic.png', 'Bare Logic brand logo', '/ventures/barelogic.png'],
   ],
   dayone: [
-    ['dayoneinsta.png', 'DayOne Instagram post'],
+    ['davone.png', 'DayOne brand logo', '/ventures/davone.png'],
   ],
   'moon-bliss': [
     ['moonbliss-post.png', 'Moon Bliss social post'],
@@ -108,13 +115,16 @@ function Logo({ slug, name, className = '', cover = false }) {
   const asset = LOGO_ASSETS[slug]
   if (asset) {
     return (
-      <img
-        src={asset.startsWith('/') ? asset : `/ventures/${asset}`}
-        alt={`${name} logo`}
-        loading="eager"
-        decoding="async"
-        className={`bg-white ${cover ? 'object-cover' : 'object-contain'} ${className}`}
-      />
+      <span className={`relative block overflow-hidden ${className}`}>
+        <img
+          src={asset.startsWith('/') ? asset : `/ventures/${asset}`}
+          alt={`${name} logo`}
+          loading="eager"
+          decoding="async"
+          style={LOGO_SCALE[slug] ? { transform: `scale(${LOGO_SCALE[slug]})`, transformOrigin: 'center' } : undefined}
+          className={`absolute inset-0 size-full bg-white ${cover ? 'object-cover' : 'object-contain'}`}
+        />
+      </span>
     )
   }
 
@@ -161,10 +171,10 @@ function SocialAssetGrid({ items }) {
       className="grid items-start gap-3"
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}
     >
-      {items.map(([file, label]) => (
+      {items.map(([file, label, src]) => (
         <figure key={file} className="m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
           <div className="grid aspect-[4/5] place-items-center overflow-hidden bg-[#f3f0eb]">
-            <img src={`/social-media/${file}`} alt={label} loading="lazy" decoding="async" className="block h-full w-full object-contain" />
+            <img src={src || `/social-media/${file}`} alt={label} loading="lazy" decoding="async" className="block h-full w-full object-contain" />
           </div>
           <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
         </figure>
@@ -293,7 +303,7 @@ const matchesWorkFilter = (item, filter) => {
 
 const BRANDS = [
   ['admos', 'Admos', 'Consumer electronics / GCC'],
-  ['oxtel', 'Oxtel', 'Accommodation technology'],
+  ['oxtel', 'Oxtel', 'Hospitality'],
   ['start-x', 'Start-X', 'Startup ecosystem'], ['hey-dossa', 'Hey Dossa', 'Food & beverage'],
   ['moon-bliss', 'Moon Bliss', "Women's wellness"], ['zaati', 'Zaati', 'Restaurant'],
   ['de-coff', 'De Coff', 'Café'], ['house-of-bliss', 'House of Bliss', 'Lifestyle'],
@@ -332,7 +342,7 @@ const PROJECTS = [
     ['Marketing leadership', 'Operations / SOPs'], ['Naming & identity', 'Brand architecture'], ['Social strategy', '360° marketing', 'Go-to-market', 'Sales & BD']),
   P('Hey Dossa', 'Food & beverage', 'food', 'Consultant / Advisor', 'advisor',
     ['Operations / SOPs'], ['Brand strategy', 'Naming & identity', 'Brand architecture', 'Social design'], ['Social strategy', 'Go-to-market']),
-  P('Oxtel', 'Accommodation technology', 'venture', 'Consultant / Advisor', 'advisor',
+  P('Oxtel', 'Hospitality', 'venture', 'Consultant / Advisor', 'advisor',
     [], [], [], 'Instagram profile and reels.'),
   P('Moon Bliss', "Women's wellness", 'style', 'CEO / Business Head', 'ceo', L_ALL, B_ALL, M_ALL),
   P('Zaati', 'Restaurant', 'food', 'CMO / Head of Marketing', 'marketing',
@@ -717,7 +727,7 @@ export default function CreativePortfolio() {
             <span className="grid place-items-center w-[58px] h-[52px] text-[1.6rem] font-black bg-[#ffe14d] border-[3px] border-[#141414] rounded-xl shadow-[3px_3px_0_#141414]">HU</span>
             <span className="flex flex-col leading-[1.05]">
               <strong className="text-[1.6rem] font-black tracking-[0.02em]">STUDIO</strong>
-              <small className="text-[0.72rem] font-semibold uppercase max-[760px]:hidden">Hashir Usman / Creative Portfolio</small>
+              <small className="text-[0.72rem] font-semibold uppercase max-[760px]:hidden">Hashir Usman  Creative Portfolio</small>
             </span>
           </a>
 
@@ -1022,7 +1032,7 @@ export default function CreativePortfolio() {
                   key={slug}
                   className="relative m-0 border-[3px] border-[#141414] rounded-[14px] overflow-hidden bg-white shadow-[4px_4px_0_#141414] hover:shadow-[7px_7px_0_#141414]"
                 >
-                  <Logo slug={slug} name={name} cover={!['admos', 'founderverse', 'carzo'].includes(slug)} className="w-full aspect-[453/293]" />
+                  <Logo slug={slug} name={name} cover={!['admos', 'founderverse'].includes(slug)} className="block w-full aspect-[453/293]" />
                   <figcaption className="flex flex-col gap-px px-2.5 py-2 text-[0.76rem] font-extrabold border-t-[3px] border-[#141414] bg-[#fffdf8]">
                     {name}
                     <small className="font-semibold text-[#5b5b5b] normal-case">{sector}</small>
@@ -1071,7 +1081,7 @@ export default function CreativePortfolio() {
                 {visibleProjects.map(({ p, i }) => {
                   const open = openRows.has(i)
                   const projectSlug = p.name.toLowerCase().replaceAll(' ', '-')
-                  const projectGallery = p.name === 'Carzo' ? [] : (WORK_GALLERIES[projectSlug] || [])
+                  const projectGallery = WORK_GALLERIES[projectSlug] || []
                   const projectPackaging = WORK_PACKAGING[projectSlug] || []
                   const projectVideos = p.name === 'Carzo' ? [] : (WORK_VIDEOS[projectSlug] || [])
                   return (

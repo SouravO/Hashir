@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, ChartLineUp, Compass, Gear, SquaresFour } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 import { brandImage, brands } from '../data/brands'
@@ -426,24 +426,7 @@ function Framework() {
   )
 }
 
-/* ---------- Ventures showcase: a dark bento stage that keeps rearranging itself ----------
-   Every venture image sits on its own rounded tile. The tiles slide, grow, shrink and trade places through four layouts
-   (the idea comes from the reference video), while the image inside each tile slowly zooms.
-
-   The images are no longer transparent logos: each one is a picture with its own background, and they are not all the same
-   shape. So nothing here leaves empty space around an image:
-     1. Each image is read once (its shape, and what its edges look like).
-     2. Tiles are mostly squares, plus a few wide ones. When a tile gets a new image the schedule prefers the image whose
-        shape is closest to the tile, and rotates through all of them so every venture is shown.
-     3. If the shape still does not match exactly, the image is shown whole and the gap is filled with its own background
-        colour (when its edges are one flat colour) or a blurred copy of itself. It never shows the dark tile.
-
-     A  one big square + two squares     B  three squares, one wide tile, and the lime link tile
-     C  the big square moves to the right   D  two wide tiles on top, three squares below
-   Tiles that are not in a layout shrink into the edge of the stage and fade out, then grow back later.
-   The thin line under the stage is the timer: when it fills, the next layout starts. It pauses on hover, on keyboard focus
-   and while the section is off screen. Reduced-motion visitors get one still layout. Phones get a tall version of the stage
-   (6 x 8 cells), larger screens a wide one (12 x 8 cells). Every venture is also listed for screen readers. */
+/* ---------- Ventures showcase: a continuous arc carousel ---------- */
 const logoVentures = [
   'dayone', 'heydossa', 'suite-spot', 'popsi', 'no-two', 'nothing-else', 'car-broker', 'zaati',
   'ezkaa', 'moonbliss', 'house-of-bliss', 'de-coff', 'ai-designers', 'bare-logic', 'celebrations',
@@ -451,207 +434,48 @@ const logoVentures = [
 ]
 const logoById = new Map(brands.map((brand) => [brand.id, brand]))
 const VENTURES = logoVentures.map((id) => ({ id, brand: logoById.get(id) })).filter((v) => v.brand)
-const FALLBACK_META = VENTURES.map(() => ({ r: 1, bg: '#15191a', kind: 'blur', crop: { x: 0, y: 0, w: 1, h: 1 } }))
-
-const STEP_MS = 3800 /* how long each layout stays */
-const MOVE_MS = 1000 /* how long the tiles take to rearrange */
-const MOVE_EASE = 'cubic-bezier(.22,1,.36,1)'
-const TILES = 7 /* each tile showcases a venture */
-const STEPS = 48 /* the schedule repeats after this many layouts (a multiple of 4) */
-const make = (spec) => Array.from({ length: TILES }, (_, t) => spec[t] || null) /* [column, row, width, height] in grid cells, or null when the tile is tucked away */
-const STAGES = {
-  wide: {
-    cols: 12,
-    rows: 8,
-    ratio: '3 / 2',
-    feature: [0, 3, 3, 1], /* the "main" tile of each layout: its venture name goes in the caption */
-    layouts: [
-      make({ 0: [0, 0, 8, 8], 1: [8, 0, 4, 4], 2: [8, 4, 4, 4] }),
-      make({ 0: [0, 0, 4, 4], 1: [4, 0, 4, 4], 2: [8, 0, 4, 4], 3: [0, 4, 8, 4], 6: [8, 4, 4, 4] }),
-      make({ 4: [0, 0, 4, 4], 5: [0, 4, 4, 4], 3: [4, 0, 8, 8] }),
-      make({ 1: [0, 0, 6, 4], 2: [6, 0, 6, 4], 4: [0, 4, 4, 4], 5: [4, 4, 4, 4], 0: [8, 4, 4, 4] }),
-    ],
-  },
-  tall: {
-    cols: 6,
-    rows: 8,
-    ratio: '3 / 4',
-    feature: [0, 3, 3, 1],
-    layouts: [
-      make({ 0: [0, 0, 6, 6], 1: [0, 6, 3, 2], 2: [3, 6, 3, 2] }),
-      make({ 0: [0, 0, 3, 3], 1: [3, 0, 3, 3], 3: [0, 3, 6, 3], 2: [0, 6, 3, 2], 6: [3, 6, 3, 2] }),
-      make({ 3: [0, 0, 6, 6], 4: [0, 6, 3, 2], 5: [3, 6, 3, 2] }),
-      make({ 1: [0, 0, 6, 3], 2: [0, 3, 6, 3], 4: [0, 6, 3, 2], 5: [3, 6, 3, 2] }),
-    ],
-  },
-}
-const SIDE = [0, 1, 1, 1, 0, 0, 1] /* which edge a hidden tile tucks into: 0 = left, 1 = right */
-
-/* Works out which image sits on which tile at every step. A tile gets a new image when it appears, when it is the main tile,
-   and every third step otherwise. The pick is the image whose shape is closest to the tile, among those not on stage,
-   and the longer an image has been away the better its chance, so all of them come round. Built once per stage and set of shapes. */
-function buildSchedule(cfg, meta) {
-  const total = meta.length
-  const last = new Array(total).fill(-1)
-  const table = []
-  for (let s = 0; s < STEPS; s += 1) {
-    const k = s % cfg.layouts.length
-    const now = cfg.layouts[k]
-    const before = cfg.layouts[(s + cfg.layouts.length - 1) % cfg.layouts.length]
-    const next = s ? table[s - 1].slice() : new Array(TILES).fill(-1)
-    for (let t = 0; t < TILES; t += 1) {
-      if (!now[t]) continue
-      if (!(s === 0 || next[t] < 0 || !before[t] || t === cfg.feature[k] || (t + s) % 3 === 0)) continue
-      const tile = now[t][2] / now[t][3]
-      let best = -1
-      let bestCost = Infinity
-      for (let v = 0; v < total; v += 1) {
-        if (next.includes(v)) continue
-        const cost = 14 * Math.abs(Math.log(tile / meta[v].r)) + last[v]
-        if (cost < bestCost) { bestCost = cost; best = v }
-      }
-      if (best >= 0) { next[t] = best; last[best] = s }
-    }
-    table.push(next)
-  }
-  return table
-}
-
-/* Reads one image: its shape, and whether its edges are a flat colour, a busy picture, or see-through. */
-function loadMeta(src) {
-  return new Promise((resolve) => {
-    const img = new Image()
-    img.onerror = () => resolve({ r: 1, bg: '#15191a', kind: 'blur', crop: { x: 0, y: 0, w: 1, h: 1 } })
-    img.onload = () => {
-      const r = (img.naturalWidth || 1) / (img.naturalHeight || 1)
-      try {
-        const S = 64
-        const c = document.createElement('canvas')
-        c.width = S
-        c.height = S
-        const ctx = c.getContext('2d', { willReadFrequently: true })
-        ctx.drawImage(img, 0, 0, S, S)
-        const px = ctx.getImageData(0, 0, S, S).data
-        const ring = []
-        for (let y = 0; y < S; y += 1) for (let x = 0; x < S; x += 1) if (x === 0 || y === 0 || x === S - 1 || y === S - 1) ring.push((y * S + x) * 4)
-        const mean = [0, 1, 2].map((ch) => ring.reduce((a, i) => a + px[i + ch], 0) / ring.length)
-        const spread = ring.reduce((a, i) => a + Math.abs(px[i] - mean[0]) + Math.abs(px[i + 1] - mean[1]) + Math.abs(px[i + 2] - mean[2]), 0) / (ring.length * 3)
-        const clear = ring.some((i) => px[i + 3] < 40)
-        const solid = ring.every((i) => px[i + 3] > 240)
-        const kind = clear ? 'none' : solid && spread < 16 ? 'solid' : 'blur'
-        let x0 = S
-        let y0 = S
-        let x1 = -1
-        let y1 = -1
-        if (kind !== 'blur') {
-          for (let y = 0; y < S; y += 1) for (let x = 0; x < S; x += 1) {
-            const i = (y * S + x) * 4
-            const content = clear
-              ? px[i + 3] > 48
-              : Math.abs(px[i] - mean[0]) + Math.abs(px[i + 1] - mean[1]) + Math.abs(px[i + 2] - mean[2]) > 54
-            if (content) { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y) }
-          }
-        }
-        const pad = 2 / S
-        const left = x1 < x0 ? 0 : Math.max(0, x0 / S - pad)
-        const top = y1 < y0 ? 0 : Math.max(0, y0 / S - pad)
-        const right = x1 < x0 ? 1 : Math.min(1, (x1 + 1) / S + pad)
-        const bottom = y1 < y0 ? 1 : Math.min(1, (y1 + 1) / S + pad)
-        resolve({ r, bg: `rgb(${mean.map(Math.round).join(',')})`, kind, crop: { x: left, y: top, w: right - left, h: bottom - top } })
-      } catch {
-        resolve({ r, bg: '#15191a', kind: 'blur', crop: { x: 0, y: 0, w: 1, h: 1 } })
-      }
-    }
-    img.src = src
-  })
-}
-
-const VENTURES_CSS = `
-.vs-fit{transition:transform .9s cubic-bezier(.16,1,.3,1),width .9s cubic-bezier(.16,1,.3,1),height .9s cubic-bezier(.16,1,.3,1),left .9s cubic-bezier(.16,1,.3,1),top .9s cubic-bezier(.16,1,.3,1)}
-.vs-in{animation:vs-in 850ms cubic-bezier(.16,1,.3,1) backwards}
-@keyframes vs-in{from{opacity:0;transform:scale(.92);filter:blur(8px)}}
-.vs-out{animation:vs-out 650ms cubic-bezier(.22,1,.36,1) forwards;pointer-events:none}
-@keyframes vs-out{to{opacity:0;transform:scale(1.06);filter:blur(5px)}}
-.vs-fill{transform-origin:left;animation:vs-fill linear forwards}
-@keyframes vs-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@media (hover:hover) and (pointer:fine){.vs-stage:hover .vs-fill,.vs-stage:focus-within .vs-fill{animation-play-state:paused}}
-@media (prefers-reduced-motion:reduce){.vs-in,.vs-out,.vs-fill{animation:none}}
-`
-
-/* One image, filling its tile. The image is always shown whole; whatever the tile has left over is filled with the image's own
-   background colour, or a blurred copy of the image, so the dark tile never shows. */
-function Pane({ src, m, cls = '', tileAspect = 1 }) {
-  const metadata = m ?? { r: 1, bg: '#15191a', kind: 'blur' }
-  const candidate = metadata.crop
-  const hasValidCrop = candidate && Number.isFinite(candidate.x) && Number.isFinite(candidate.y)
-    && Number.isFinite(candidate.w) && Number.isFinite(candidate.h) && candidate.w > 0 && candidate.h > 0
-  const ratio = Number.isFinite(metadata.r) && metadata.r > 0 ? metadata.r : 1
-  const cropArtwork = (metadata.kind === 'solid' || metadata.kind === 'none') && hasValidCrop
-  const crop = cropArtwork ? candidate : { x: 0, y: 0, w: 1, h: 1 }
-  const scale = cropArtwork ? Math.min(1 / crop.h, tileAspect / (crop.w * ratio)) : 1
-  const imageWidth = scale * ratio / tileAspect
-  const imageHeight = scale
-  const imageStyle = cropArtwork ? {
-    width: `${imageWidth * 100}%`,
-    height: `${imageHeight * 100}%`,
-    left: `${(0.5 - (crop.x + crop.w / 2) * imageWidth) * 100}%`,
-    top: `${(0.5 - (crop.y + crop.h / 2) * imageHeight) * 100}%`,
-  } : undefined
-  return (
-    <span aria-hidden className={`absolute inset-0 grid place-items-center ${cls}`}>
-      {metadata.kind === 'solid' && <span className="absolute inset-0" style={{ background: metadata.bg }} />}
-      {metadata.kind !== 'solid' && metadata.kind !== 'none' && <img src={src} alt="" draggable="false" className="absolute inset-0 size-full scale-125 object-cover object-center opacity-90 blur-2xl" />}
-      <img src={src} alt="" draggable="false" className={cropArtwork ? 'vs-fit absolute max-w-none' : 'vs-fit relative block size-full object-contain object-center p-[2%]'} style={imageStyle} />
-    </span>
-  )
-}
-
 function MobileVentureCarousel() {
   const carouselRef = useRef(null)
-  const pauseRef = useRef(false)
 
   useEffect(() => {
     const rail = carouselRef.current
-    if (!rail || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined
-
-    let resumeTimer
+    if (!rail) return undefined
     let rafId
     let previousTime
     let visible = false
-    let touchStart = null
-    const pause = () => {
-      pauseRef.current = true
-      previousTime = undefined
-      window.clearTimeout(resumeTimer)
-      resumeTimer = window.setTimeout(() => { pauseRef.current = false }, 1400)
+    const cards = Array.from(rail.querySelectorAll('[data-arc-card]'))
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const shapeArc = () => {
+      const railBox = rail.getBoundingClientRect()
+      const center = railBox.left + railBox.width / 2
+      const radius = railBox.width / 2
+      const positions = cards.map((card) => {
+        const box = card.getBoundingClientRect()
+        const ratio = Math.max(-1, Math.min(1, (box.left + box.width / 2 - center) / (radius + box.width / 2)))
+        return { card, ratio }
+      })
+      positions.forEach(({ card, ratio }) => {
+        const depth = ratio * ratio
+        card.style.transform = `translate3d(0,${-22 + depth * 64}px,0) scale(${1 - Math.abs(ratio) * 0.1}) rotate(${ratio * 4}deg)`
+        card.style.zIndex = String(10 - Math.round(Math.abs(ratio) * 10))
+      })
     }
-    const onPointerDown = (event) => { if (event.pointerType !== 'touch') pause() }
-    const onTouchStart = (event) => {
-      const touch = event.touches[0]
-      touchStart = touch ? { x: touch.clientX, y: touch.clientY } : null
-    }
-    const onTouchMove = (event) => {
-      if (!touchStart) return
-      const touch = event.touches[0]
-      if (!touch) return
-      const dx = Math.abs(touch.clientX - touchStart.x)
-      const dy = Math.abs(touch.clientY - touchStart.y)
-      if (dx > 8 && dx > dy) {
-        touchStart = null
-        pause()
-      }
-    }
-    const onWheel = (event) => { if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) pause() }
     const wrap = () => {
       const loopStart = rail.querySelector('[data-venture-loop]')
       const loopPoint = loopStart && loopStart.offsetLeft - Number.parseFloat(window.getComputedStyle(rail).paddingLeft || '0')
       if (loopPoint && rail.scrollLeft >= loopPoint) rail.scrollLeft -= loopPoint
     }
+    shapeArc()
+    if (reducedMotion.matches) {
+      window.addEventListener('resize', shapeArc)
+      return () => window.removeEventListener('resize', shapeArc)
+    }
     const tick = (time) => {
       if (!visible) return
-      if (previousTime !== undefined && !pauseRef.current) {
-        rail.scrollLeft += Math.min(time - previousTime, 40) * 0.105
+      if (previousTime !== undefined) {
+        rail.scrollLeft += Math.min(time - previousTime, 40) * 0.035
         wrap()
+        shapeArc()
       }
       previousTime = time
       rafId = window.requestAnimationFrame(tick)
@@ -666,39 +490,29 @@ function MobileVentureCarousel() {
       }
     }, { rootMargin: '100px' })
     observer.observe(rail)
-    rail.addEventListener('scroll', wrap, { passive: true })
-    rail.addEventListener('touchstart', onTouchStart, { passive: true })
-    rail.addEventListener('touchmove', onTouchMove, { passive: true })
-    rail.addEventListener('pointerdown', onPointerDown)
-    rail.addEventListener('wheel', onWheel, { passive: true })
-    rail.addEventListener('focusin', pause)
     return () => {
       window.cancelAnimationFrame(rafId)
-      window.clearTimeout(resumeTimer)
       observer.disconnect()
-      rail.removeEventListener('scroll', wrap)
-      rail.removeEventListener('touchstart', onTouchStart)
-      rail.removeEventListener('touchmove', onTouchMove)
-      rail.removeEventListener('pointerdown', onPointerDown)
-      rail.removeEventListener('wheel', onWheel)
-      rail.removeEventListener('focusin', pause)
     }
   }, [])
 
   return (
-    <div ref={carouselRef} role="region" aria-label="Venture brands" aria-roledescription="carousel" className="relative -mx-5 flex touch-auto overflow-x-auto overscroll-x-contain px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-7 sm:px-7">
+    <div ref={carouselRef} role="region" aria-label="Venture brands" aria-roledescription="carousel" className="relative flex h-[clamp(260px,38vw,420px)] w-full touch-pan-y overflow-hidden">
       {[0, 1].map((copy) => (
-        <div key={copy} data-venture-loop={copy === 1 ? '' : undefined} className="relative flex w-max shrink-0 gap-5 pr-5" aria-hidden={copy === 1}>
+        <div key={copy} data-venture-loop={copy === 1 ? '' : undefined} className="relative flex h-full w-max shrink-0 items-center gap-[clamp(16px,3vw,40px)] pr-[clamp(16px,3vw,40px)]" aria-hidden={copy === 1}>
           {VENTURES.map(({ id, brand }, index) => (
             <Link
               key={`${id}-${copy}`}
               to={`/ventures#brand-${id}`}
               tabIndex={copy === 1 ? -1 : undefined}
-              className="group flex w-[min(84vw,380px)] shrink-0 flex-col items-center gap-3 text-center text-white no-underline"
+              data-arc-card
+              className="group relative flex w-[clamp(150px,22vw,270px)] shrink-0 flex-col items-center gap-2 text-center text-white no-underline will-change-transform"
               aria-label={`View ${brand.name}`}
             >
-              <img src={brandImage(brand.file)} alt="" loading="eager" decoding="async" fetchPriority={index < 3 ? 'high' : 'auto'} className="aspect-square w-full object-contain transition-transform duration-300 group-active:scale-[1.02]" />
-              <span className="text-lg font-semibold tracking-tight">{brand.name}</span>
+              <span className="block aspect-square w-full overflow-hidden group-focus-visible:outline group-focus-visible:outline-2 group-focus-visible:outline-offset-4 group-focus-visible:outline-[#a4be2d]">
+                <img src={brandImage(brand.file)} alt="" loading="eager" decoding="async" fetchPriority={index < 3 ? 'high' : 'auto'} className="block size-full object-cover" />
+              </span>
+              <span className="text-sm font-semibold tracking-tight sm:text-base">{brand.name}</span>
             </Link>
           ))}
         </div>
@@ -708,129 +522,22 @@ function MobileVentureCarousel() {
 }
 
 function Portfolio() {
-  const [tall, setTall] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches)
-  const [step, setStep] = useState(0)
-  const [live, setLive] = useState(false)
-  const [near, setNear] = useState(false)
-  const [assetsReady, setAssetsReady] = useState(false)
-  const [meta, setMeta] = useState(FALLBACK_META)
-  const [still] = useState(calm)
-  const stageRef = useRef(null)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)')
-    const on = () => setTall(mq.matches)
-    on()
-    mq.addEventListener('change', on)
-    return () => mq.removeEventListener('change', on)
-  }, [])
-  /* the timer only runs while the stage is on screen; the images are only fetched once it is close */
-  useEffect(() => {
-    const el = stageRef.current
-    if (!el) return undefined
-    const onScreen = new IntersectionObserver(([en]) => setLive(en.isIntersecting), { threshold: 0.25 })
-    const close = new IntersectionObserver(([en]) => { if (en.isIntersecting) { setNear(true); close.disconnect() } }, { rootMargin: '1600px 0px' })
-    onScreen.observe(el)
-    close.observe(el)
-    return () => { onScreen.disconnect(); close.disconnect() }
-  }, [])
-  useEffect(() => {
-    if (!near) return undefined
-    let dead = false
-    let published = false
-    let waiting = VENTURES.length
-    const found = FALLBACK_META.map((entry) => ({ ...entry, crop: { ...entry.crop } }))
-    const publish = () => {
-      if (dead || published) return
-      published = true
-      setMeta(found.slice())
-      setAssetsReady(true)
-    }
-    const timer = setTimeout(publish, 4500)
-    VENTURES.forEach((v, i) => loadMeta(brandImage(v.brand.file)).then((m) => {
-      found[i] = m
-      waiting -= 1
-      if (waiting === 0) { clearTimeout(timer); publish() }
-    }))
-    return () => { dead = true; clearTimeout(timer) }
-  }, [near])
-
-  const cfg = tall ? STAGES.tall : STAGES.wide
-  const schedule = useMemo(() => buildSchedule(cfg, meta), [cfg, meta])
-  const i = still ? 0 : step % STEPS
-  const k = still ? 1 : step % cfg.layouts.length
-  const layout = cfg.layouts[k]
-  const slots = schedule[i]
-  const before = schedule[(i + STEPS - 1) % STEPS]
-
   return (
     <section id="brands" aria-labelledby="brands-title" className="relative isolate overflow-hidden bg-[#0d0f10] py-[clamp(24px,4svh,56px)]">
-      <style>{VENTURES_CSS}</style>
       <span aria-hidden className="pointer-events-none absolute inset-0 -z-10" style={{ background: 'radial-gradient(900px circle at 50% 38%, rgba(164,190,45,.09), transparent 65%)' }} />
       <span aria-hidden className={`pointer-events-none absolute inset-0 -z-10 opacity-40 ${dotted}`} style={{ WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 45%, #000, transparent 100%)', maskImage: 'radial-gradient(ellipse 70% 60% at 50% 45%, #000, transparent 100%)' }} />
 
-      <div className="mx-auto w-full max-w-[1440px] px-5 sm:px-7">
+      <div className="w-full max-w-none px-0">
         <h2 id="brands-title" className="mb-[clamp(24px,3svh,36px)] text-center text-[clamp(30px,4.5vw,54px)] font-extrabold leading-[1.05] tracking-[-.055em] text-white">
           Ventures <span className="text-[#a4be2d]">I’ve helped build</span>
         </h2>
 
-        <div ref={stageRef}>
-          <div className="md:hidden">
-            <MobileVentureCarousel />
-          </div>
+        <MobileVentureCarousel />
 
-        <div className="vs-stage mx-auto hidden md:block" style={{ width: 'min(100%, calc(62svh * 1.5))' }}>
-          <div className="relative w-full" style={{ aspectRatio: cfg.ratio }}>
-            {Array.from({ length: TILES }, (_, t) => {
-              const rect = layout[t]
-              const on = Boolean(rect)
-              const [x, y, w, h] = rect || [SIDE[t] ? cfg.cols : 0, cfg.rows / 2, 0, 0]
-              const box = {
-                inset: 0,
-                transformOrigin: 'top left',
-                transform: `translate3d(${(x / cfg.cols) * 100}%, ${(y / cfg.rows) * 100}%, 0) scale(${w / cfg.cols}, ${h / cfg.rows}) translateZ(0)`,
-                opacity: on ? 1 : 0,
-                visibility: on ? 'visible' : 'hidden',
-                willChange: 'transform, opacity',
-                transition: `transform ${MOVE_MS}ms ${MOVE_EASE} ${t * 42}ms, opacity 550ms ease ${t * 32}ms, visibility 0s linear ${on ? 0 : MOVE_MS + t * 42}ms`,
-              }
-              const tileCls = 'vs-tile absolute inset-[5px] overflow-hidden rounded-[16px] sm:inset-[7px] sm:rounded-[22px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a4be2d]'
-
-              const idx = slots[t]
-              const v = idx >= 0 ? VENTURES[idx] : null
-              if (!v) return <div key={t} className="absolute" style={box}><span className={`${tileCls} bg-[#15191a]`} /></div>
-              const prev = before[t]
-              const changed = !still && step > 0 && prev >= 0 && idx !== prev
-              const [stageWidth, stageHeight] = cfg.ratio.split('/').map(Number)
-              const tileAspect = h ? (w * stageWidth * cfg.rows) / (h * stageHeight * cfg.cols) : 1
-              return (
-                <div key={t} className="absolute" style={box}>
-                  <Link to={`/ventures#brand-${v.id}`} aria-label={`View ${v.brand.name}`} className={`${tileCls} group bg-[#15191a]`}>
-                    <span aria-hidden className="absolute inset-0">
-                      {changed && <Pane key={`o${prev}`} src={brandImage(VENTURES[prev].brand.file)} m={meta[prev]} cls="vs-out" tileAspect={tileAspect} />}
-                      <Pane key={`c${idx}`} src={brandImage(v.brand.file)} m={meta[idx]} cls={changed ? 'vs-in' : ''} tileAspect={tileAspect} />
-                    </span>
-                  </Link>
-                </div>
-              )
-            })}
-          </div>
-
-          {/* timer: when the line fills, the tiles move on */}
-          {!still && (
-            <span aria-hidden className="mt-3 block h-[2px] w-full bg-white/10">
-              <span key={step} className="vs-fill block h-full bg-[#a4be2d]" onAnimationEnd={() => { if (assetsReady) setStep((s) => s + 1) }} style={{ animationDuration: `${STEP_MS}ms`, animationPlayState: live && assetsReady ? undefined : 'paused' }} />
-            </span>
-          )}
-
-        </div>
-        </div>
-
-        <div className="mt-8 flex justify-center md:mt-5">
+        <div className="mt-8 flex justify-center">
           <Link to="/ventures#collection" className="group inline-flex min-h-12 items-center gap-3 rounded-full bg-white px-6 text-[13px] font-semibold text-[#171a1b] no-underline transition-colors duration-300 hover:bg-[#a4be2d] active:scale-[.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a4be2d]">See all ventures <Arrow /></Link>
         </div>
 
-        {/* the tiles keep changing, so every venture is also listed here for screen readers */}
         <ul className="sr-only">
           {VENTURES.map((v) => <li key={v.id}><Link to={`/ventures#brand-${v.id}`}>{v.brand.name}</Link></li>)}
         </ul>
@@ -838,7 +545,6 @@ function Portfolio() {
     </section>
   )
 }
-
 const EXPERTISE_ICONS = [SquaresFour, Compass, ChartLineUp, Gear]
 
 function TechCard({ e, i }) {
@@ -1036,293 +742,6 @@ function Conversation() {
   )
 }
 
-/* ---------- Experience: an S-shaped roadmap that draws itself as you scroll ----------
-   A lime line snakes down the page in the shape of an S (like the hand-drawn sketch): top, swing left, swing right, then an
-   arrow that keeps going. Four milestones sit on the line. As you scroll, a glowing head travels along the line and each
-   milestone lights up when the head reaches it, with its name sliding in beside it.
-
-   Desktop (mouse): hover a milestone, or its name, to open its detail card.
-   Phones and touch: tap a milestone, or its name, to open it; tap it again, or tap anywhere else, to close.
-   Keyboard: tab to a milestone to open it, Escape closes.
-
-   Two shapes of the same S are built once: a tall one for phones and a wider, shorter one for tablets and desktop.
-   Milestone positions are stored as percentages, so the buttons, names and cards stay glued to the line at any width.
-   Reduced-motion visitors get the finished roadmap with no travelling head and no pulsing.
-
-   Edit the milestones in `journey` below: name (the big label), tag (small line under the name), role, place, year and note
-   (the text inside the card). Any field left empty is simply not shown. Keep the list at four entries. */
-const journey = [
-  { name: 'Suite Spot', tag: 'BDM', role: 'Business Development Manager', place: '', year: '', note: 'Business development. The first chapter of the journey.' },
-  { name: 'Bramma', tag: 'Kerala, Cochin', role: '', place: 'Cochin, Kerala', year: '', note: 'The second chapter of the journey, in Cochin.' },
-  { name: 'nkreatives', tag: '', role: '', place: '', year: '', note: 'The third chapter of the journey.' },
-  { name: 'DayOne Ventures', tag: '', role: '', place: '', year: '', note: 'Venture building. The chapter that is still being written.' },
-]
-
-/* The S, drawn as two smooth curves in a 800 x 1180 box. Each milestone is [curve, step] along them. */
-const ROAD_CURVES = [
-  [[600, 60], [110, 70], [60, 520], [400, 580]],
-  [[400, 580], [740, 640], [760, 1020], [260, 1110]],
-]
-const ROAD_STEPS = 120
-const ROAD_NODES = [[0, 12], [0, 60], [1, 36], [1, 84]]
-const CARD_W = 320
-
-/* Builds one version of the S: kx / ky stretch it across / down. Returns the path, the milestone positions (in %), how far along
-   the line (0 to 1) each one sits, and where the arrow goes. */
-function buildRoad(kx, ky) {
-  const W = 800 * kx
-  const H = 1180 * ky
-  const curves = ROAD_CURVES.map((c) => c.map(([x, y]) => [x * kx, y * ky]))
-  const pts = []
-  let total = 0
-  curves.forEach((c, ci) => {
-    for (let i = ci ? 1 : 0; i <= ROAD_STEPS; i += 1) {
-      const t = i / ROAD_STEPS
-      const u = 1 - t
-      const x = u * u * u * c[0][0] + 3 * u * u * t * c[1][0] + 3 * u * t * t * c[2][0] + t * t * t * c[3][0]
-      const y = u * u * u * c[0][1] + 3 * u * u * t * c[1][1] + 3 * u * t * t * c[2][1] + t * t * t * c[3][1]
-      const prev = pts[pts.length - 1]
-      if (prev) total += Math.hypot(x - prev.x, y - prev.y)
-      pts.push({ x, y, len: total, f: 0 })
-    }
-  })
-  pts.forEach((q) => { q.f = q.len / total })
-  const pair = (a) => `${a[0].toFixed(1)} ${a[1].toFixed(1)}`
-  const d = `M${pair(curves[0][0])}${curves.map((c) => `C${pair(c[1])} ${pair(c[2])} ${pair(c[3])}`).join('')}`
-  const tip = pts[pts.length - 1]
-  const back = pts[pts.length - 8]
-  return {
-    W,
-    H,
-    d,
-    pts,
-    nodes: ROAD_NODES.map(([ci, i]) => {
-      const q = pts[ci * ROAD_STEPS + i]
-      return { x: (q.x / W) * 100, y: (q.y / H) * 100, f: q.f }
-    }),
-    end: { x: tip.x, y: tip.y, ang: (Math.atan2(tip.y - back.y, tip.x - back.x) * 180) / Math.PI },
-  }
-}
-const ROAD = { tall: buildRoad(1, 0.78), wide: buildRoad(1.3, 0.64) }
-
-/* The point on the line that is `f` (0 to 1) of the way along it. */
-function pointAt(pts, f) {
-  let i = 1
-  while (i < pts.length - 1 && pts[i].f < f) i += 1
-  const a = pts[i - 1]
-  const b = pts[i]
-  const k = b.f === a.f ? 0 : Math.min(1, Math.max(0, (f - a.f) / (b.f - a.f)))
-  return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k }
-}
-
-const canHover = () => typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches
-
-/* 0 when the roadmap is just entering the screen, 1 when its end is comfortably in view. */
-function useRoadmapProgress() {
-  const ref = useRef(null)
-  const [p, setP] = useState(() => (calm() ? 1 : 0))
-  useEffect(() => {
-    if (calm()) return undefined
-    let raf = 0
-    const run = () => {
-      raf = 0
-      const el = ref.current
-      if (!el) return
-      const r = el.getBoundingClientRect()
-      const vh = window.innerHeight
-      const mobileGain = window.matchMedia('(max-width: 767px)').matches ? 1.25 : 1
-      const v = ((vh * 0.7 - r.top) / Math.max(1, r.height - vh * 0.2)) * mobileGain
-      setP(Math.round(Math.min(1, Math.max(0, v)) * 100) / 100)
-    }
-    const queue = () => { if (!raf) raf = requestAnimationFrame(run) }
-    queue()
-    window.addEventListener('scroll', queue, { passive: true })
-    window.addEventListener('resize', queue)
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('scroll', queue); window.removeEventListener('resize', queue) }
-  }, [])
-  return [ref, p]
-}
-
-const XP_CSS = `
-.xp-spin{animation:xp-spin 14s linear infinite}
-@keyframes xp-spin{to{transform:rotate(360deg)}}
-.xp-ping{animation:xp-ping 2.8s cubic-bezier(.16,1,.3,1) infinite}
-@keyframes xp-ping{0%{transform:scale(.75);opacity:.75}100%{transform:scale(1.9);opacity:0}}
-.xp-headping{transform-box:fill-box;transform-origin:center;animation:xp-headping 2.2s ease-out infinite}
-@keyframes xp-headping{0%{transform:scale(.5);opacity:.8}100%{transform:scale(1.7);opacity:0}}
-.xp-road{filter:drop-shadow(0 0 7px rgba(164,190,45,.45))}
-.xp-pop{animation:xp-pop 460ms cubic-bezier(.16,1,.3,1) both}
-@keyframes xp-pop{from{opacity:0;transform:translateY(12px) scale(.96)}}
-.xp-node:focus-visible{outline:2px solid #a4be2d;outline-offset:2px}
-@media (max-width:767px){.xp-spin,.xp-ping,.xp-headping{animation:none}.xp-road{filter:none}}
-@media (prefers-reduced-motion:reduce){.xp-spin,.xp-ping,.xp-headping,.xp-pop{animation:none}}
-`
-
-/* Hand-drawn underline that scribbles itself in under the heading. */
-function Scribble({ className = 'mx-auto' }) {
-  const [ref, seen] = useInView()
-  return (
-    <svg ref={ref} viewBox="0 0 240 14" className={`${className} mt-4 block h-3.5 w-[min(60%,240px)] overflow-visible`} fill="none" stroke="#a4be2d" strokeWidth="3" strokeLinecap="round" aria-hidden>
-      <path d="M3 9C48 3 92 12 140 6S214 5 237 8" pathLength="1" strokeDasharray="1 2" style={{ strokeDashoffset: seen ? 0 : 1, transition: `stroke-dashoffset 550ms ${EASE}` }} />
-    </svg>
-  )
-}
-
-/* The detail card for one milestone. It sits just below the milestone, or just above it near the bottom of the roadmap,
-   and never leaves the roadmap sideways. */
-function Peek({ item, node }) {
-  const flip = node.y > 72
-  const half = `min(${CARD_W}px, 100%) / 2`
-  const facts = [item.role, item.place].filter(Boolean)
-  return (
-    <div
-      aria-hidden
-      className="pointer-events-none absolute z-30 -translate-x-1/2"
-      style={{
-        width: `min(${CARD_W}px, 100%)`,
-        left: `clamp(calc(${half}), ${node.x}%, calc(100% - ${half}))`,
-        ...(flip ? { bottom: `calc(${100 - node.y}% + 34px)` } : { top: `calc(${node.y}% + 34px)` }),
-      }}
-    >
-      <div className="xp-pop relative overflow-hidden rounded-[20px] border border-white/15 bg-[#101314]/95 p-5 shadow-[0_44px_80px_-30px_rgba(0,0,0,.95)] backdrop-blur-xl sm:p-6">
-        <span className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg,transparent,#a4be2d,transparent)' }} />
-        <span className={`absolute inset-0 opacity-50 ${dotted}`} style={{ WebkitMaskImage: 'linear-gradient(225deg,#000,transparent 60%)', maskImage: 'linear-gradient(225deg,#000,transparent 60%)' }} />
-        <div className="relative flex items-start justify-between gap-4">
-        <span className="grid size-11 place-items-center rounded-xl bg-[#a4be2d] text-lg font-extrabold text-[#1e2618]">{item.name.charAt(0).toUpperCase()}</span>
-          {item.year && <span className="rounded-full border border-[#a4be2d]/40 px-3 py-1 text-[12px] font-semibold tabular-nums text-[#a4be2d]">{item.year}</span>}
-        </div>
-        <h3 className="relative m-0 mt-4 text-[22px] font-extrabold leading-[1.1] tracking-[-.035em] text-white sm:text-[26px]">{item.name}</h3>
-        {facts.length > 0 && (
-          <p className="relative m-0 mt-2 text-[13px] font-semibold leading-[1.5] text-[#b8d23c]">{facts.join('  ·  ')}</p>
-        )}
-        {item.note && <p className="relative m-0 mt-3 text-[14px] leading-[1.65] text-[#b7beb0]">{item.note}</p>}
-      </div>
-    </div>
-  )
-}
-
-function Experience() {
-  const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches)
-  const [open, setOpen] = useState(null)
-  const [still] = useState(calm)
-  const [box, f] = useRoadmapProgress()
-
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 768px)')
-    const on = () => setWide(mq.matches)
-    on()
-    mq.addEventListener('change', on)
-    return () => mq.removeEventListener('change', on)
-  }, [])
-  /* a card closes when you tap anywhere that is not a milestone, or press Escape */
-  useEffect(() => {
-    if (open === null) return undefined
-    const away = (e) => { if (!(e.target instanceof Element) || !e.target.closest('[data-xp]')) setOpen(null) }
-    const esc = (e) => { if (e.key === 'Escape') setOpen(null) }
-    document.addEventListener('pointerdown', away)
-    document.addEventListener('keydown', esc)
-    return () => { document.removeEventListener('pointerdown', away); document.removeEventListener('keydown', esc) }
-  }, [open])
-
-  const g = wide ? ROAD.wide : ROAD.tall
-  const sw = wide ? 4.5 : 7
-  const head = pointAt(g.pts, f)
-  const hr = wide ? 7 : 12
-  const arrow = wide ? 17 : 30
-  /* mouse: hover opens and closes. touch: tap toggles. */
-  const bind = (i) => ({
-    onMouseEnter: () => { if (canHover()) setOpen(i) },
-    onMouseLeave: () => { if (canHover()) setOpen((o) => (o === i ? null : o)) },
-    onClick: () => { if (!canHover()) setOpen((o) => (o === i ? null : i)) },
-  })
-
-  return (
-    <section id="experience" aria-labelledby="experience-title" className="relative isolate overflow-hidden bg-[linear-gradient(145deg,#17201a_0%,#0d0f10_58%,#11150f_100%)] py-16 text-[#f8f9f6] sm:py-20">
-      <style>{XP_CSS}</style>
-      <span aria-hidden className="pointer-events-none absolute inset-0 -z-10" style={{ background: 'radial-gradient(900px circle at 50% 10%, rgba(164,190,45,.09), transparent 65%)' }} />
-      <span aria-hidden className={`pointer-events-none absolute inset-0 -z-10 opacity-40 ${dotted}`} style={{ WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 50%, #000, transparent 100%)', maskImage: 'radial-gradient(ellipse 70% 60% at 50% 50%, #000, transparent 100%)' }} />
-
-      <div className={wrap}>
-        <header className="grid items-end gap-6 border-b border-white/10 pb-7 md:grid-cols-12">
-          <div className="md:col-span-8">
-            <p className="mb-3 flex items-center gap-3 text-[13px] font-semibold text-[#a4be2d] before:h-px before:w-8 before:bg-[#a4be2d]">Career timeline</p>
-            <Heading id="experience-title" lines={['Experience']} className="text-[clamp(46px,8vw,120px)] font-extrabold leading-[.95] tracking-[-.06em] text-white" />
-            <Scribble className="mx-0" />
-          </div>
-          <p className="mb-1 max-w-[42ch] text-[15px] leading-[1.7] text-[#c1c8bc] md:col-span-4">Four milestones, from business development to venture building and the work still taking shape.</p>
-        </header>
-
-        <div className="relative mt-8 rounded-[28px] border border-white/10 bg-white/[.025] p-3 shadow-[0_36px_90px_-58px_rgba(164,190,45,.42)] sm:mt-10 sm:rounded-[36px] sm:p-6">
-        <div ref={box} className="relative isolate mx-auto" style={{ width: wide ? 'min(100%, 1080px)' : 'min(100%, 460px)', aspectRatio: `${g.W} / ${g.H}` }}>
-          {/* soft light that follows the head of the line */}
-          <span aria-hidden className="pointer-events-none absolute z-0 hidden size-[680px] -translate-x-1/2 -translate-y-1/2 rounded-full md:block" style={{ left: `${(head.x / g.W) * 100}%`, top: `${(head.y / g.H) * 100}%`, background: 'radial-gradient(circle, rgba(164,190,45,.17), transparent 65%)', opacity: f > 0.004 ? 1 : 0, transition: 'left 180ms linear, top 180ms linear, opacity 350ms ease' }} />
-
-          <svg viewBox={`0 0 ${g.W} ${g.H}`} className="absolute inset-0 z-10 h-full w-full overflow-visible" fill="none" aria-hidden>
-            {/* the road ahead: a dotted track */}
-            <path d={g.d} stroke="#f8f9f6" strokeOpacity=".24" strokeWidth={sw * 0.62} strokeLinecap="round" strokeDasharray={`0.1 ${wide ? 12 : 17}`} />
-            {/* the road travelled: a glowing lime line that draws itself */}
-            <path className="xp-road" d={g.d} pathLength="1" stroke="#a4be2d" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 2" style={{ strokeDashoffset: 1 - f, opacity: f > 0.003 ? 1 : 0, transition: 'stroke-dashoffset 140ms linear' }} />
-            {/* the head of the line */}
-            {f > 0.004 && f < 0.985 && (
-              <g style={{ transform: `translate(${head.x}px, ${head.y}px)`, transition: 'transform 140ms linear' }}>
-                {!still && <circle r={hr * 2.2} fill="#a4be2d" className="xp-headping" />}
-                <circle r={hr} fill="#a4be2d" />
-                <circle r={hr * 0.42} fill="#171a1b" />
-              </g>
-            )}
-            {/* the arrow: the story keeps going */}
-            <g transform={`translate(${g.end.x.toFixed(1)} ${g.end.y.toFixed(1)}) rotate(${g.end.ang.toFixed(1)})`}>
-              <path d={`M${-arrow} ${-arrow * 0.72}L0 0L${-arrow} ${arrow * 0.72}`} stroke="#a4be2d" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" style={{ opacity: f > 0.97 ? 1 : 0, transition: 'opacity 250ms ease' }} />
-            </g>
-          </svg>
-
-          {journey.map((item, i) => {
-            const n = g.nodes[i]
-            const on = f >= n.f - 0.012
-            const isOpen = open === i
-            const right = i < 2 /* the first two names sit to the right of the line, the last two to the left */
-            const mid = i !== 0 && i !== 3 /* vertical placement: centred on the milestone, a little below it, or a little above it */
-            const off = on ? 0 : 12
-            const labelStyle = {
-              ...(right ? { left: `calc(${n.x}% + 30px)`, maxWidth: `calc(${100 - n.x}% - 34px)` } : { right: `calc(${100 - n.x}% + 30px)`, maxWidth: `calc(${n.x}% - 34px)`, textAlign: 'right' }),
-              ...(i === 3 ? { bottom: `calc(${100 - n.y}% + 2px)` } : { top: mid ? `${n.y}%` : `calc(${n.y}% + 6px)` }),
-              opacity: on ? 1 : 0,
-              transform: `translate(${on ? 0 : right ? -14 : 14}px, ${mid ? `calc(-50% + ${off}px)` : `${off}px`})`,
-              transition: `opacity 420ms ${EASE}, transform 480ms ${EASE}`,
-            }
-            return (
-              <div key={item.name}>
-                <div aria-hidden data-xp className="absolute z-20 w-max cursor-pointer select-none" style={labelStyle} {...bind(i)}>
-                  <p className="m-0 text-[18px] font-extrabold leading-[1.05] tracking-[-.04em] transition-colors duration-500 sm:text-[22px] md:text-[clamp(24px,2.7vw,36px)]" style={{ color: isOpen ? '#a4be2d' : '#f8f9f6' }}>{item.name}</p>
-                  {item.tag && <p className="m-0 mt-1.5 text-[12px] font-semibold text-[#8f9686] md:text-[14px]">{item.tag}</p>}
-                </div>
-                <button
-                  type="button"
-                  data-xp
-                  aria-label={`${item.name}. ${[item.role, item.place, item.year, item.note].filter(Boolean).join('. ')}`}
-                  className="xp-node absolute z-20 grid size-12 -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full border-0 bg-transparent p-0 outline-none md:size-16"
-                  style={{ left: `${n.x}%`, top: `${n.y}%` }}
-                  onFocus={(e) => { if (e.currentTarget.matches(':focus-visible')) setOpen(i) }}
-                  onBlur={() => setOpen((o) => (o === i ? null : o))}
-                  {...bind(i)}
-                >
-                  {on && !still && <span aria-hidden className="xp-ping absolute inset-[6px] rounded-full border border-[#a4be2d] md:inset-[8px]" style={{ animationDelay: `${i * 450}ms` }} />}
-                  <span aria-hidden className="absolute inset-[4px] rounded-full border transition-all duration-700 md:inset-[6px]" style={{ borderColor: on ? 'rgba(164,190,45,.7)' : 'rgba(255,255,255,.16)', background: isOpen ? 'rgba(164,190,45,.14)' : 'transparent', transform: isOpen ? 'scale(1.18)' : 'scale(1)' }} />
-                  <span aria-hidden className={`absolute inset-[11px] rounded-full border border-dashed md:inset-[15px] ${on ? 'xp-spin' : ''}`} style={{ borderColor: on ? 'rgba(164,190,45,.55)' : 'rgba(255,255,255,.1)' }} />
-                  <span aria-hidden className="relative block size-3 rounded-full transition-all duration-700 md:size-3.5" style={{ background: on ? '#a4be2d' : '#2b3031', boxShadow: on ? '0 0 22px 5px rgba(164,190,45,.5)' : 'none', transform: isOpen ? 'scale(1.5)' : on ? 'scale(1)' : 'scale(.7)' }} />
-                </button>
-              </div>
-            )
-          })}
-
-          {open !== null && <Peek key={open} item={journey[open]} node={g.nodes[open]} />}
-        </div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
 function Positioning() {
   const [statRef, progress] = useScrollProgress()
 
@@ -1412,9 +831,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* 3b. Experience: S-shaped milestone roadmap (hover on desktop, tap on mobile) */}
-      <Experience />
 
       {/* 4. Strategic framework */}
       <Framework />

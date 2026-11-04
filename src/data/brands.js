@@ -14,7 +14,7 @@ export const BRAND_DIR = '/ventures/'
 // encodeURIComponent keeps odd characters in file names safe (for example the bullet in Hosther•hostels.png).
 export const brandImage = (file) => file.startsWith('/') ? file : `${BRAND_DIR}${encodeURIComponent(file)}`
 
-export const groups = ['Food & Drink', 'Retail & Lifestyle', 'Beauty & Wellness', 'Hospitality', 'Business & Tech']
+export const groups = ['Food & Beverages', 'Retail & Lifestyle', 'Beauty & Wellness', 'Hospitality', 'Business & Tech']
 
 // Same order as the blueprint. `group` drives the filter chips, `category` is the label shown on each card.
 export const brands = [
@@ -54,11 +54,11 @@ export const brands = [
     short: 'A networking concept designed to connect founders with venture capital professionals and new opportunities.',
     scope: ['Concept Development', 'Networking'] },
 
-  { id: 'popsi', name: 'POPSI', file: 'popsi.png', category: 'Beverages', group: 'Food & Drink', url: null,
+  { id: 'popsi', name: 'POPSI', file: 'popsi.png', category: 'Beverages', group: 'Food & Beverages', url: null,
     short: 'A playful consumer beverage concept developed through business planning, branding, and creative activation ideas.',
     scope: ['Business Planning', 'Branding', 'Activations'] },
 
-  { id: 'heydossa', name: 'Hey Dossa', file: 'heydossa.png', category: 'Food / QSR', group: 'Food & Drink', url: null,
+  { id: 'heydossa', name: 'Hey Dossa', file: 'heydossa.png', category: 'Food / QSR', group: 'Food & Beverages', url: null,
     short: 'A quick-service restaurant concept combining a familiar food experience with a fresh brand identity.',
     scope: ['QSR Concept', 'Branding', 'Idea Development'] },
 
@@ -66,11 +66,11 @@ export const brands = [
     short: 'Building a menstrual wellness venture across business strategy, product positioning, brand development, and go-to-market planning.',
     scope: ['Venture Leadership', 'Branding', 'GTM'] },
 
-  { id: 'zaati', name: 'Zaati', file: 'zaati.png', category: 'Restaurant / UK', group: 'Food & Drink', url: null,
+  { id: 'zaati', name: 'Zaati', file: 'zaati.png', category: 'Restaurant / UK', group: 'Food & Beverages', url: null,
     short: 'An Indian-Arabic food business supported through branding, kitchen and dish SOPs, social media planning, and sales strategies.',
     scope: ['Branding', 'SOPs', 'Sales', 'Social Media'] },
 
-  { id: 'de-coff', name: 'DE COFF', file: 'DE-COFF.png', category: 'Coffee / Business Concept', group: 'Food & Drink', url: null,
+  { id: 'de-coff', name: 'DE COFF', file: 'DE-COFF.png', category: 'Coffee / Business Concept', group: 'Food & Beverages', url: null,
     short: 'A coffee business concept shaped through idea development, brand building, and product planning.',
     scope: ['Business Idea', 'Branding', 'Product Development'] },
 
@@ -78,7 +78,7 @@ export const brands = [
     short: 'A Moonbliss-connected community initiative developed through events, branding, engagement, and content strategy.',
     scope: ['Community', 'Events', 'Branding', 'Content'] },
 
-  { id: 'hungry-potato', name: 'Hungry Potato', file: 'hungry-potato.png', category: 'QSR', group: 'Food & Drink', url: null,
+  { id: 'hungry-potato', name: 'Hungry Potato', file: 'hungry-potato.png', category: 'QSR', group: 'Food & Beverages', url: null,
     short: 'A quick-service food business supported through operational SOPs, menu engineering, technology systems, and sales planning.',
     scope: ['QSR Operations', 'SOPs', 'Menu Engineering'] },
 
@@ -94,7 +94,7 @@ export const brands = [
     short: 'A car-selling service built around a 60-minute sale, a hassle-free process, and instant payment.',
     scope: ['Car Selling', 'Customer Experience', 'Instant Payment'] },
 
-  { id: 'curry-bag', name: 'Curry Bag', file: 'curry-bag.jpeg', category: 'Food / Business Setup', group: 'Food & Drink', url: null,
+  { id: 'curry-bag', name: 'Curry Bag', file: 'curry-bag.jpeg', category: 'Food / Business Setup', group: 'Food & Beverages', url: null,
     short: 'A food business developed across branding, business setup, legal coordination, website planning, and founder preparation.',
     scope: ['Venture Setup', 'Branding', 'Founder Support'] },
 
@@ -118,7 +118,7 @@ export const brands = [
     short: 'An early-stage venture concept developed from an idea through concept building.',
     scope: ['Idea Development', 'Concept Building'] },
 
-  { id: 'oxtel', name: 'Oxtel', file: 'oxtel.png', category: 'Accommodation Technology', group: 'Hospitality', url: null,
+  { id: 'oxtel', name: 'Oxtel', file: 'oxtel.png', category: 'Hospitality', group: 'Hospitality', url: null,
     short: 'A hostel discovery platform for students and working professionals, supported through brand identity and visual direction.',
     scope: ['Branding', 'Identity'] },
 

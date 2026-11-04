@@ -296,7 +296,7 @@ function Hero() {
       <motion.div aria-hidden style={{ background: glow }} className="absolute inset-0 -z-10" />
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 opacity-[.09] mix-blend-overlay" style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")" }} />
 
-      <div className={`${wrap} shrink-0 pt-3 sm:pt-5`}><img src={LOGO_IMAGE} alt="Founderverse" className="h-10 w-auto object-contain sm:h-14" /></div>
+      <div className={`${wrap} shrink-0 pt-3 sm:pt-5`}><img src={LOGO_IMAGE} alt="Founderverse" className="h-14 w-auto object-contain sm:h-20" /></div>
 
       <div className={`${wrap} flex min-h-0 flex-1 items-center py-2 sm:py-[clamp(12px,3svh,28px)]`}>
         <AnimatePresence mode="wait">

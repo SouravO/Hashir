@@ -8,16 +8,11 @@ import BrandArtwork from '../components/BrandArtwork'
 const VENTURE_IMAGE = '/image.png'
 // React 19 reads `fetchPriority`; React 18 only passes the lowercase attribute through without a warning.
 const FETCH_PRIORITY_PROP = Number.parseInt(version, 10) >= 19 ? 'fetchPriority' : 'fetchpriority'
-const NO_METRICS = 'No outcome metrics are published for this project.'
-
-// The featured build. The full collection lives in src/data/brands.js.
-const featured = { id: 'dayone', name: 'Dayone Venture Studio', category: 'Venture Building', url: null, crop: { pos: '50% 35%', zoom: 1.1 }, statement: 'Building startups, founders, and the systems behind them.', context: 'A startup studio where my work spans venture strategy, founder development, operational systems, and business execution.', role: 'Venture Leadership, Strategy, and Operations.' }
 const titleCaseName = (name) => name.toLowerCase().replace(/(^|[\s-])([a-z])/g, (_, boundary, letter) => `${boundary}${letter.toUpperCase()}`)
 const ventureBrands = brands
   .filter((brand) => brand.id !== 'start-x')
   .map((brand) => ({ ...brand, name: brand.id === 'sol' ? 'Sol.' : titleCaseName(brand.name) }))
   .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
-const nameRow = `${ventureBrands.map((b) => b.name).join('   \u2014   ')}   \u2014   `
 
 // Each stage only points to projects documented in the collection above.
 const stages = [
@@ -37,7 +32,6 @@ const TONES = {
 const ease = 'ease-[cubic-bezier(0.22,1,0.36,1)]'
 const wrap = 'mx-auto max-w-[1320px] px-7 max-[768px]:px-[18px]'
 const focus = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a4be2d]'
-const stroke = 'text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,.55)]'
 const pill = 'rounded-full border px-3 py-1 text-xs font-medium'
 const move = 'transition-[opacity,transform,translate,scale]'
 const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -279,15 +273,9 @@ export default function Ventures() {
     return () => cancelAnimationFrame(frame)
   }, [hash])
 
-  const steps = [
-    ['The venture', featured.context],
-    ['My role', featured.role],
-    ['Outcome', NO_METRICS],
-  ]
-
   return (
     <main id="main" ref={root} className="overflow-x-clip">
-      {/* 01 Hero: a concise introduction before the featured venture */}
+      {/* 01 Hero */}
       <section data-p="top" aria-labelledby="ventures-title" className="bg-[#101310] pb-6 text-white">
        
         <div className={`${wrap} grid items-end gap-x-10 gap-y-5 pb-8 pt-6 lg:grid-cols-12`}>
@@ -296,48 +284,12 @@ export default function Ventures() {
         </div>
       </section>
 
-      {/* 02 Featured venture: a scrubbed statement and a timeline that draws itself */}
-      <section id="featured" aria-labelledby="featured-title" className="scroll-mt-16 overflow-hidden bg-[#F2F3EF] py-[clamp(48px,5.5vw,88px)] text-[#101310]">
-        <div className={wrap}>
-          <div className="flex items-center justify-between gap-4 text-xs font-semibold text-[#617319]">
-            <span>02 / Featured build</span>
-            <span className="flex gap-2"><span className={`${pill} border-[#617319]/40`}>{featured.category}</span></span>
-          </div>
-          <h2 id="featured-title" className="sr-only">{featured.name} featured build</h2>
-          <div className="mt-8 grid gap-x-12 gap-y-10 lg:grid-cols-12">
-            <div data-p="through" className="relative aspect-[4/5] overflow-hidden rounded-[28px] lg:col-span-5 lg:self-start">
-              <div style={{ transform: 'translateY(calc((.5 - var(--p, .5)) * 14%))' }} className="absolute inset-x-0 -inset-y-[8%] will-change-transform">
-                <Cover crop={featured.crop} tone="natural" image="/ventures1.png" />
-              </div>
-              <span className={`${pill} absolute bottom-4 left-4 border-white/40 bg-[#101310]/50 text-white`}>{featured.name}</span>
-            </div>
-            <div className="lg:col-span-7">
-              <p className="m-0 mb-3 text-xs font-semibold text-[#617319]">{featured.name}</p>
-              <p className="m-0 text-[clamp(28px,3.4vw,52px)] font-extrabold leading-[1.05] tracking-[-.05em]">{featured.statement}</p>
-              <ol className="relative m-0 mt-10 list-none p-0 pl-9">
-                <span aria-hidden className="absolute left-[6px] top-1 h-[calc(100%-8px)] w-px bg-[#101310]/15" />
-                <span aria-hidden className="absolute left-[6px] top-1 h-[calc(100%-8px)] w-px bg-[#617319]" />
-                {steps.map(([label, text], i) => (
-                  <li key={label} className="relative pb-7 last:pb-0">
-                    <span aria-hidden className="absolute -left-9 top-1 size-[13px] rounded-full bg-[#617319]" />
-                    <span aria-hidden className="absolute -left-9 top-1 size-[13px] rounded-full border border-[#617319]" />
-                    <h3 className="m-0 text-[15px] font-bold"><span className="mr-2 tabular-nums text-[#617319]">0{i + 1}</span>{label}</h3>
-                    <p className="m-0 mt-1 max-w-[60ch] text-[15px] leading-[1.7] text-[#3a4137]">{text}</p>
-                  </li>
-                ))}
-              </ol>
-              <VentureLink venture={featured} className="mt-6" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 03 Collection: every project, with sector filters and an expandable row per project */}
+      {/* 02 Collection: every project, with sector filters and an expandable row per project */}
       <section id="collection" aria-labelledby="collection-title" className="scroll-mt-16 bg-[#153B2B] py-[clamp(44px,5vw,80px)] text-white">
         <div className={wrap}>
           <div className="grid items-end gap-x-6 gap-y-4 lg:grid-cols-12">
             <div className="lg:col-span-8">
-              <p className="m-0 mb-3 text-xs font-semibold text-[#a4be2d]">03 / The collection</p>
+              <p className="m-0 mb-3 text-xs font-semibold text-[#a4be2d]">02 / The collection</p>
               <Chars as="h2" id="collection-title" text="Here’s a little look around." className="text-[clamp(34px,5vw,72px)] font-extrabold leading-[.98] tracking-[-.055em]" />
             </div>
               <p className="m-0 max-w-[38ch] text-[15px] leading-[1.7] text-[#b9c7b2] lg:col-span-4">{ventureBrands.length} startups and businesses. Filter by sector or open a row to see what I worked on.</p>
@@ -351,7 +303,7 @@ export default function Ventures() {
         <div className={wrap}>
           <div className="grid items-end gap-x-6 gap-y-4 lg:grid-cols-12">
             <div className="lg:col-span-8">
-              <p className="m-0 mb-3 text-xs font-semibold text-[#617319]">04 / How the work creates value</p>
+              <p className="m-0 mb-3 text-xs font-semibold text-[#617319]">03 / How the work creates value</p>
               <Chars as="h2" id="value-title" text="From opportunity to something that runs." className="text-[clamp(34px,5vw,72px)] font-extrabold leading-[.98] tracking-[-.055em]" />
             </div>
             <p className="m-0 max-w-[38ch] border-l-2 border-[#a4be2d] pl-4 text-[14px] leading-[1.65] text-[#4f5a4d] lg:col-span-4">Each stage points to projects in the collection above. It is not a fixed process or a promise of results.</p>
@@ -384,12 +336,16 @@ export default function Ventures() {
         </div>
       </section>
 
-      {/* 05 Closing: two rows of type drift opposite ways with scroll, around the invitation */}
+      {/* 04 Closing: a clear path from idea to progress */}
       <section data-p="through" aria-labelledby="close-title" className="overflow-hidden bg-[#101310] py-[clamp(40px,4.5vw,72px)] text-white">
-        <div aria-hidden style={{ transform: 'translateX(calc((.5 - var(--p, .5)) * 45vw))' }} className={`-ml-[30vw] select-none whitespace-nowrap text-[clamp(48px,9vw,140px)] font-extrabold leading-[1] tracking-[-.05em] will-change-transform ${stroke}`}>{nameRow}{nameRow}</div>
+        <div aria-hidden className="overflow-hidden border-y border-white/10 bg-white/[.025] py-3 sm:py-4">
+          <div style={{ transform: 'translateX(calc((.5 - var(--p, .5)) * 8vw))' }} className="flex w-max items-center gap-8 whitespace-nowrap text-[clamp(16px,2vw,24px)] font-semibold tracking-[-.025em] text-white/65 will-change-transform">
+            {Array.from({ length: 5 }, (_, i) => <span key={i} className="flex items-center gap-5"><span>Start with an idea</span><span className="text-[#a4be2d]">→</span><span>Find a clear direction</span><span className="text-[#a4be2d]">→</span><span>Build for growth</span></span>)}
+          </div>
+        </div>
         <div className={`${wrap} grid items-center gap-x-12 gap-y-8 py-[clamp(28px,4vw,56px)] lg:grid-cols-12`}>
           <div className="lg:col-span-7">
-            <p className="m-0 mb-4 text-xs font-semibold text-[#a4be2d]">05 / The next conversation</p>
+            <p className="m-0 mb-4 text-xs font-semibold text-[#a4be2d]">04 / The next conversation</p>
             <Chars as="h2" id="close-title" text="Let’s put that brain to work." className="text-[clamp(40px,6.4vw,100px)] font-extrabold leading-[.95] tracking-[-.055em]" />
             <p className="mt-6 max-w-[46ch] text-[16px] leading-[1.7] text-[#dfe6d8]">A focused one-to-one conversation about your idea, your business, or the thing that’s keeping you stuck. No complicated process. Just a proper conversation about what matters.</p>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
@@ -407,7 +363,11 @@ export default function Ventures() {
             </div>
           </div>
         </div>
-        <div aria-hidden style={{ transform: 'translateX(calc((var(--p, .5) - .5) * 45vw))' }} className={`-ml-[30vw] select-none whitespace-nowrap text-[clamp(48px,9vw,140px)] font-extrabold leading-[1] tracking-[-.05em] will-change-transform ${stroke}`}>Book Some Thinking Time   —   Book Some Thinking Time   —   Book Some Thinking Time   —   Book Some Thinking Time</div>
+        <div aria-hidden className="overflow-hidden border-y border-white/10 bg-white/[.025] py-3 sm:py-4">
+          <div style={{ transform: 'translateX(calc((var(--p, .5) - .5) * 8vw))' }} className="flex w-max items-center gap-8 whitespace-nowrap text-[clamp(16px,2vw,24px)] font-semibold tracking-[-.025em] text-white/65 will-change-transform">
+            {Array.from({ length: 5 }, (_, i) => <span key={i} className="flex items-center gap-5"><span>Clear strategy</span><span className="text-[#a4be2d]">→</span><span>Aligned teams</span><span className="text-[#a4be2d]">→</span><span>Meaningful progress</span></span>)}
+          </div>
+        </div>
       </section>
     </main>
   )
