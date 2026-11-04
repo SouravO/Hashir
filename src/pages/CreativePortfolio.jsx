@@ -193,6 +193,8 @@ const WORK_FILTERS = [
   ['founder', 'Founder'],
   ['marketing', 'Marketing lead'],
   ['creative', 'Creative director'],
+  ['advisor', 'Advisor'],
+  ['event-head', 'Event head'],
   ['marketing360', '360 Degree Marketing'],
 ]
 
@@ -240,21 +242,12 @@ const INDUSTRIES = {
   corporate: 'Corporate & Health',
 }
 
-const ROLES = {
-  ceo: 'Business head',
-  founder: 'Founder',
-  marketing: 'Marketing lead',
-  creative: 'Creative director',
-  advisor: 'Advisor',
-  none: 'Not specified',
-}
-
 const P = (name, sector, ind, role, roleKey, l, b, m, note) => ({ name, sector, ind, role, roleKey, l, b, m, note })
 
 const PROJECTS = [
   P('START-X', 'Startup ecosystem', 'venture', 'Marketing / Growth Lead', 'marketing',
     ['Marketing leadership', 'Operations / SOPs'], ['Naming & identity', 'Brand architecture'], ['Social strategy', '360° marketing', 'Go-to-market', 'Sales & BD']),
-  P('Hey Dossa', 'Food & beverage', 'food', 'Role not specified', 'none',
+  P('Hey Dossa', 'Food & beverage', 'food', 'Consultant / Advisor', 'advisor',
     ['Operations / SOPs'], ['Brand strategy', 'Naming & identity', 'Brand architecture', 'Social design'], ['Social strategy', 'Go-to-market']),
   P('Moon Bliss', "Women's wellness", 'style', 'CEO / Business Head', 'ceo', L_ALL, B_ALL, M_ALL),
   P('Zaati', 'Restaurant', 'food', 'CMO / Head of Marketing', 'marketing',
@@ -262,7 +255,7 @@ const PROJECTS = [
   P('De Coff', 'Café', 'food', 'Founder / Co-founder', 'founder',
     ['CEO / business leadership', 'Team leadership'], ['Brand strategy', 'Naming & identity', 'Brand voice', 'Brand architecture'],
     ['Paid media', '360° marketing', 'Go-to-market', 'Growth & revenue', 'Sales & BD']),
-  P('House of Bliss', 'Lifestyle / concept', 'style', 'Role not specified', 'none', [], [], [],
+  P('House of Bliss', 'Lifestyle / concept', 'style', 'Event Head', 'event-head', [], [], [],
     'Portfolio reference only; role and contribution scope not detailed.'),
   P('Hungry Potato', 'Food & beverage', 'food', 'Founder / Co-founder', 'founder',
     ['CEO / business leadership', 'Marketing leadership', 'Operations / SOPs'],
@@ -278,7 +271,7 @@ const PROJECTS = [
   P('The Founderverse', 'Startup education', 'venture', 'Founder / Co-founder', 'founder', L_ALL, B_ALL, M_ALL),
   P('Hyzo', 'Brand concept', 'consumer', 'Consultant / Advisor', 'advisor',
     [], ['Naming & identity', 'Brand architecture', 'Creative direction', 'Content production', 'Social design'], []),
-  P('Ezka', 'Fashion & lifestyle', 'style', 'Role not specified', 'none',
+  P('Ezka', 'Fashion & lifestyle', 'style', 'Consultant / Advisor', 'advisor',
     [], ['Brand strategy', 'Naming & identity', 'Brand voice', 'Brand architecture', 'Creative direction', 'Content production', 'Social design'],
     ['Social strategy', 'Paid media', '360° marketing', 'Growth & revenue', 'Sales & BD', 'Influencers / PR']),
   P('DayOne Venture Studio', 'Venture studio', 'venture', 'CEO / Business Head', 'ceo', L_ALL, B_ALL, M_ALL),
@@ -294,34 +287,34 @@ const PROJECTS = [
     [], ['Brand strategy', 'Naming & identity', 'Brand architecture', 'Creative direction', 'Content production', 'Social design'],
     ['Social strategy', '360° marketing', 'Growth & revenue', 'Influencers / PR']),
   P('Nothing Else', 'FMCG', 'consumer', 'Founder / Co-founder', 'founder', L_ALL, B_ALL, M_ALL),
-  P('Bare Logic', 'Skincare', 'style', 'Role not specified', 'none',
+  P('Bare Logic', 'Skincare', 'style', 'Founder / Co-founder', 'founder',
     [], ['Naming & identity', 'Brand architecture', 'Creative direction', 'Content production', 'Social design'], ['Social strategy', '360° marketing']),
-  P('Terminal', "Men's fashion", 'style', 'Role not specified', 'none',
+  P('Terminal', "Men's fashion", 'style', 'Consultant / Advisor', 'advisor',
     [], ['Brand strategy', 'Brand architecture', 'Creative direction', 'Content production', 'Social design', 'Brand QA'],
     ['Social strategy', '360° marketing', 'Growth & revenue', 'Influencers / PR']),
   P('NKreatives', 'Creative / marketing agency', 'corporate', 'Creative Director', 'creative',
     ['Marketing leadership', 'Team leadership', 'Operations / SOPs'], B_ALL, M_ALL),
   P('Coffee Klatch', 'Café', 'food', 'Creative Director', 'creative',
     ['CEO / business leadership'], ['Brand voice', 'Brand architecture', 'Creative direction', 'Content production', 'Social design'], ['Social strategy', '360° marketing']),
-  P('Global Venture', 'Construction / design', 'corporate', 'Role not specified', 'none',
+  P('Global Venture', 'Construction / design', 'corporate', 'Creative Director', 'creative',
     [], ['Brand strategy', 'Brand voice', 'Brand architecture', 'Creative direction', 'Content production', 'Social design'],
     ['Social strategy', '360° marketing', 'Growth & revenue', 'Influencers / PR']),
   P('Wayanad Trade Centre', 'Commercial / trade', 'corporate', 'Creative Director', 'creative',
     [], ['Creative direction', 'Content production', 'Social design'], ['Social strategy', '360° marketing']),
-  P('Tempest Automotive Battery', 'Automotive', 'consumer', 'Role not specified', 'none',
+  P('Tempest Automotive Battery', 'Automotive', 'consumer', 'Consultant / Advisor', 'advisor',
     [], ['Brand architecture', 'Creative direction', 'Content production', 'Social design'], ['Social strategy', '360° marketing', 'Influencers / PR']),
-  P('Warrior Mens/Kids', 'Fashion', 'style', 'Role not specified', 'none',
+  P('Warrior Mens/Kids', 'Fashion', 'style', 'Consultant / Advisor', 'advisor',
     [], ['Brand architecture', 'Creative direction', 'Content production', 'Social design'], ['Social strategy', 'Paid media', '360° marketing']),
-  P('TP Group of Companies', 'Building materials / corporate', 'corporate', 'Role not specified', 'none',
+  P('TP Group of Companies', 'Building materials / corporate', 'corporate', 'Consultant / Advisor', 'advisor',
     ['Marketing leadership'], ['Naming & identity', 'Brand voice', 'Brand architecture', 'Creative direction', 'Content production', 'Social design', 'Brand QA'],
     ['Social strategy', 'Paid media', '360° marketing', 'Growth & revenue', 'Sales & BD', 'Influencers / PR']),
-  P('Vinayaka Hospital', 'Healthcare', 'corporate', 'Role not specified', 'none',
+  P('Vinayaka Hospital', 'Healthcare', 'corporate', 'Consultant / Advisor', 'advisor',
     [], ['Creative direction', 'Content production', 'Social design'], ['Social strategy', '360° marketing', 'Growth & revenue']),
-  P('Aisen Studio', "Women's fashion", 'style', 'Role not specified', 'none',
+  P('Aisen Studio', "Women's fashion", 'style', 'Consultant / Advisor', 'advisor',
     [], ['Creative direction', 'Content production', 'Social design'], ['Social strategy', '360° marketing', 'Growth & revenue', 'Influencers / PR']),
-  P('AI Institute', 'Education', 'venture', 'Role not specified', 'none',
+  P('AI Institute', 'Education', 'venture', 'CMO / Head of Marketing', 'marketing',
     [], [], ['Social strategy', 'Paid media', '360° marketing', 'Sales & BD', 'Influencers / PR']),
-  P('Tanza Opticals', 'Optical / retail healthcare', 'consumer', 'Role not specified', 'none',
+  P('Tanza Opticals', 'Optical / retail healthcare', 'consumer', 'Consultant / Advisor', 'advisor',
     [], ['Creative direction', 'Content production'], ['360° marketing']),
 ].map((p) => ({
   ...p,
@@ -330,7 +323,6 @@ const PROJECTS = [
 
 const countBy = (key) => PROJECTS.reduce((acc, p) => ((acc[p[key]] = (acc[p[key]] || 0) + 1), acc), {})
 const IND_COUNTS = countBy('ind')
-const ROLE_COUNTS = countBy('roleKey')
 
 /* ---------- Data: static copy blocks ---------- */
 
@@ -509,7 +501,6 @@ export default function CreativePortfolio() {
   const [current, setCurrent] = useState(0)
   const [query, setQuery] = useState('')
   const [indFilter, setIndFilter] = useState('all')
-  const [roleFilter, setRoleFilter] = useState('all')
   const [openRows, setOpenRows] = useState(() => new Set())
 
   /* ---------- Document title ---------- */
@@ -595,7 +586,6 @@ export default function CreativePortfolio() {
   /* ---------- Project index ---------- */
   const visibleProjects = PROJECTS.map((p, i) => ({ p, i })).filter(({ p }) =>
     (indFilter === 'all' || p.ind === indFilter) &&
-    (roleFilter === 'all' || p.roleKey === roleFilter) &&
     (!query || p.search.includes(query)))
 
   const toggleRow = (i) =>
@@ -986,7 +976,6 @@ export default function CreativePortfolio() {
                   />
                 </label>
                 <FilterChips map={INDUSTRIES} value={indFilter} onChange={setIndFilter} counts={IND_COUNTS} total={PROJECTS.length} label="Filter by industry" />
-                <FilterChips map={ROLES} value={roleFilter} onChange={setRoleFilter} counts={ROLE_COUNTS} total={PROJECTS.length} label="Filter by role" small />
               </div>
 
               <div className="flex flex-wrap gap-4 items-center text-[0.78rem] font-extrabold uppercase" aria-hidden="true">
@@ -1019,9 +1008,7 @@ export default function CreativePortfolio() {
                           <span className="block font-semibold text-[length:clamp(0.9rem,1vw,1rem)] text-[#5b5b5b] normal-case">{p.sector}</span>
                         </span>
                         <span
-                          className={`justify-self-start text-[0.72rem] font-extrabold uppercase px-[9px] py-[3px] border-2 border-[#141414] rounded-full max-[760px]:col-start-2 ${
-                            p.roleKey === 'none' ? 'bg-[#eee] text-[#5b5b5b] border-dashed' : 'bg-[#ffe14d]'
-                          }`}
+                          className="justify-self-start text-[0.72rem] font-extrabold uppercase px-[9px] py-[3px] border-2 border-[#141414] rounded-full bg-[#ffe14d] max-[760px]:col-start-2"
                         >
                           {p.role}
                         </span>
@@ -1123,7 +1110,7 @@ export default function CreativePortfolio() {
                 <a className={`${BTN_CORE} ${BTN_GHOST} ${BTN_PAD}`} href="#top">Back to top <span aria-hidden="true">↑</span></a>
               </div>
             </article>
-            <p className={FINE}>Portfolio note: project-specific responsibilities are shown according to the scope of involvement. Quantitative results and campaign case evidence can be added where documented. “Role not specified” indicates that no primary role is being claimed for that entry.</p>
+            <p className={FINE}>Portfolio note: project-specific responsibilities are shown according to the scope of involvement. Quantitative results and campaign case evidence can be added where documented.</p>
           </section>
 
           <footer className="flex flex-wrap justify-between gap-2.5 pt-[18px] border-t-[3px] border-[#141414] text-[0.8rem] font-bold uppercase">
