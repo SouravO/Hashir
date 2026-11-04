@@ -40,7 +40,7 @@
 }
 
 @layer base {
-  html { scroll-behavior: smooth; scrollbar-gutter: stable; }
+  html { scroll-behavior: auto; scrollbar-gutter: stable; }
   body { min-width: 320px; margin: 0; font-family: 'DM Sans', Arial, sans-serif; color: #171a17; background: #f8f9f6; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
   button { cursor: pointer; }
   button, a, input, textarea { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }

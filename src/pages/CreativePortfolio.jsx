@@ -611,7 +611,7 @@ export default function CreativePortfolio() {
 
       {/* ============ TOP BAR ============ */}
       <header ref={topbarRef} className="sticky top-0 z-50 bg-[#fffdf8] border-b-[3px] border-[#141414]" id="top">
-        <div className="max-w-[1480px] mx-auto relative grid grid-cols-[1fr_auto] items-center gap-6 px-[clamp(16px,3vw,36px)] py-3">
+        <div className="max-w-[1920px] mx-auto relative grid grid-cols-[1fr_auto] items-center gap-6 px-[clamp(16px,3vw,36px)] py-3">
           <a className="flex items-center gap-3 no-underline" href="https://hashirusman.com" target="_blank" rel="noopener noreferrer" aria-label="Visit hashirusman.com">
             <span className="grid place-items-center w-[58px] h-[52px] text-[1.6rem] font-black bg-[#ffe14d] border-[3px] border-[#141414] rounded-xl shadow-[3px_3px_0_#141414]">HU</span>
             <span className="flex flex-col leading-[1.05] max-[420px]:hidden">
@@ -649,14 +649,14 @@ export default function CreativePortfolio() {
             </button>
           </div>
         </div>
-        <div className="max-w-[1480px] mx-auto relative flex flex-wrap items-center justify-between gap-3 px-[clamp(16px,3vw,36px)] pb-2 text-[0.75rem] text-[#5b5b5b] max-[1240px]:flex-col max-[1240px]:justify-center">
+        <div className="max-w-[1920px] mx-auto relative flex flex-wrap items-center justify-between gap-3 px-[clamp(16px,3vw,36px)] pb-2 text-[0.75rem] text-[#5b5b5b] max-[1240px]:flex-col max-[1240px]:justify-center">
           <div className="min-w-0 max-[1240px]:text-center">
             <a className="no-underline hover:underline" href="https://hashirusman.com" target="_blank" rel="noopener noreferrer">hashirusman.com</a> <span className="mx-1">/</span> hu-studio <span className="mx-1">/</span> <b className="text-[#141414]">creative-portfolio</b>
           </div>
         </div>
       </header>
 
-      <div className={`max-w-[1480px] mx-auto grid grid-cols-[250px_minmax(0,1fr)] max-[1024px]:grid-cols-1 ${GAP} px-[clamp(16px,3vw,36px)] pt-[clamp(14px,1.8vw,24px)] pb-10`}>
+      <div className={`max-w-[1920px] mx-auto grid grid-cols-[250px_minmax(0,1fr)] max-[1024px]:grid-cols-1 ${GAP} px-[clamp(16px,3vw,36px)] pt-[clamp(14px,1.8vw,24px)] pb-10`}>
         {/* ============ SIDE NAV ============ */}
         <aside
           id="sidenav"
@@ -703,10 +703,10 @@ export default function CreativePortfolio() {
         <main className="min-w-0 flex flex-col gap-[clamp(48px,6vw,80px)]">
           {/* ============ 01 DASHBOARD ============ */}
           <section className={SECTION} id="dashboard" aria-labelledby="dash-title">
-            <div className={`grid grid-cols-[minmax(0,1.75fr)_minmax(0,1fr)] max-[1024px]:grid-cols-1 ${GAP}`}>
+            <div className={`grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] max-[1024px]:grid-cols-1 ${GAP}`}>
               <article
                 data-reveal
-                className={`${CARD} ${REVEAL} relative min-h-[520px] overflow-hidden bg-[#ffcfae] flex flex-col gap-[18px] max-[760px]:min-h-[460px]`}
+                className={`${CARD} ${REVEAL} order-2 max-[1024px]:order-1 relative min-h-[520px] overflow-hidden bg-[#ffcfae] flex flex-col gap-[18px] max-[760px]:min-h-[460px]`}
               >
                 <span className={`${PILL} bg-[#ffe14d] self-start`}>01 / The creative leadership dashboard</span>
                 <h1 id="dash-title" className="text-[length:clamp(2.4rem,5.3vw,5.8rem)] font-black [font-stretch:82%] leading-[0.92] tracking-[-0.02em] uppercase">
@@ -729,7 +729,7 @@ export default function CreativePortfolio() {
 
               <article
                 data-reveal
-                className={`${CARD} ${REVEAL} relative isolate min-h-[360px] overflow-hidden bg-cover bg-center`}
+                className={`${CARD} ${REVEAL} order-1 max-[1024px]:order-2 relative isolate min-h-[360px] overflow-hidden bg-cover bg-center`}
                 style={{ backgroundImage: "url('/hashir.PNG')", backgroundPosition: 'center 38%' }}
               >
                 <span className="absolute right-4 top-4 z-10 grid size-14 place-items-center rounded-xl border-[3px] border-[#141414] bg-[#ffe14d] text-xl font-black shadow-[3px_3px_0_#141414]">01</span>

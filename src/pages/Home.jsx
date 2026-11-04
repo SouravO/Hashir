@@ -605,6 +605,87 @@ function Pane({ src, m, cls = '', tileAspect = 1 }) {
   )
 }
 
+function MobileVentureCarousel() {
+  const carouselRef = useRef(null)
+  const pauseRef = useRef(false)
+
+  useEffect(() => {
+    const rail = carouselRef.current
+    if (!rail || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined
+
+    let resumeTimer
+    let rafId
+    let previousTime
+    let visible = false
+    const pause = () => {
+      pauseRef.current = true
+      previousTime = undefined
+      window.clearTimeout(resumeTimer)
+      resumeTimer = window.setTimeout(() => { pauseRef.current = false }, 1400)
+    }
+    const wrap = () => {
+      const loopStart = rail.querySelector('[data-venture-loop]')
+      const loopPoint = loopStart && loopStart.offsetLeft - Number.parseFloat(window.getComputedStyle(rail).paddingLeft || '0')
+      if (loopPoint && rail.scrollLeft >= loopPoint) rail.scrollLeft -= loopPoint
+    }
+    const tick = (time) => {
+      if (!visible) return
+      if (previousTime !== undefined && !pauseRef.current) {
+        rail.scrollLeft += Math.min(time - previousTime, 40) * 0.09
+        wrap()
+      }
+      previousTime = time
+      rafId = window.requestAnimationFrame(tick)
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+      if (visible) {
+        previousTime = undefined
+        rafId = window.requestAnimationFrame(tick)
+      } else {
+        window.cancelAnimationFrame(rafId)
+      }
+    }, { rootMargin: '100px' })
+    observer.observe(rail)
+    rail.addEventListener('scroll', wrap, { passive: true })
+    rail.addEventListener('touchstart', pause, { passive: true })
+    rail.addEventListener('pointerdown', pause)
+    rail.addEventListener('wheel', pause, { passive: true })
+    rail.addEventListener('focusin', pause)
+    return () => {
+      window.cancelAnimationFrame(rafId)
+      window.clearTimeout(resumeTimer)
+      observer.disconnect()
+      rail.removeEventListener('scroll', wrap)
+      rail.removeEventListener('touchstart', pause)
+      rail.removeEventListener('pointerdown', pause)
+      rail.removeEventListener('wheel', pause)
+      rail.removeEventListener('focusin', pause)
+    }
+  }, [])
+
+  return (
+    <div ref={carouselRef} role="region" aria-label="Venture brands" aria-roledescription="carousel" className="relative -mx-5 flex overflow-x-auto overscroll-x-contain px-5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [touch-action:pan-x] sm:-mx-7 sm:px-7">
+      {[0, 1].map((copy) => (
+        <div key={copy} data-venture-loop={copy === 1 ? '' : undefined} className="relative flex w-max shrink-0 gap-5 pr-5" aria-hidden={copy === 1}>
+          {VENTURES.map(({ id, brand }, index) => (
+            <Link
+              key={`${id}-${copy}`}
+              to={`/ventures#brand-${id}`}
+              tabIndex={copy === 1 ? -1 : undefined}
+              className="group flex w-[min(84vw,380px)] shrink-0 flex-col items-center gap-3 text-center text-white no-underline"
+              aria-label={`View ${brand.name}`}
+            >
+              <img src={brandImage(brand.file)} alt="" loading="eager" decoding="async" fetchPriority={index < 3 ? 'high' : 'auto'} className="aspect-square w-full object-contain transition-transform duration-300 group-active:scale-[1.02]" />
+              <span className="text-lg font-semibold tracking-tight">{brand.name}</span>
+            </Link>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function Portfolio() {
   const [tall, setTall] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches)
   const [step, setStep] = useState(0)
@@ -627,7 +708,7 @@ function Portfolio() {
     const el = stageRef.current
     if (!el) return undefined
     const onScreen = new IntersectionObserver(([en]) => setLive(en.isIntersecting), { threshold: 0.25 })
-    const close = new IntersectionObserver(([en]) => { if (en.isIntersecting) { setNear(true); close.disconnect() } }, { rootMargin: '800px 0px' })
+    const close = new IntersectionObserver(([en]) => { if (en.isIntersecting) { setNear(true); close.disconnect() } }, { rootMargin: '1600px 0px' })
     onScreen.observe(el)
     close.observe(el)
     return () => { onScreen.disconnect(); close.disconnect() }
@@ -668,11 +749,16 @@ function Portfolio() {
       <span aria-hidden className={`pointer-events-none absolute inset-0 -z-10 opacity-40 ${dotted}`} style={{ WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 45%, #000, transparent 100%)', maskImage: 'radial-gradient(ellipse 70% 60% at 50% 45%, #000, transparent 100%)' }} />
 
       <div className="mx-auto w-full max-w-[1440px] px-5 sm:px-7">
-        <h2 id="brands-title" className="mb-[clamp(16px,3svh,36px)] text-center text-[clamp(30px,4.5vw,54px)] font-extrabold leading-[1.05] tracking-[-.055em] text-white">
+        <h2 id="brands-title" className="mb-[clamp(24px,3svh,36px)] text-center text-[clamp(30px,4.5vw,54px)] font-extrabold leading-[1.05] tracking-[-.055em] text-white">
           Ventures <span className="text-[#a4be2d]">I’ve helped build</span>
         </h2>
 
-        <div ref={stageRef} className="vs-stage mx-auto" style={{ width: tall ? 'min(100%, calc(54svh * .75))' : 'min(100%, calc(62svh * 1.5))' }}>
+        <div ref={stageRef}>
+          <div className="md:hidden">
+            <MobileVentureCarousel />
+          </div>
+
+        <div className="vs-stage mx-auto hidden md:block" style={{ width: 'min(100%, calc(62svh * 1.5))' }}>
           <div className="relative w-full" style={{ aspectRatio: cfg.ratio }}>
             {Array.from({ length: TILES }, (_, t) => {
               const rect = layout[t]
@@ -716,9 +802,11 @@ function Portfolio() {
             </span>
           )}
 
-          <div className="mt-4 flex justify-center">
-            <Link to="/ventures#collection" className="group inline-flex min-h-12 items-center gap-3 rounded-full bg-white px-6 text-[13px] font-semibold text-[#171a1b] no-underline transition-colors duration-300 hover:bg-[#a4be2d] active:scale-[.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a4be2d]">See all ventures <Arrow /></Link>
-          </div>
+        </div>
+        </div>
+
+        <div className="mt-8 flex justify-center md:mt-5">
+          <Link to="/ventures#collection" className="group inline-flex min-h-12 items-center gap-3 rounded-full bg-white px-6 text-[13px] font-semibold text-[#171a1b] no-underline transition-colors duration-300 hover:bg-[#a4be2d] active:scale-[.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#a4be2d]">See all ventures <Arrow /></Link>
         </div>
 
         {/* the tiles keep changing, so every venture is also listed here for screen readers */}
@@ -927,6 +1015,290 @@ function Conversation() {
   )
 }
 
+/* ---------- Experience: an S-shaped roadmap that draws itself as you scroll ----------
+   A lime line snakes down the page in the shape of an S (like the hand-drawn sketch): top, swing left, swing right, then an
+   arrow that keeps going. Four milestones sit on the line. As you scroll, a glowing head travels along the line and each
+   milestone lights up when the head reaches it, with its name sliding in beside it.
+
+   Desktop (mouse): hover a milestone, or its name, to open its detail card.
+   Phones and touch: tap a milestone, or its name, to open it; tap it again, or tap anywhere else, to close.
+   Keyboard: tab to a milestone to open it, Escape closes.
+
+   Two shapes of the same S are built once: a tall one for phones and a wider, shorter one for tablets and desktop.
+   Milestone positions are stored as percentages, so the buttons, names and cards stay glued to the line at any width.
+   Reduced-motion visitors get the finished roadmap with no travelling head and no pulsing.
+
+   Edit the milestones in `journey` below: name (the big label), tag (small line under the name), role, place, year and note
+   (the text inside the card). Any field left empty is simply not shown. Keep the list at four entries. */
+const journey = [
+  { name: 'Suite Spot', tag: 'BDM', role: 'Business Development Manager', place: '', year: '', note: 'Business development. The first chapter of the journey.' },
+  { name: 'Bramma', tag: 'Kerala, Cochin', role: '', place: 'Cochin, Kerala', year: '', note: 'The second chapter of the journey, in Cochin.' },
+  { name: 'nkreatives', tag: '', role: '', place: '', year: '', note: 'The third chapter of the journey.' },
+  { name: 'DayOne Ventures', tag: '', role: '', place: '', year: '', note: 'Venture building. The chapter that is still being written.' },
+]
+
+/* The S, drawn as two smooth curves in a 800 x 1180 box. Each milestone is [curve, step] along them. */
+const ROAD_CURVES = [
+  [[600, 60], [110, 70], [60, 520], [400, 580]],
+  [[400, 580], [740, 640], [760, 1020], [260, 1110]],
+]
+const ROAD_STEPS = 120
+const ROAD_NODES = [[0, 12], [0, 60], [1, 36], [1, 84]]
+const CARD_W = 320
+
+/* Builds one version of the S: kx / ky stretch it across / down. Returns the path, the milestone positions (in %), how far along
+   the line (0 to 1) each one sits, and where the arrow goes. */
+function buildRoad(kx, ky) {
+  const W = 800 * kx
+  const H = 1180 * ky
+  const curves = ROAD_CURVES.map((c) => c.map(([x, y]) => [x * kx, y * ky]))
+  const pts = []
+  let total = 0
+  curves.forEach((c, ci) => {
+    for (let i = ci ? 1 : 0; i <= ROAD_STEPS; i += 1) {
+      const t = i / ROAD_STEPS
+      const u = 1 - t
+      const x = u * u * u * c[0][0] + 3 * u * u * t * c[1][0] + 3 * u * t * t * c[2][0] + t * t * t * c[3][0]
+      const y = u * u * u * c[0][1] + 3 * u * u * t * c[1][1] + 3 * u * t * t * c[2][1] + t * t * t * c[3][1]
+      const prev = pts[pts.length - 1]
+      if (prev) total += Math.hypot(x - prev.x, y - prev.y)
+      pts.push({ x, y, len: total, f: 0 })
+    }
+  })
+  pts.forEach((q) => { q.f = q.len / total })
+  const pair = (a) => `${a[0].toFixed(1)} ${a[1].toFixed(1)}`
+  const d = `M${pair(curves[0][0])}${curves.map((c) => `C${pair(c[1])} ${pair(c[2])} ${pair(c[3])}`).join('')}`
+  const tip = pts[pts.length - 1]
+  const back = pts[pts.length - 8]
+  return {
+    W,
+    H,
+    d,
+    pts,
+    nodes: ROAD_NODES.map(([ci, i]) => {
+      const q = pts[ci * ROAD_STEPS + i]
+      return { x: (q.x / W) * 100, y: (q.y / H) * 100, f: q.f }
+    }),
+    end: { x: tip.x, y: tip.y, ang: (Math.atan2(tip.y - back.y, tip.x - back.x) * 180) / Math.PI },
+  }
+}
+const ROAD = { tall: buildRoad(1, 0.78), wide: buildRoad(1.3, 0.64) }
+
+/* The point on the line that is `f` (0 to 1) of the way along it. */
+function pointAt(pts, f) {
+  let i = 1
+  while (i < pts.length - 1 && pts[i].f < f) i += 1
+  const a = pts[i - 1]
+  const b = pts[i]
+  const k = b.f === a.f ? 0 : Math.min(1, Math.max(0, (f - a.f) / (b.f - a.f)))
+  return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k }
+}
+
+const canHover = () => typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
+/* 0 when the roadmap is just entering the screen, 1 when its end is comfortably in view. */
+function useRoadmapProgress() {
+  const ref = useRef(null)
+  const [p, setP] = useState(() => (calm() ? 1 : 0))
+  useEffect(() => {
+    if (calm()) return undefined
+    let raf = 0
+    const run = () => {
+      raf = 0
+      const el = ref.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      const vh = window.innerHeight
+      const v = (vh * 0.7 - r.top) / Math.max(1, r.height - vh * 0.2)
+      setP(Math.round(Math.min(1, Math.max(0, v)) * 200) / 200)
+    }
+    const queue = () => { if (!raf) raf = requestAnimationFrame(run) }
+    queue()
+    window.addEventListener('scroll', queue, { passive: true })
+    window.addEventListener('resize', queue)
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('scroll', queue); window.removeEventListener('resize', queue) }
+  }, [])
+  return [ref, p]
+}
+
+const XP_CSS = `
+.xp-spin{animation:xp-spin 14s linear infinite}
+@keyframes xp-spin{to{transform:rotate(360deg)}}
+.xp-ping{animation:xp-ping 2.8s cubic-bezier(.16,1,.3,1) infinite}
+@keyframes xp-ping{0%{transform:scale(.75);opacity:.75}100%{transform:scale(1.9);opacity:0}}
+.xp-headping{transform-box:fill-box;transform-origin:center;animation:xp-headping 2.2s ease-out infinite}
+@keyframes xp-headping{0%{transform:scale(.5);opacity:.8}100%{transform:scale(1.7);opacity:0}}
+.xp-pop{animation:xp-pop 460ms cubic-bezier(.16,1,.3,1) both}
+@keyframes xp-pop{from{opacity:0;transform:translateY(12px) scale(.96)}}
+.xp-node:focus-visible{outline:2px solid #a4be2d;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.xp-spin,.xp-ping,.xp-headping,.xp-pop{animation:none}}
+`
+
+/* Hand-drawn underline that scribbles itself in under the heading. */
+function Scribble({ className = 'mx-auto' }) {
+  const [ref, seen] = useInView()
+  return (
+    <svg ref={ref} viewBox="0 0 240 14" className={`${className} mt-4 block h-3.5 w-[min(60%,240px)] overflow-visible`} fill="none" stroke="#a4be2d" strokeWidth="3" strokeLinecap="round" aria-hidden>
+      <path d="M3 9C48 3 92 12 140 6S214 5 237 8" pathLength="1" strokeDasharray="1 2" style={{ strokeDashoffset: seen ? 0 : 1, transition: `stroke-dashoffset 1400ms ${EASE} 500ms` }} />
+    </svg>
+  )
+}
+
+/* The detail card for one milestone. It sits just below the milestone, or just above it near the bottom of the roadmap,
+   and never leaves the roadmap sideways. */
+function Peek({ item, node, i }) {
+  const flip = node.y > 72
+  const half = `min(${CARD_W}px, 100%) / 2`
+  const facts = [item.role, item.place].filter(Boolean)
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute z-30 -translate-x-1/2"
+      style={{
+        width: `min(${CARD_W}px, 100%)`,
+        left: `clamp(calc(${half}), ${node.x}%, calc(100% - ${half}))`,
+        ...(flip ? { bottom: `calc(${100 - node.y}% + 34px)` } : { top: `calc(${node.y}% + 34px)` }),
+      }}
+    >
+      <div className="xp-pop relative overflow-hidden rounded-[20px] border border-white/15 bg-[#101314]/95 p-5 shadow-[0_44px_80px_-30px_rgba(0,0,0,.95)] backdrop-blur-xl sm:p-6">
+        <span className="absolute inset-x-0 top-0 h-px" style={{ background: 'linear-gradient(90deg,transparent,#a4be2d,transparent)' }} />
+        <span className={`absolute inset-0 opacity-50 ${dotted}`} style={{ WebkitMaskImage: 'linear-gradient(225deg,#000,transparent 60%)', maskImage: 'linear-gradient(225deg,#000,transparent 60%)' }} />
+        <div className="relative flex items-start justify-between gap-4">
+        <span className="grid size-11 place-items-center rounded-xl bg-[#a4be2d] text-lg font-extrabold text-[#1e2618]">{item.name.charAt(0).toUpperCase()}</span>
+          {item.year && <span className="rounded-full border border-[#a4be2d]/40 px-3 py-1 text-[12px] font-semibold tabular-nums text-[#a4be2d]">{item.year}</span>}
+        </div>
+        <h3 className="relative m-0 mt-4 text-[22px] font-extrabold leading-[1.1] tracking-[-.035em] text-white sm:text-[26px]">{item.name}</h3>
+        {facts.length > 0 && (
+          <p className="relative m-0 mt-2 text-[13px] font-semibold leading-[1.5] text-[#b8d23c]">{facts.join('  ·  ')}</p>
+        )}
+        {item.note && <p className="relative m-0 mt-3 text-[14px] leading-[1.65] text-[#b7beb0]">{item.note}</p>}
+      </div>
+    </div>
+  )
+}
+
+function Experience() {
+  const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches)
+  const [open, setOpen] = useState(null)
+  const [still] = useState(calm)
+  const [box, f] = useRoadmapProgress()
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    const on = () => setWide(mq.matches)
+    on()
+    mq.addEventListener('change', on)
+    return () => mq.removeEventListener('change', on)
+  }, [])
+  /* a card closes when you tap anywhere that is not a milestone, or press Escape */
+  useEffect(() => {
+    if (open === null) return undefined
+    const away = (e) => { if (!(e.target instanceof Element) || !e.target.closest('[data-xp]')) setOpen(null) }
+    const esc = (e) => { if (e.key === 'Escape') setOpen(null) }
+    document.addEventListener('pointerdown', away)
+    document.addEventListener('keydown', esc)
+    return () => { document.removeEventListener('pointerdown', away); document.removeEventListener('keydown', esc) }
+  }, [open])
+
+  const g = wide ? ROAD.wide : ROAD.tall
+  const sw = wide ? 4.5 : 7
+  const head = pointAt(g.pts, f)
+  const hr = wide ? 7 : 12
+  const arrow = wide ? 17 : 30
+  /* mouse: hover opens and closes. touch: tap toggles. */
+  const bind = (i) => ({
+    onMouseEnter: () => { if (canHover()) setOpen(i) },
+    onMouseLeave: () => { if (canHover()) setOpen((o) => (o === i ? null : o)) },
+    onClick: () => { if (!canHover()) setOpen((o) => (o === i ? null : i)) },
+  })
+
+  return (
+    <section id="experience" aria-labelledby="experience-title" className="relative isolate overflow-hidden bg-[linear-gradient(145deg,#17201a_0%,#0d0f10_58%,#11150f_100%)] py-16 text-[#f8f9f6] sm:py-20">
+      <style>{XP_CSS}</style>
+      <span aria-hidden className="pointer-events-none absolute inset-0 -z-10" style={{ background: 'radial-gradient(900px circle at 50% 10%, rgba(164,190,45,.09), transparent 65%)' }} />
+      <span aria-hidden className={`pointer-events-none absolute inset-0 -z-10 opacity-40 ${dotted}`} style={{ WebkitMaskImage: 'radial-gradient(ellipse 70% 60% at 50% 50%, #000, transparent 100%)', maskImage: 'radial-gradient(ellipse 70% 60% at 50% 50%, #000, transparent 100%)' }} />
+
+      <div className={wrap}>
+        <header className="grid items-end gap-6 border-b border-white/10 pb-7 md:grid-cols-12">
+          <div className="md:col-span-8">
+            <p className="mb-3 flex items-center gap-3 text-[13px] font-semibold text-[#a4be2d] before:h-px before:w-8 before:bg-[#a4be2d]">Career timeline</p>
+            <Heading id="experience-title" lines={['Experience']} className="text-[clamp(46px,8vw,120px)] font-extrabold leading-[.95] tracking-[-.06em] text-white" />
+            <Scribble className="mx-0" />
+          </div>
+          <p className="mb-1 max-w-[42ch] text-[15px] leading-[1.7] text-[#c1c8bc] md:col-span-4">Four milestones, from business development to venture building and the work still taking shape.</p>
+        </header>
+
+        <div className="relative mt-8 rounded-[28px] border border-white/10 bg-white/[.025] p-3 shadow-[0_36px_90px_-58px_rgba(164,190,45,.42)] sm:mt-10 sm:rounded-[36px] sm:p-6">
+        <div ref={box} className="relative isolate mx-auto" style={{ width: wide ? 'min(100%, 1080px)' : 'min(100%, 460px)', aspectRatio: `${g.W} / ${g.H}` }}>
+          {/* soft light that follows the head of the line */}
+          <span aria-hidden className="pointer-events-none absolute z-0 size-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full md:size-[680px]" style={{ left: `${(head.x / g.W) * 100}%`, top: `${(head.y / g.H) * 100}%`, background: 'radial-gradient(circle, rgba(164,190,45,.17), transparent 65%)', opacity: f > 0.004 ? 1 : 0, transition: 'left 300ms linear, top 300ms linear, opacity 600ms ease' }} />
+
+          <svg viewBox={`0 0 ${g.W} ${g.H}`} className="absolute inset-0 z-10 h-full w-full overflow-visible" fill="none" aria-hidden>
+            {/* the road ahead: a dotted track */}
+            <path d={g.d} stroke="#f8f9f6" strokeOpacity=".24" strokeWidth={sw * 0.62} strokeLinecap="round" strokeDasharray={`0.1 ${wide ? 12 : 17}`} />
+            {/* the road travelled: a glowing lime line that draws itself */}
+            <path d={g.d} pathLength="1" stroke="#a4be2d" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1 2" style={{ strokeDashoffset: 1 - f, opacity: f > 0.003 ? 1 : 0, transition: 'stroke-dashoffset 300ms linear', filter: 'drop-shadow(0 0 7px rgba(164,190,45,.55))' }} />
+            {/* the head of the line */}
+            {f > 0.004 && f < 0.985 && (
+              <g style={{ transform: `translate(${head.x}px, ${head.y}px)`, transition: 'transform 300ms linear' }}>
+                {!still && <circle r={hr * 2.2} fill="#a4be2d" className="xp-headping" />}
+                <circle r={hr} fill="#a4be2d" />
+                <circle r={hr * 0.42} fill="#171a1b" />
+              </g>
+            )}
+            {/* the arrow: the story keeps going */}
+            <g transform={`translate(${g.end.x.toFixed(1)} ${g.end.y.toFixed(1)}) rotate(${g.end.ang.toFixed(1)})`}>
+              <path d={`M${-arrow} ${-arrow * 0.72}L0 0L${-arrow} ${arrow * 0.72}`} stroke="#a4be2d" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" style={{ opacity: f > 0.97 ? 1 : 0, transition: 'opacity 500ms ease', filter: 'drop-shadow(0 0 7px rgba(164,190,45,.55))' }} />
+            </g>
+          </svg>
+
+          {journey.map((item, i) => {
+            const n = g.nodes[i]
+            const on = f >= n.f - 0.012
+            const isOpen = open === i
+            const right = i < 2 /* the first two names sit to the right of the line, the last two to the left */
+            const mid = i !== 0 && i !== 3 /* vertical placement: centred on the milestone, a little below it, or a little above it */
+            const off = on ? 0 : 12
+            const labelStyle = {
+              ...(right ? { left: `calc(${n.x}% + 30px)`, maxWidth: `calc(${100 - n.x}% - 34px)` } : { right: `calc(${100 - n.x}% + 30px)`, maxWidth: `calc(${n.x}% - 34px)`, textAlign: 'right' }),
+              ...(i === 3 ? { bottom: `calc(${100 - n.y}% + 2px)` } : { top: mid ? `${n.y}%` : `calc(${n.y}% + 6px)` }),
+              opacity: on ? 1 : 0,
+              transform: `translate(${on ? 0 : right ? -14 : 14}px, ${mid ? `calc(-50% + ${off}px)` : `${off}px`})`,
+              transition: `opacity 800ms ${EASE}, transform 900ms ${EASE}`,
+            }
+            return (
+              <div key={item.name}>
+                <div aria-hidden data-xp className="absolute z-20 w-max cursor-pointer select-none" style={labelStyle} {...bind(i)}>
+                  <p className="m-0 text-[18px] font-extrabold leading-[1.05] tracking-[-.04em] transition-colors duration-500 sm:text-[22px] md:text-[clamp(24px,2.7vw,36px)]" style={{ color: isOpen ? '#a4be2d' : '#f8f9f6' }}>{item.name}</p>
+                  {item.tag && <p className="m-0 mt-1.5 text-[12px] font-semibold text-[#8f9686] md:text-[14px]">{item.tag}</p>}
+                </div>
+                <button
+                  type="button"
+                  data-xp
+                  aria-label={`${item.name}. ${[item.role, item.place, item.year, item.note].filter(Boolean).join('. ')}`}
+                  className="xp-node absolute z-20 grid size-12 -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full border-0 bg-transparent p-0 outline-none md:size-16"
+                  style={{ left: `${n.x}%`, top: `${n.y}%` }}
+                  onFocus={(e) => { if (e.currentTarget.matches(':focus-visible')) setOpen(i) }}
+                  onBlur={() => setOpen((o) => (o === i ? null : o))}
+                  {...bind(i)}
+                >
+                  {on && !still && <span aria-hidden className="xp-ping absolute inset-[6px] rounded-full border border-[#a4be2d] md:inset-[8px]" style={{ animationDelay: `${i * 450}ms` }} />}
+                  <span aria-hidden className="absolute inset-[4px] rounded-full border transition-all duration-700 md:inset-[6px]" style={{ borderColor: on ? 'rgba(164,190,45,.7)' : 'rgba(255,255,255,.16)', background: isOpen ? 'rgba(164,190,45,.14)' : 'transparent', transform: isOpen ? 'scale(1.18)' : 'scale(1)' }} />
+                  <span aria-hidden className={`absolute inset-[11px] rounded-full border border-dashed md:inset-[15px] ${on ? 'xp-spin' : ''}`} style={{ borderColor: on ? 'rgba(164,190,45,.55)' : 'rgba(255,255,255,.1)' }} />
+                  <span aria-hidden className="relative block size-3 rounded-full transition-all duration-700 md:size-3.5" style={{ background: on ? '#a4be2d' : '#2b3031', boxShadow: on ? '0 0 22px 5px rgba(164,190,45,.5)' : 'none', transform: isOpen ? 'scale(1.5)' : on ? 'scale(1)' : 'scale(.7)' }} />
+                </button>
+              </div>
+            )
+          })}
+
+          {open !== null && <Peek key={open} item={journey[open]} node={g.nodes[open]} i={open} />}
+        </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function Home() {
   const [ready, setReady] = useState(calm)
   const [statRef, p] = useScrollProgress()
@@ -992,7 +1364,7 @@ export default function Home() {
       </section>
 
       {/* 3. Core expertise */}
-      <section id="services" aria-labelledby="expertise-heading" className="bg-[#f2f3ef] pb-0 pt-20 sm:py-28">
+      <section id="services" aria-labelledby="expertise-heading" className="bg-[#f2f3ef] pb-16 pt-20 sm:py-28">
         <div className={wrap}>
           <header className="mb-12 grid gap-8 lg:grid-cols-12 lg:items-end">
             <div className="lg:col-span-8">
@@ -1010,6 +1382,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* 3b. Experience: S-shaped milestone roadmap (hover on desktop, tap on mobile) */}
+      <Experience />
 
       {/* 4. Strategic framework */}
       <Framework />
