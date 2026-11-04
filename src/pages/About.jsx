@@ -1,5 +1,5 @@
 import { version, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { ArrowDown, ArrowRight, Plus } from '@phosphor-icons/react'
+import { ArrowRight, Plus } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 
 /* -------------------------------------------------------------------------------------------
@@ -358,7 +358,7 @@ function Hero() {
   const ref = useRef(null)
   useProgress(ref, 'out')
   return (
-    <section ref={ref} aria-labelledby="about-title" className="relative isolate min-h-[100svh] overflow-hidden bg-[#101310] text-white">
+    <section ref={ref} aria-labelledby="about-title" className="relative isolate min-h-[calc(100svh-80px)] overflow-hidden bg-[#101310] text-white max-[768px]:min-h-[calc(100svh-64px)]">
       {/* The window opens: the photo grows out of the centre of the dark screen */}
       <div className="about-window absolute inset-0 -z-10">
         <div className="absolute inset-0" style={{ transform: 'translate3d(0,calc(var(--p,0) * 14%),0) scale(calc(1.04 + var(--p,0) * .1))' }}>
@@ -368,37 +368,19 @@ function Hero() {
       </div>
 
       <div
-        className={`${wrap} relative z-10 flex min-h-[100svh] flex-col justify-end pb-[clamp(40px,6vw,80px)] pt-28`}
+        className={`${wrap} relative z-10 flex min-h-[calc(100svh-80px)] flex-col justify-end pb-[clamp(28px,5vw,64px)] pt-20 max-[768px]:min-h-[calc(100svh-64px)] max-[768px]:pb-8 max-[768px]:pt-16`}
         style={{ transform: 'translate3d(0,calc(var(--p,0) * -9vh),0)', opacity: 'calc(1 - var(--p,0) * 1.6)' }}
       >
-        <div aria-hidden className="about-focus pointer-events-none absolute right-[18px] top-28 hidden w-[17%] max-w-[240px] md:right-7 lg:block" style={{ animationDelay: '1.3s' }}>
-          <div className="relative">
-            <span className="absolute inset-0 translate-x-3 translate-y-3 border border-[#a4be2d]" />
-            <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#153B2B]">
-              <Pic src="/abouthero1.png" crop={{ pos: '50% 22%', zoom: 1.6 }} tone="muted" />
-            </div>
-          </div>
-        </div>
-
         <FlipLines
           id="about-title"
           delay={500}
           lines={['Need a second brain?', 'Or someone to help', 'build the whole thing?']}
-          className="text-[clamp(26px,7.2vw,116px)] font-extrabold leading-[.98] tracking-[-.055em]"
+          className="text-[clamp(24px,5.4vw,86px)] font-extrabold leading-[.98] tracking-[-.055em]"
         />
-        <div className="mt-8 flex flex-col gap-6 lg:mt-12 lg:flex-row lg:items-end lg:justify-between">
-          <p className="about-focus max-w-[46ch] text-[15px] leading-[1.7] text-[#dfe6d8] md:text-[17px]" style={{ animationDelay: '1.5s' }}>
+        <div className="mt-5">
+          <p className="about-focus max-w-[46ch] text-[15px] leading-[1.65] text-[#dfe6d8] md:text-[17px]" style={{ animationDelay: '1.5s' }}>
             Some problems need one good conversation. Others need research, planning, systems, execution and a little time.
           </p>
-          <div className="about-focus" style={{ animationDelay: '1.7s' }}>
-            <a href="#story" className={`group inline-flex min-h-11 items-center gap-4 text-sm font-medium text-white no-underline ${focus}`}>
-              <span className="relative block h-12 w-px overflow-hidden bg-white/30">
-                <span aria-hidden className="about-cue absolute inset-x-0 top-0 h-1/2 bg-[#a4be2d]" />
-              </span>
-              Scroll to read
-              <ArrowDown size={18} weight="light" aria-hidden className="text-[#a4be2d]" />
-            </a>
-          </div>
         </div>
       </div>
     </section>
@@ -773,12 +755,10 @@ export default function AboutPage() {
       <style>{`
         @keyframes about-window { from { clip-path: inset(24% 28% 24% 28%); } to { clip-path: inset(0 0 0 0); } }
         @keyframes about-focus { from { opacity: 0; filter: blur(12px); transform: translateY(8px); } to { opacity: 1; filter: blur(0); transform: none; } }
-        @keyframes about-cue { 0% { transform: translateY(-100%); } 100% { transform: translateY(200%); } }
         .about-window { animation: about-window 1.7s cubic-bezier(.77,0,.18,1) .1s both; }
         .about-focus { animation: about-focus 1.1s cubic-bezier(.16,1,.3,1) both; }
-        .about-cue { animation: about-cue 1.8s cubic-bezier(.77,0,.18,1) infinite; }
         @media (prefers-reduced-motion: reduce) {
-          .about-window, .about-focus, .about-cue { animation: none; }
+          .about-window, .about-focus { animation: none; }
         }
       `}</style>
 

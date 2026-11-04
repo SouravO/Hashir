@@ -140,13 +140,13 @@ function DeferredInstagramEmbed({ src, title }) {
           title={title}
           allow="encrypted-media; picture-in-picture; web-share"
           allowFullScreen
-          className="block h-[min(68vh,680px)] min-h-[480px] w-full"
+          className="block aspect-[9/16] max-h-[280px] w-full"
         />
       ) : (
         <button
           type="button"
           onClick={() => setLoaded(true)}
-          className="grid min-h-32 w-full place-items-center bg-[#141414] px-5 py-6 text-center text-sm font-extrabold uppercase text-white transition-colors hover:bg-[#282828]"
+          className="grid aspect-[9/16] max-h-[280px] w-full place-items-center bg-[#141414] px-3 py-4 text-center text-xs font-extrabold uppercase text-white transition-colors hover:bg-[#282828]"
         >
           Play Instagram reel
         </button>
@@ -158,13 +158,15 @@ function DeferredInstagramEmbed({ src, title }) {
 function SocialAssetGrid({ items }) {
   return (
     <div
-      className="grid gap-0 overflow-hidden border-[3px] border-[#141414] bg-[#141414]"
-      style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))' }}
+      className="grid items-start gap-3"
+      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}
     >
       {items.map(([file, label]) => (
-        <figure key={file} className="m-0 min-w-0 bg-[#f3f0eb]">
-          <img src={`/social-media/${file}`} alt={label} loading="lazy" decoding="async" className="block aspect-[9/16] w-full object-contain" />
-          <figcaption className="flex min-h-12 items-center border-t border-[#141414] bg-[#fffdf8] px-3 py-2 text-[0.78rem] font-bold">{label}</figcaption>
+        <figure key={file} className="m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
+          <div className="grid aspect-[4/5] place-items-center overflow-hidden bg-[#f3f0eb]">
+            <img src={`/social-media/${file}`} alt={label} loading="lazy" decoding="async" className="block h-full w-full object-contain" />
+          </div>
+          <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
         </figure>
       ))}
     </div>
@@ -478,7 +480,6 @@ const CARD_INK = `${FRAME} ${PAD} bg-[#141414] text-white shadow-[6px_6px_0_#ffe
 const PILL = 'inline-block text-[0.75rem] font-extrabold uppercase tracking-[0.02em] px-[14px] py-1 border-2 border-[#141414] rounded-full'
 const EYEBROW = 'inline-block text-[0.8rem] font-extrabold tracking-[0.08em] uppercase px-2.5 py-[3px] border-2 rounded-lg mb-[14px]'
 const EYEBROW_WHITE = `${EYEBROW} bg-white border-[#141414]`
-const EYEBROW_LIME = `${EYEBROW} bg-[#c6f24e] text-[#141414] border-[#c6f24e]`
 const H2 = 'text-[length:clamp(1.9rem,4vw,3.1rem)] font-black leading-[1.02] tracking-[-0.01em] [font-stretch:85%] uppercase max-w-[22ch]'
 const LEAD = 'text-[#5b5b5b] text-[1.05rem] max-w-[62ch] mt-2.5'
 const FINE = 'text-[length:clamp(0.9rem,1vw,1rem)] leading-[1.5] text-[#5b5b5b] mt-[18px] max-w-[90ch]'
@@ -704,6 +705,7 @@ export default function CreativePortfolio() {
         @import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap');
         .hu-root { --topbar-h: 96px; font-family: Archivo, system-ui, -apple-system, "Segoe UI", sans-serif; }
         .hu-checker:not(.bg-cover) { background-image: repeating-conic-gradient(rgba(20,20,20,.045) 0% 25%, transparent 0% 50%); background-size: 48px 48px; }
+        .hu-checker.value-proposition-card { background-color: #141414; background-image: repeating-conic-gradient(rgba(255,255,255,.055) 0% 25%, rgba(0,0,0,.08) 0% 50%); background-size: 48px 48px; }
         :where(.hu-root) :focus-visible { outline: 3px solid #5468ff; outline-offset: 3px; }
         @keyframes pop { from { transform: translateY(14px) scale(0.98); opacity: 0; } }
       `}</style>
@@ -873,9 +875,9 @@ export default function CreativePortfolio() {
               </article>
             </div>
 
-            <article data-reveal className={`${CARD_INK} ${REVEAL}`}>
-              <span className={EYEBROW_LIME}>My value proposition</span>
-              <p className="text-[length:clamp(1.15rem,2.1vw,1.65rem)] font-extrabold leading-[1.3] max-w-[52ch]">I can translate an ambition into an operating plan, a market-facing brand, a coordinated marketing engine and a team that knows what to execute.</p>
+            <article data-reveal className={`${CARD_INK} value-proposition-card ${REVEAL}`}>
+              <span className={`${EYEBROW} bg-[#ff5a52] text-[#141414] border-[#ff5a52]`}>My value proposition</span>
+              <p className="max-w-[52ch] text-[length:clamp(1.15rem,2.1vw,1.65rem)] font-extrabold leading-[1.3] [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">I can translate an ambition into an operating plan, a market-facing brand, a coordinated marketing engine and a team that knows what to execute.</p>
             </article>
           </section>
 
@@ -1126,11 +1128,11 @@ export default function CreativePortfolio() {
                         {projectPackaging.length > 0 && (
                           <section aria-label={`${p.name} packaging`} className="col-span-full flex flex-col gap-3">
                             <h5 className="text-[0.9rem] font-black uppercase">Product packaging</h5>
-                            <div className="flex flex-wrap justify-center gap-4">
+                            <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
                               {projectPackaging.map(([file, label]) => (
-                                <figure key={file} className="w-fit max-w-full overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]">
-                                  <img src={`/packaging/${file}`} alt={label} loading="lazy" decoding="async" className="block h-auto w-auto max-h-[min(68vh,680px)] max-w-full object-contain" />
-                                  <figcaption className="border-t-2 border-[#141414] px-3 py-2 text-[0.85rem] font-bold">{label}</figcaption>
+                                <figure key={file} className="m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
+                                  <div className="grid aspect-[4/5] place-items-center overflow-hidden bg-[#f3f0eb]"><img src={`/packaging/${file}`} alt={label} loading="lazy" decoding="async" className="block h-full w-full object-contain" /></div>
+                                  <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
                                 </figure>
                               ))}
                             </div>
@@ -1139,9 +1141,9 @@ export default function CreativePortfolio() {
                         {open && projectVideos.length > 0 && (
                           <section aria-label={`${p.name} video gallery`} className="col-span-full flex flex-col gap-3">
                             <h5 className="text-[0.9rem] font-black uppercase">Videos</h5>
-                            <div className="grid grid-cols-1 gap-0 overflow-hidden border-[3px] border-[#141414] bg-[#141414] sm:grid-cols-2">
+                            <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
                               {projectVideos.map(({ src, title }) => (
-                                <div key={src} className="min-w-0 overflow-hidden bg-white">
+                                <div key={src} className="min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
                                   <DeferredInstagramEmbed src={src} title={title} />
                                 </div>
                               ))}
@@ -1190,7 +1192,10 @@ export default function CreativePortfolio() {
               </h2>
               <p className="text-[1.6rem] font-black mt-4">Hashir Usman</p>
               <p className="text-[#141414]/75">Business &amp; Marketing Leadership · Creative Direction · Venture Building</p>
-              <div className="flex flex-wrap gap-[14px] mt-[18px] relative z-[1]">
+              <p className="max-w-[54ch] text-[#141414]/75">Have a project in mind? Call me directly or send a note through the contact form.</p>
+              <div className="flex flex-wrap gap-3 mt-2 relative z-[1]">
+                <a className={`${BTN_CORE} ${BTN_DARK} ${BTN_PAD} bg-[#ff5a52] text-[#141414]`} href="tel:+917789800898">Call +91 77 898 00 898 <span aria-hidden="true">↗</span></a>
+                <Link className={`${BTN_CORE} ${BTN_DARK} ${BTN_PAD} bg-[#ffe14d] text-[#141414]`} to="/contact">Email / contact form <span aria-hidden="true">↗</span></Link>
                 <a className={`${BTN_CORE} ${BTN_DARK} ${BTN_PAD} bg-[#ffe14d] text-[#141414]`} href="#top">Back to top <span aria-hidden="true">↑</span></a>
               </div>
             </article>
@@ -1249,11 +1254,11 @@ export default function CreativePortfolio() {
           {workPackaging.length > 0 && (
             <section aria-label={`${c.name} packaging`} className="flex flex-col gap-3">
               <h4 className="text-[0.9rem] font-black uppercase">Product packaging</h4>
-              <div className="flex flex-wrap justify-center gap-4">
+              <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
                 {workPackaging.map(([file, label]) => (
-                  <figure key={file} className="w-fit max-w-full overflow-hidden border-[3px] border-[#141414] rounded-xl bg-white shadow-[3px_3px_0_#141414]">
-                    <img src={`/packaging/${file}`} alt={label} loading="lazy" decoding="async" className="block h-auto w-auto max-h-[min(68vh,680px)] max-w-full object-contain" />
-                    <figcaption className="border-t-2 border-[#141414] px-3 py-2 text-[0.85rem] font-bold">{label}</figcaption>
+                  <figure key={file} className="m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
+                    <div className="grid aspect-[4/5] place-items-center overflow-hidden bg-[#f3f0eb]"><img src={`/packaging/${file}`} alt={label} loading="lazy" decoding="async" className="block h-full w-full object-contain" /></div>
+                    <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
                   </figure>
                 ))}
               </div>
@@ -1262,9 +1267,9 @@ export default function CreativePortfolio() {
           {workVideos.length > 0 && (
             <section aria-label={`${c.name} videos`} className="flex flex-col gap-3">
               <h4 className="text-[0.9rem] font-black uppercase">Videos</h4>
-              <div className="grid grid-cols-1 gap-0 overflow-hidden border-[3px] border-[#141414] bg-[#141414] sm:grid-cols-2">
+              <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
                 {workVideos.map(({ src, title }) => (
-                  <div key={src} className="min-w-0 overflow-hidden bg-white">
+                  <div key={src} className="min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
                     <DeferredInstagramEmbed src={src} title={title} />
                   </div>
                 ))}
