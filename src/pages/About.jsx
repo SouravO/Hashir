@@ -559,7 +559,7 @@ const journeyChapters = [
     lesson: 'Understand the business behind the sales.',
   },
   {
-    place: 'Kochi, Kerala',
+    place: ' Kerala',
     org: 'Bramma Learning Solutions',
     title: 'Diagnose before you prescribe',
     body: 'Business development and consulting work broadened my exposure to business scanning, process improvement, SOPs and organisational systems.',
@@ -605,7 +605,7 @@ function JourneyHead() {
                 Built{' '}
                 <span className="relative inline-block">
                   Along
-                  <span className="absolute inset-x-0 bottom-[.1em] h-[.055em] origin-left bg-[#a4be2d]" style={{ transform: 'scaleX(var(--h2))' }} />
+            <span className="absolute inset-x-0 bottom-[-.04em] h-[.045em] origin-left bg-[#a4be2d]" style={{ transform: 'scaleX(var(--h2))' }} />
                 </span>
               </span>
             </span>
@@ -639,7 +639,7 @@ function JourneyHead() {
 function Chapter({ c, i }) {
   const left = i % 2 === 0
   return (
-    <li data-stop className={`group relative pl-10 lg:flex lg:pl-0 ${left ? 'lg:justify-start' : 'lg:justify-end'} ${i ? 'mt-5 lg:-mt-[7rem]' : ''}`}>
+    <li data-stop className={`group relative pl-10 lg:flex lg:pl-0 ${left ? 'lg:justify-start' : 'lg:justify-end'} ${i ? 'mt-8 lg:mt-10' : ''}`}>
       {/* stop on the road */}
       <span
         aria-hidden

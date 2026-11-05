@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUpRight, ChartLineUp, Compass, Gear, SquaresFour } from '@phosphor-icons/react'
+import { ArrowUpRight, ChartLineUp, Compass, FacebookLogo, Gear, InstagramLogo, LinkedinLogo, SquaresFour, WhatsappLogo, X, YoutubeLogo } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
+import { createPortal } from 'react-dom'
 import { brandImage, brands } from '../data/brands'
 
 /* ---------- Editable content (taken from the HU. content blueprint) ---------- */
@@ -48,6 +49,13 @@ const wrap = 'mx-auto w-full max-w-[1280px] px-5 sm:px-7'
 const eyebrow = 'mb-5 flex items-center gap-3 text-[13px] font-semibold text-[#617319] before:h-px before:w-8 before:bg-[#7c9318]'
 const h2cls = 'text-[clamp(34px,5vw,66px)] font-extrabold leading-[1.02] tracking-[-.045em]'
 const dotted = '[background-image:radial-gradient(#d5e48145_.8px,transparent_1px)] [background-size:12px_12px]'
+const heroSocials = [
+  { label: 'Facebook', href: 'https://www.facebook.com/', Icon: FacebookLogo },
+  { label: 'Instagram', href: 'https://www.instagram.com/', Icon: InstagramLogo },
+  { label: 'YouTube', href: 'https://www.youtube.com/', Icon: YoutubeLogo },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/', Icon: LinkedinLogo },
+  { label: 'WhatsApp', href: 'https://www.whatsapp.com/', Icon: WhatsappLogo },
+]
 
 function useInView(margin = '0px 0px 280px 0px') {
   const ref = useRef(null)
@@ -382,7 +390,7 @@ function Framework() {
   }, [])
   const jump = (i) => refs.current[i]?.scrollIntoView({ behavior: calm() ? 'auto' : 'smooth', block: 'center' })
   return (
-    <section id="framework" className="bg-[#f2f3ef] pb-24 pt-8 sm:py-36" aria-labelledby="framework-title">
+    <section id="framework" className="bg-[#f2f3ef] pb-24 pt-8 sm:pb-28 sm:pt-16" aria-labelledby="framework-title">
       <div className={wrap}>
         <header className="mb-14 max-w-3xl sm:mb-20">
           <Reveal className={eyebrow}>From idea to actual business</Reveal>
@@ -766,18 +774,31 @@ function Positioning() {
 
 export default function Home() {
   const [ready, setReady] = useState(calm)
+  const [showStartupPopup, setShowStartupPopup] = useState(false)
   useEffect(() => {
     document.title = 'Hashir Usman | Startup Architect, Venture Builder & Business Consultant'
     const frame = requestAnimationFrame(() => setReady(true))
-    return () => cancelAnimationFrame(frame)
+    const popupTimer = window.setTimeout(() => setShowStartupPopup(true), 1800)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.clearTimeout(popupTimer)
+    }
   }, [])
   const line = (d) => ({ strokeDashoffset: ready ? 0 : 1, transition: `stroke-dashoffset 850ms ${EASE} ${d}ms` })
 
   return (
+    <>
     <main id="main" className="overflow-x-clip font-sans text-[#171a17]">
       {/* 1. Hero */}
       <section id="home" aria-labelledby="hero-title" className="relative flex min-h-[calc(100svh-72px)] flex-col max-[768px]:min-h-[calc(100svh-64px)]">
         <div className="mx-auto flex w-full max-w-[1720px] flex-1 flex-col px-5 py-10 sm:px-8 sm:py-12 lg:px-12 xl:px-16 2xl:px-20">
+          <nav aria-label="Social media profiles" className="absolute left-5 top-5 z-20 flex items-center gap-3 sm:left-8 sm:top-6 sm:gap-4 lg:left-[max(3rem,calc((100vw-1720px)/2+3rem))] xl:left-[max(4rem,calc((100vw-1720px)/2+4rem))]">
+            {heroSocials.map(({ label, href, Icon }) => (
+              <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} className="grid size-10 place-items-center rounded-full border border-[#8da320]/70 bg-[#a4be2d]/75 text-[#17271c] shadow-[0_4px_12px_#10200818] backdrop-blur-sm transition-[transform,background-color,color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-[#153B2B] hover:text-[#d7ea72] hover:shadow-[0_7px_18px_#10200825] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#153B2B] sm:size-12">
+                <Icon size={21} aria-hidden />
+              </a>
+            ))}
+          </nav>
           <div className="grid flex-1 items-center gap-8 lg:grid-cols-12 lg:gap-12 xl:gap-16">
             <div className="contents lg:col-span-7 lg:block">
               <div style={rise(ready)}>
@@ -813,7 +834,7 @@ export default function Home() {
       <Positioning />
 
       {/* 3. Core expertise */}
-      <section id="services" aria-labelledby="expertise-heading" className="bg-[#f2f3ef] pb-16 pt-20 sm:py-28">
+      <section id="services" aria-labelledby="expertise-heading" className="bg-[#f2f3ef] pb-10 pt-20 sm:pb-14 sm:pt-28">
         <div className={wrap}>
           <header className="mb-12 grid gap-8 lg:grid-cols-12 lg:items-end">
             <div className="lg:col-span-8">
@@ -841,5 +862,25 @@ export default function Home() {
       {/* 6. Strategy calls & numbers */}
       <Conversation />
     </main>
+    {showStartupPopup && createPortal(
+      <aside aria-label="Explore Founderverse" className="fixed bottom-5 right-4 z-[110] w-[min(380px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-[#c5a65e]/70 bg-[linear-gradient(135deg,#1c4936_0%,#10251b_100%)] p-3 text-white shadow-[0_18px_46px_#10131065] animate-startup-popup sm:bottom-6 sm:right-6 sm:p-4">
+        <button type="button" onClick={() => setShowStartupPopup(false)} aria-label="Close Founderverse promotion" className="absolute right-2 top-2 z-10 inline-flex size-8 items-center justify-center rounded-full border border-white/15 bg-black/20 text-white/80 transition-colors hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4e77d]"><X size={16} aria-hidden /></button>
+        <div className="flex items-center gap-3">
+          <div className="shrink-0 rounded-lg border border-[#d5bb72]/55 bg-[#f4f0df] p-1 shadow-[0_5px_16px_#0005]">
+            <img src="/book.png" alt="Startup guide book cover" className="h-[82px] w-[58px] rounded-[4px] object-cover sm:h-[92px] sm:w-[66px]" />
+          </div>
+          <div className="min-w-0 flex-1 pr-6">
+            <p className="m-0 text-[9px] font-bold uppercase tracking-[.18em] text-[#d5bb72]">Got an idea worth building?</p>
+            <h2 className="m-0 mt-1.5 text-[19px] font-bold leading-tight tracking-[-.035em] sm:text-[22px]">Make your next move count.</h2>
+            <p className="m-0 mt-1.5 text-[11px] leading-[1.45] text-white/75 sm:text-xs">Explore the playbooks for testing ideas, winning customers, and building a business that lasts.</p>
+          </div>
+        </div>
+        <Link to="/founderverse" onClick={() => setShowStartupPopup(false)} className="mt-3 flex min-h-10 items-center justify-between rounded-lg border border-[#e2c878]/70 bg-[#c3d646] px-3.5 text-xs font-bold text-[#172218] no-underline shadow-[inset_0_1px_0_#ffffff80] transition-[background-color,transform] hover:-translate-y-px hover:bg-[#d3e66b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+          Discover Founderverse <Arrow />
+        </Link>
+      </aside>,
+      document.body,
+    )}
+    </>
   )
 }

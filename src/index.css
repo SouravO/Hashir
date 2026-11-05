@@ -13,6 +13,7 @@
   --animate-bounce-down: bounce-down 2s ease-in-out infinite;
   --animate-menu-drop: menu-drop 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-page-enter: page-enter 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-startup-popup: startup-popup 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
   @keyframes hero-rise {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: none; }
@@ -36,6 +37,10 @@
   @keyframes page-enter {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: none; }
+  }
+  @keyframes startup-popup {
+    from { opacity: 0; transform: translateY(18px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 }
 

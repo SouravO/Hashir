@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { FacebookLogo, InstagramLogo, LinkedinLogo, WhatsappLogo, YoutubeLogo } from '@phosphor-icons/react'
 
 /* =========================================================
    HU STUDIO — Creative Portfolio (page route)
@@ -40,6 +41,14 @@ const LOGO_SCALE = {
   nkreatives: 1.45,
   'shameers-cars': 1.15,
 }
+
+const HERO_SOCIALS = [
+  { label: 'Facebook', href: 'https://www.facebook.com/', Icon: FacebookLogo },
+  { label: 'Instagram', href: 'https://www.instagram.com/', Icon: InstagramLogo },
+  { label: 'YouTube', href: 'https://www.youtube.com/', Icon: YoutubeLogo },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/', Icon: LinkedinLogo },
+  { label: 'WhatsApp', href: 'https://www.whatsapp.com/', Icon: WhatsappLogo },
+]
 
 // Social media examples shown inside each selected work's case detail.
 const WORK_GALLERIES = {
@@ -82,32 +91,32 @@ const WORK_PACKAGING = {
 
 const WORK_VIDEOS = {
   nkreatives: [
-    { src: 'https://www.instagram.com/reel/DXt4ZYLgP2J/embed', title: 'NKreatives Instagram reel 1' },
-    { src: 'https://www.instagram.com/reel/DV8ogXLEbcC/embed', title: 'NKreatives Instagram reel 2' },
+    { src: 'https://www.instagram.com/reel/DXt4ZYLgP2J/embed', title: 'NKreatives Instagram reel 1', thumbnail: '/social-media/nkreactives-insta-prof.jpeg' },
+    { src: 'https://www.instagram.com/reel/DV8ogXLEbcC/embed', title: 'NKreatives Instagram reel 2', thumbnail: '/social-media/nkreactives-insta-prof.jpeg' },
   ],
   oxtel: [
-    { src: 'https://www.instagram.com/reel/C6S8Ei4rGV-/embed', title: 'Oxtel Instagram reel 1' },
-    { src: 'https://www.instagram.com/reel/DBRHBrZyo0F/embed', title: 'Oxtel Instagram reel 2' },
+    { src: 'https://www.instagram.com/reel/C6S8Ei4rGV-/embed', title: 'Oxtel Instagram reel 1', thumbnail: '/social-media/oxtelinstaprof.jpeg' },
+    { src: 'https://www.instagram.com/reel/DBRHBrZyo0F/embed', title: 'Oxtel Instagram reel 2', thumbnail: '/social-media/oxtelinstaprof.jpeg' },
   ],
   carzo: [
-    { src: 'https://www.instagram.com/reel/Db8QT0Tznb1/embed', title: 'Carzo Instagram reel' },
+    { src: 'https://www.instagram.com/reel/Db8QT0Tznb1/embed', title: 'Carzo Instagram reel', thumbnail: '/social-media/carzoreels.png' },
   ],
   dayone: [
-    { src: 'https://www.instagram.com/reel/De3mc-kNwdD/embed', title: 'DayOne Instagram reel' },
+    { src: 'https://www.instagram.com/reel/De3mc-kNwdD/embed', title: 'DayOne Instagram reel', thumbnail: '/social-media/dayoneinsta.png' },
   ],
   'moon-bliss': [
-    { src: 'https://www.instagram.com/reel/DfCb-eBAwIj/embed', title: 'Moon Bliss Instagram reel' },
-    { src: 'https://www.instagram.com/reel/DYZd31XttAK/embed', title: 'Moon Bliss Instagram reel 2' },
+    { src: 'https://www.instagram.com/reel/DfCb-eBAwIj/embed', title: 'Moon Bliss Instagram reel', thumbnail: '/social-media/moonbliss-reels.png' },
+    { src: 'https://www.instagram.com/reel/DYZd31XttAK/embed', title: 'Moon Bliss Instagram reel 2', thumbnail: '/social-media/moonbliss-reels.png' },
   ],
   'house-of-bliss': [
-    { src: 'https://www.instagram.com/reel/DV-S-H-D1SJ/embed', title: 'House of Bliss Instagram reel' },
+    { src: 'https://www.instagram.com/reel/DV-S-H-D1SJ/embed', title: 'House of Bliss Instagram reel', thumbnail: '/ventures/HOUSE-of-Biss.png' },
   ],
   'aisen-studio': [
-    { src: 'https://www.instagram.com/reel/DVm70zikRKw/embed', title: 'Aisen Studio Instagram reel' },
+    { src: 'https://www.instagram.com/reel/DVm70zikRKw/embed', title: 'Aisen Studio Instagram reel', thumbnail: '/social-media/aisenstudio-insta-prof.png' },
   ],
   'shameers-cars': [
-    { src: 'https://www.instagram.com/reel/DGVwJYTTFV_/embed', title: "Shameer's Cars Instagram reel" },
-    { src: 'https://www.instagram.com/reel/DHaVnHiy-SF/embed', title: "Shameer's Cars Instagram reel 2" },
+    { src: 'https://www.instagram.com/reel/DGVwJYTTFV_/embed', title: "Shameer's Cars Instagram reel", thumbnail: '/social-media/shameers-reels.png' },
+    { src: 'https://www.instagram.com/reel/DHaVnHiy-SF/embed', title: "Shameer's Cars Instagram reel 2", thumbnail: '/social-media/shameers-reels.png' },
   ],
 }
 
@@ -139,7 +148,7 @@ function Logo({ slug, name, className = '', cover = false }) {
   )
 }
 
-function DeferredInstagramEmbed({ src, title }) {
+function DeferredInstagramEmbed({ src, title, thumbnail }) {
   const [loaded, setLoaded] = useState(false)
 
   return (
@@ -156,9 +165,15 @@ function DeferredInstagramEmbed({ src, title }) {
         <button
           type="button"
           onClick={() => setLoaded(true)}
-          className="grid aspect-[9/16] max-h-[280px] w-full place-items-center bg-[#141414] px-3 py-4 text-center text-xs font-extrabold uppercase text-white transition-colors hover:bg-[#282828]"
+          aria-label={`Play ${title}`}
+          className="group relative block aspect-[9/16] max-h-[280px] w-full overflow-hidden bg-[#141414] text-left text-white"
         >
-          Play Instagram reel
+          {thumbnail && <img src={thumbnail} alt="" loading="lazy" decoding="async" onError={(event) => { event.currentTarget.style.display = 'none' }} className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105" />}
+          <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-black/15" />
+          <span aria-hidden className="absolute left-1/2 top-1/2 grid size-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/80 bg-black/35 shadow-lg backdrop-blur-sm transition-transform group-hover:scale-110">
+            <svg viewBox="0 0 24 24" className="ml-0.5 size-5 fill-current"><path d="M7 4.8c0-.77.84-1.25 1.5-.85l10.1 6.2a1 1 0 0 1 0 1.7l-10.1 6.2A1 1 0 0 1 7 17.2V4.8Z" /></svg>
+          </span>
+          <span className="absolute inset-x-0 bottom-0 p-3 text-xs font-extrabold leading-snug drop-shadow">{title}</span>
         </button>
       )}
     </div>
@@ -395,9 +410,9 @@ const PROJECTS = [
     ['Social strategy', '360° marketing', 'Growth & revenue', 'Influencers / PR']),
   P('Wayanad Trade Centre', 'Commercial / trade', 'corporate', 'Creative Director', 'creative',
     [], ['Creative direction', 'Content production', 'Social design'], ['Social strategy', '360° marketing']),
-  P('Tempest Automotive Battery', 'Automotive', 'consumer', 'Consultant / Advisor', 'advisor',
+  P('Tempest Automotive ', 'Automotive', 'consumer', 'Consultant / Advisor', 'advisor',
     [], ['Brand architecture', 'Creative direction', 'Content production', 'Social design'], ['Social strategy', '360° marketing', 'Influencers / PR']),
-  P('Warrior Mens/Kids', 'Fashion', 'style', 'Consultant / Advisor', 'advisor',
+  P('Warrior Mens', 'Fashion', 'style', 'Consultant / Advisor', 'advisor',
     [], ['Brand architecture', 'Creative direction', 'Content production', 'Social design'], ['Social strategy', 'Paid media', '360° marketing']),
   P('TP Group of Companies', 'Building materials / corporate', 'corporate', 'Consultant / Advisor', 'advisor',
     ['Marketing leadership'], ['Naming & identity', 'Brand voice', 'Brand architecture', 'Creative direction', 'Content production', 'Social design', 'Brand QA'],
@@ -793,6 +808,13 @@ export default function CreativePortfolio() {
         <main className="min-w-0 flex flex-col gap-[clamp(48px,6vw,80px)]">
           {/* ============ 01 DASHBOARD ============ */}
           <section className={SECTION} id="dashboard" aria-labelledby="dash-title">
+            <nav aria-label="Social media profiles" className="mb-6 flex flex-wrap items-center gap-3 sm:mb-8 sm:gap-4">
+              {HERO_SOCIALS.map(({ label, href, Icon }) => (
+                <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} className="grid size-11 place-items-center rounded-full border-2 border-[#141414] bg-white text-[#1554a3] shadow-[2px_2px_0_#141414] transition-[transform,background-color,color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-[#1554a3] hover:text-white hover:shadow-[3px_4px_0_#141414] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5468ff] sm:size-12">
+                  <Icon size={21} weight="regular" aria-hidden />
+                </a>
+              ))}
+            </nav>
             <div className={`grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] max-[1024px]:grid-cols-1 ${GAP}`}>
               <article
                 data-reveal
@@ -1137,7 +1159,7 @@ export default function CreativePortfolio() {
                         )}
                         {projectPackaging.length > 0 && (
                           <section aria-label={`${p.name} packaging`} className="col-span-full flex flex-col gap-3">
-                            <h5 className="text-[0.9rem] font-black uppercase">Product packaging</h5>
+                            <h5 className="text-[0.9rem] font-black uppercase">Product packaging concept</h5>
                             <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
                               {projectPackaging.map(([file, label]) => (
                                 <figure key={file} className="m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
@@ -1152,9 +1174,9 @@ export default function CreativePortfolio() {
                           <section aria-label={`${p.name} video gallery`} className="col-span-full flex flex-col gap-3">
                             <h5 className="text-[0.9rem] font-black uppercase">Videos</h5>
                             <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
-                              {projectVideos.map(({ src, title }) => (
+                              {projectVideos.map(({ src, title, thumbnail }) => (
                                 <div key={src} className="min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
-                                  <DeferredInstagramEmbed src={src} title={title} />
+                                  <DeferredInstagramEmbed src={src} title={title} thumbnail={thumbnail} />
                                 </div>
                               ))}
                             </div>
@@ -1263,7 +1285,7 @@ export default function CreativePortfolio() {
           )}
           {workPackaging.length > 0 && (
             <section aria-label={`${c.name} packaging`} className="flex flex-col gap-3">
-              <h4 className="text-[0.9rem] font-black uppercase">Product packaging</h4>
+              <h4 className="text-[0.9rem] font-black uppercase">Product packaging concept</h4>
               <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
                 {workPackaging.map(([file, label]) => (
                   <figure key={file} className="m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
@@ -1278,9 +1300,9 @@ export default function CreativePortfolio() {
             <section aria-label={`${c.name} videos`} className="flex flex-col gap-3">
               <h4 className="text-[0.9rem] font-black uppercase">Videos</h4>
               <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
-                {workVideos.map(({ src, title }) => (
+                {workVideos.map(({ src, title, thumbnail }) => (
                   <div key={src} className="min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
-                    <DeferredInstagramEmbed src={src} title={title} />
+                    <DeferredInstagramEmbed src={src} title={title} thumbnail={thumbnail} />
                   </div>
                 ))}
               </div>
