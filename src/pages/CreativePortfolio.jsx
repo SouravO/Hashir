@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 /* =========================================================
@@ -173,7 +173,7 @@ function Logo({ slug, name, className = '', cover = false }) {
         <img
           src={asset.startsWith('/') ? asset : `/ventures/${asset}`}
           alt={`${name} logo`}
-          loading="eager"
+          loading="lazy"
           decoding="async"
           style={LOGO_SCALE[slug] ? { transform: `scale(${LOGO_SCALE[slug]})`, transformOrigin: 'center' } : undefined}
           className={`absolute inset-0 size-full bg-white ${cover ? 'object-cover' : 'object-contain'}`}
@@ -225,15 +225,16 @@ function DeferredInstagramEmbed({ src, title, thumbnail }) {
 }
 
 function SocialAssetGrid({ items }) {
+  const hasBareLogicLogo = items.some(([file, , src]) => file === 'barelogic.png' && src === '/ventures/barelogic.png')
   return (
     <div
       className="grid items-start gap-3"
-      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}
+      style={{ gridTemplateColumns: `repeat(auto-fill, minmax(min(100%, 150px), ${hasBareLogicLogo ? 250 : 190}px))` }}
     >
       {items.map(([file, label, src]) => (
         <figure key={file} className="m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
-          <div className="grid aspect-[4/5] place-items-center overflow-hidden bg-[#f3f0eb]">
-            <img src={src || `/social-media/${file}`} alt={label} loading="lazy" decoding="async" className="block h-full w-full object-contain" />
+          <div className={`grid ${hasBareLogicLogo && file === 'barelogic.png' ? 'aspect-square' : 'aspect-[4/5]'} place-items-center overflow-hidden bg-[#f3f0eb]`}>
+            <img src={src || `/social-media/${file}`} alt={label} loading="lazy" decoding="async" className={`block h-full w-full object-contain ${hasBareLogicLogo && file === 'barelogic.png' ? 'scale-[1.65]' : ''}`} />
           </div>
           {!/instagram|social post/i.test(label) && (
             <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
@@ -348,12 +349,6 @@ const WORK_FILTERS = [
   ['event-head', 'Event head'],
 ]
 
-const MARKETING_STRATEGIES = [
-  { slug: 'bare-logic', name: 'Bare Logic', file: '/pdf/MARKETING%20STRATEGY_compressed.pdf' },
-  { slug: 'nothing-else', name: 'Nothing Else', file: '/pdf/MARKETING%20STRATEGY%20for%20Nothing%20else_compressed.pdf' },
-  { slug: 'moon-bliss', name: 'MoonBliss', file: '/pdf/Safari_compressed.pdf' },
-]
-
 const matchesWorkFilter = (item, filter) => {
   if (filter === 'all') return true
   return item.filter === filter
@@ -392,6 +387,7 @@ const INDUSTRIES = {
   consumer: 'Consumer & Auto',
   corporate: 'Corporate & Health',
 }
+const INDUSTRY_FILTERS = { all: 'All sectors', ...INDUSTRIES }
 
 const P = (name, sector, ind, role, roleKey, l, b, m, note) => ({ name, sector, ind, role, roleKey, l, b, m, note })
 
@@ -491,11 +487,6 @@ const ALL_WORK = [
     mkt: project.m,
   })),
 ]
-const ROLE_LABELS = {
-  ceo: 'Business head', founder: 'Founder / Co-founder', marketing: 'Marketing lead',
-  creative: 'Creative director', advisor: 'Consultant / Advisor', 'event-head': 'Event head',
-}
-
 /* ---------- Data: static copy blocks ---------- */
 
 const RANGE = [
@@ -622,7 +613,6 @@ function FilterChips({ map, value, onChange, small, label }) {
 // Counts up when scrolled into view (skipped for reduced-motion users).
 function CountUp({ to, pad: width = 0, className }) {
   const ref = useRef(null)
-  const [val, setVal] = useState(to)
 
   useEffect(() => {
     const el = ref.current
@@ -635,7 +625,7 @@ function CountUp({ to, pad: width = 0, className }) {
         const t0 = performance.now()
         const tick = (t) => {
           const p = Math.min((t - t0) / 900, 1)
-          setVal(Math.round(to * (1 - Math.pow(1 - p, 3))))
+          el.textContent = String(Math.round(to * (1 - Math.pow(1 - p, 3)))).padStart(width, '0')
           if (p < 1) raf = requestAnimationFrame(tick)
         }
         raf = requestAnimationFrame(tick)
@@ -647,9 +637,9 @@ function CountUp({ to, pad: width = 0, className }) {
       io.disconnect()
       cancelAnimationFrame(raf)
     }
-  }, [to])
+  }, [to, width])
 
-  return <span ref={ref} className={className}>{String(val).padStart(width, '0')}</span>
+  return <span ref={ref} className={className}>{String(to).padStart(width, '0')}</span>
 }
 
 /* =========================================================
@@ -660,6 +650,8 @@ export default function CreativePortfolio() {
   const rootRef = useRef(null)
   const topbarRef = useRef(null)
   const dialogRef = useRef(null)
+  const sidebarRef = useRef(null)
+  const sidebarListRef = useRef(null)
 
   const [active, setActive] = useState('dashboard')
   const [headerVisible, setHeaderVisible] = useState(true)
@@ -667,13 +659,33 @@ export default function CreativePortfolio() {
   const [current, setCurrent] = useState(0)
   const [caseOpen, setCaseOpen] = useState(false)
   const [query, setQuery] = useState('')
-  const [roleIndexFilter, setRoleIndexFilter] = useState('ceo')
+  const [sectorIndexFilter, setSectorIndexFilter] = useState('all')
   const [openRows, setOpenRows] = useState(() => new Set())
 
   /* ---------- Document title ---------- */
   useEffect(() => {
     document.title = 'Creative Portfolio | Hashir Usman'
     return () => { document.title = 'Hashir Usman' }
+  }, [])
+
+  useEffect(() => {
+    const sidebar = sidebarRef.current
+    const list = sidebarListRef.current
+    if (!sidebar || !list) return undefined
+
+    const scrollSidebar = (event) => {
+      if (event.deltaY === 0) return
+      event.preventDefault()
+      const scale = event.deltaMode === WheelEvent.DOM_DELTA_LINE
+        ? 16
+        : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+          ? window.innerHeight
+          : 1
+      list.scrollTop += event.deltaY * scale
+    }
+
+    sidebar.addEventListener('wheel', scrollSidebar, { passive: false })
+    return () => sidebar.removeEventListener('wheel', scrollSidebar)
   }, [])
 
   /* ---------- Smooth scroll + topbar height (sticky offsets) ---------- */
@@ -749,7 +761,11 @@ export default function CreativePortfolio() {
   }, [])
 
   /* ---------- Case dialog ---------- */
-  const visibleCases = ALL_WORK.map((_, i) => i).filter((i) => matchesWorkFilter(ALL_WORK[i], workFilter))
+  const visibleWorkCards = useMemo(
+    () => ALL_WORK.map((f, i) => ({ f, i })).filter(({ f }) => matchesWorkFilter(f, workFilter)),
+    [workFilter],
+  )
+  const visibleCases = visibleWorkCards.map(({ i }) => i)
 
   const openCase = (i) => {
     setCurrent(i)
@@ -769,9 +785,12 @@ export default function CreativePortfolio() {
   const workVideos = WORK_VIDEOS[c.slug] || []
 
   /* ---------- Project index ---------- */
-  const visibleProjects = PROJECTS.map((p, i) => ({ p, i })).filter(({ p }) =>
-    (roleIndexFilter === 'all' || p.roleKey === roleIndexFilter) &&
-    (!query || p.search.includes(query)))
+  const visibleProjects = useMemo(
+    () => PROJECTS.map((p, i) => ({ p, i })).filter(({ p }) =>
+      (sectorIndexFilter === 'all' || p.ind === sectorIndexFilter) &&
+      (!query || p.search.includes(query))),
+    [sectorIndexFilter, query],
+  )
 
   const toggleRow = (i) =>
     setOpenRows((prev) => {
@@ -835,13 +854,14 @@ export default function CreativePortfolio() {
       <div className={`max-w-[1920px] mx-auto grid grid-cols-[250px_minmax(0,1fr)] max-[1024px]:grid-cols-1 ${GAP} px-[clamp(16px,3vw,36px)] pt-[clamp(14px,1.8vw,24px)] pb-10`}>
         {/* ============ SIDE NAV ============ */}
         <aside
+          ref={sidebarRef}
           id="sidenav"
           aria-label="Sections"
           className="relative max-[1024px]:hidden"
         >
-          <div className="hu-checker sticky top-[calc(var(--topbar-h)_+_20px)] flex flex-col max-h-[calc(100vh_-_var(--topbar-h)_-_40px)] bg-[#ffe14d] border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] pt-[22px] px-4 pb-4 overflow-hidden">
+          <div className="hu-checker sticky top-[calc(var(--topbar-h)_+_20px)] flex h-[calc(100vh_-_var(--topbar-h)_-_40px)] min-h-0 flex-col max-h-[calc(100vh_-_var(--topbar-h)_-_40px)] bg-[#ffe14d] border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] pt-[22px] px-4 pb-4 overflow-hidden">
             <p className="font-black text-[1rem] tracking-[0.04em] uppercase px-2 pb-3">Navigation</p>
-            <ol className="min-h-0 flex-1 overflow-y-auto">
+            <ol ref={sidebarListRef} className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain">
               {SIDE_NAV.map(([id, no, label], i) => (
                 <li key={id} className={i > 0 ? 'border-t-2 border-[#141414]' : ''}>
                   <a
@@ -864,12 +884,6 @@ export default function CreativePortfolio() {
             </div>
           </div>
         </aside>
-
-        <div className="hu-checker relative hidden max-[1024px]:block px-5 py-4 bg-[#5468ff] text-white border-[3px] border-[#141414] rounded-[14px] shadow-[4px_4px_0_#141414]">
-          <span className="absolute -top-3 right-3 text-[2rem] text-[#ffe14d] leading-none [text-shadow:2px_2px_0_#141414]" aria-hidden="true">✦</span>
-          <p className="font-black uppercase tracking-[0.03em] mb-1">The mindset</p>
-          <p className="font-bold text-[1.05rem] leading-[1.3]">Build with clarity.<br />Scale with intention.</p>
-        </div>
 
         <main className="min-w-0 flex flex-col gap-[clamp(48px,6vw,80px)]">
           {/* ============ 01 DASHBOARD ============ */}
@@ -1033,17 +1047,16 @@ export default function CreativePortfolio() {
             </header>
 
             <div className={`grid grid-cols-2 max-[760px]:grid-cols-1 ${GAP}`}>
-              {ALL_WORK.map((f, i) => {
-                const shown = matchesWorkFilter(f, workFilter)
+              {visibleWorkCards.map(({ f, i }) => {
                 return (
                   <button
                     key={f.slug}
                     type="button"
                     data-reveal
-                    data-in={shown ? 'true' : undefined}
+                    data-in="true"
                     onClick={() => openCase(i)}
                     style={{ backgroundColor: '#fffdf8', backgroundImage: `repeating-conic-gradient(color-mix(in srgb, ${f.accent} 15%, transparent) 0% 25%, #fffdf8 0% 50%)`, backgroundSize: '48px 48px' }}
-                    className={`hu-checker group ${shown ? 'flex' : 'hidden'} flex-col gap-[14px] text-left cursor-pointer border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] hover:shadow-[9px_9px_0_#141414] p-[18px] bg-[#fffdf8] ${REVEAL}`}
+                    className={`hu-checker group flex flex-col gap-[14px] text-left cursor-pointer border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] hover:shadow-[9px_9px_0_#141414] p-[18px] bg-[#fffdf8] ${REVEAL}`}
                   >
                     <div className="flex gap-4 items-center">
                       <Logo slug={f.slug} name={f.name} className="flex-none w-[86px] h-[86px] border-[3px] border-[#141414] rounded-xl overflow-hidden" />
@@ -1090,7 +1103,7 @@ export default function CreativePortfolio() {
                   key={slug}
                   className="relative m-0 border-[3px] border-[#141414] rounded-[14px] overflow-hidden bg-white shadow-[4px_4px_0_#141414] hover:shadow-[7px_7px_0_#141414]"
                 >
-                  <Logo slug={slug} name={name} cover={!['admos', 'founderverse'].includes(slug)} className="block w-full aspect-[453/293]" />
+                  <Logo slug={slug} name={name} cover={!['admos', 'founderverse', 'oxtel'].includes(slug)} className="block w-full aspect-[453/293]" />
                   <figcaption className="flex flex-col gap-px px-2.5 py-2 text-[0.76rem] font-extrabold border-t-[3px] border-[#141414] bg-[#fffdf8]">
                     {name}
                     <small className="font-semibold text-[#5b5b5b] normal-case">{sector}</small>
@@ -1107,7 +1120,7 @@ export default function CreativePortfolio() {
             <header data-reveal className={REVEAL}>
               <span className={EYEBROW_WHITE}>06 / Project contribution directory</span>
               <h2 id="index-title" className={H2}>Full project index.</h2>
-              <p className={LEAD}>All {PROJECTS.length} projects, with responsibilities grouped by leadership, brand &amp; creative and marketing &amp; growth scope.</p>
+              <p className={LEAD}>Browse all {PROJECTS.length} projects by sector, then expand a brand to see its leadership, brand &amp; creative, and marketing &amp; growth responsibilities.</p>
             </header>
 
             <div data-reveal className={`${CARD} ${REVEAL} bg-[#fffdf8] flex flex-col gap-4`}>
@@ -1123,7 +1136,7 @@ export default function CreativePortfolio() {
                     className="w-full font-semibold py-3 pr-4 pl-11 border-[3px] border-[#141414] rounded-xl bg-[#fff8ec] focus:[outline:none] focus:shadow-[4px_4px_0_#141414] focus:bg-white"
                   />
                 </label>
-                <FilterChips map={ROLE_LABELS} value={roleIndexFilter} onChange={setRoleIndexFilter} label="Filter projects by role" />
+                <FilterChips map={INDUSTRY_FILTERS} value={sectorIndexFilter} onChange={setSectorIndexFilter} label="Filter projects by sector" />
               </div>
 
               <div className="flex flex-wrap gap-4 items-center text-[0.78rem] font-extrabold uppercase" aria-hidden="true">
@@ -1287,10 +1300,10 @@ export default function CreativePortfolio() {
           {workPackaging.length > 0 && (
             <section aria-label={`${c.name} packaging`} className="flex flex-col gap-3">
               <h4 className="text-[0.9rem] font-black uppercase">Product packaging concept</h4>
-              <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
+              <div className="grid items-start gap-3" style={{ gridTemplateColumns: `repeat(auto-fill, minmax(min(100%, 150px), ${c.slug === 'bare-logic' ? 250 : 190}px))` }}>
                 {workPackaging.map(([file, label]) => (
                   <figure key={file} className="m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
-                    <div className={`grid ${file === 'nothingelse.png' ? 'aspect-[16/9]' : 'aspect-[4/5]'} place-items-center overflow-hidden bg-[#f3f0eb]`}><img src={`/packaging/${file}`} alt={label} loading="lazy" decoding="async" className="block h-full w-full object-contain" /></div>
+                    <div className={`grid ${file === 'nothingelse.png' ? 'aspect-[16/9]' : c.slug === 'bare-logic' ? 'aspect-[4/3]' : 'aspect-[4/5]'} place-items-center overflow-hidden bg-[#f3f0eb]`}><img src={`/packaging/${file}`} alt={label} loading="lazy" decoding="async" className="block h-full w-full object-contain" /></div>
                     <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
                   </figure>
                 ))}

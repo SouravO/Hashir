@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, ChartLineUp, Compass, FacebookLogo, Gear, InstagramLogo, LinkedinLogo, SquaresFour, WhatsappLogo, X, YoutubeLogo } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { brandImage, brands } from '../data/brands'
+
+const Lanyard = lazy(() => import('../components/Lanyard'))
 
 /* ---------- Editable content (taken from the HU. content blueprint) ---------- */
 const statement = 'I build businesses, and fix a few things along the way. I work with *startup founders*, *business owners*, and *teams* to turn ideas into plans, and plans into action.'
@@ -752,17 +754,33 @@ function Conversation() {
 
 function Positioning() {
   const [statRef, progress] = useScrollProgress()
+  const [lanyardRef, showLanyard] = useInView('600px 0px')
 
   return (
-    <section id="positioning" aria-labelledby="positioning-title" className="bg-[#171a1b] py-28 text-[#f8f9f6] sm:py-40">
-      <div className={`${wrap} grid gap-10 lg:grid-cols-12`}>
-        <div className="lg:col-span-3">
-          <div className="lg:sticky lg:top-28">
-            <p className="mb-4 text-[13px] font-semibold text-[#a4be2d]">A little about me</p>
-            <div className="h-px w-full max-w-[160px] bg-white/15"><div className="h-px origin-left bg-[#a4be2d]" style={{ transform: `scaleX(${progress})`, transition: 'transform 180ms linear' }} /></div>
-          </div>
+    <section id="positioning" aria-labelledby="positioning-title" className="relative isolate overflow-hidden bg-[#171a1b] py-28 text-[#f8f9f6] sm:py-40">
+      <div ref={lanyardRef} aria-hidden="true" className="absolute inset-0 z-20 hidden lg:block">
+        {showLanyard && (
+          <Suspense fallback={<div className="h-full w-full" />}>
+            <Lanyard
+              frontImage="/images/hashir-portrait.webp"
+              cardColor="#f8f9f6"
+              strapColor="#a4be2d"
+              finish="matte"
+              size={0.5}
+              anchor="left"
+              strapLength={0.62}
+              breeze={0.32}
+              damping={0.62}
+              className="h-full w-full"
+            />
+          </Suspense>
+        )}
+      </div>
+      <div className={`${wrap} relative z-10 grid gap-10 lg:grid-cols-12`}>
+        <div className="relative z-10 lg:col-span-3">
+         
         </div>
-        <div ref={statRef} className="lg:col-span-9">
+        <div ref={statRef} className="relative z-10 lg:col-span-9">
           <h2 id="positioning-title" className="text-[clamp(30px,4.8vw,68px)] font-bold leading-[1.1] tracking-[-.04em]">
             {positioningWords.map(([word, hot], i) => <span key={i} style={{ color: i / positioningWords.length < progress ? (hot ? '#a4be2d' : '#f8f9f6') : '#5d6558', transition: 'color 220ms ease' }}>{word} </span>)}
           </h2>
@@ -792,21 +810,14 @@ export default function Home() {
       {/* 1. Hero */}
       <section id="home" aria-labelledby="hero-title" className="relative flex min-h-[calc(100svh-72px)] flex-col max-[768px]:min-h-[calc(100svh-64px)]">
         <div className="mx-auto flex w-full max-w-[1720px] flex-1 flex-col px-5 pb-10 pt-6 sm:px-8 sm:pb-12 sm:pt-8 lg:px-12 lg:pt-12 xl:px-16 2xl:px-20">
-          <nav aria-label="Social media profiles" className="relative z-20 mb-7 flex w-fit max-w-full items-center gap-2.5 sm:gap-4 lg:absolute lg:left-[max(3rem,calc((100vw-1720px)/2+3rem))] lg:top-5 lg:mb-0 xl:left-[max(4rem,calc((100vw-1720px)/2+4rem))]">
-            {heroSocials.map(({ label, href, Icon }) => (
-              <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} className="grid size-10 place-items-center rounded-full border border-[#8da320]/70 bg-[#a4be2d]/75 text-[#17271c] shadow-[0_4px_12px_#10200818] backdrop-blur-sm transition-[transform,background-color,color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-[#153B2B] hover:text-[#d7ea72] hover:shadow-[0_7px_18px_#10200825] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#153B2B] sm:size-12">
-                <Icon size={21} aria-hidden />
-              </a>
-            ))}
-          </nav>
           <div className="grid flex-1 items-center gap-8 lg:grid-cols-12 lg:gap-12 xl:gap-16">
             <div className="contents lg:col-span-7 lg:block">
               <div style={rise(ready)}>
-                <h1 id="hero-title" className="text-[clamp(60px,7.8vw,138px)] font-extrabold leading-[.88] tracking-[-.075em]">Hashir Usman</h1>
+                <h1 id="hero-title" className="text-[clamp(56px,7.2vw,120px)] font-extrabold leading-[.92] tracking-[-.065em]">Hashir Usman</h1>
               </div>
-              <Heading tag="h2" on={ready} delay={40} className="mt-7 text-[clamp(40px,5vw,88px)] font-extrabold leading-[.94] tracking-[-.065em]" lines={['Is your business growing?', <span className="text-[#7c9318]">Or just getting busier?</span>]} />
-              <div className="order-1 mt-6 max-w-[600px] lg:order-none" style={rise(ready, 100)}>
-                <h3 className="m-0 text-xl font-bold leading-tight tracking-[-.02em] text-[#65751b] sm:text-2xl">Startup architect. Venture builder. Business consultant.</h3>
+              <Heading tag="h2" on={ready} delay={40} className="mt-5 text-[clamp(38px,4.3vw,68px)] font-extrabold leading-[1.04] tracking-[-.055em] sm:mt-6" lines={['Is your business growing?', <span className="text-[#7c9318]">Or just getting busier?</span>]} />
+              <div className="order-1 mt-7 max-w-[600px] lg:order-none sm:mt-8" style={rise(ready, 100)}>
+                <h3 className="m-0 text-xl font-bold leading-[1.3] tracking-[-.02em] text-[#65751b] sm:text-[22px]">Startup architect. Venture builder. Business consultant.</h3>
                 <p className="m-0 mt-3 text-base leading-[1.6] text-[#2f332e] sm:text-lg xl:text-xl">I help people start businesses, fix what’s not working, and build systems that make growth a little less chaotic.</p>
               </div>
               <div className="order-3 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 lg:order-none" style={rise(ready, 160)}>
@@ -825,6 +836,13 @@ export default function Home() {
                 </svg>
                 <img className="absolute inset-0 h-full w-full max-w-none object-cover object-top" src="/images/hashir-portrait.webp" srcSet="/images/hashir-portrait-small.webp 480w, /images/hashir-portrait-medium.webp 800w, /images/hashir-portrait.webp 1120w" sizes="(max-width:1023px) 94vw, 40vw" width="1120" height="1400" alt="Portrait of Hashir Usman" fetchPriority="high" />
               </div>
+              <nav aria-label="Social media profiles" className="relative z-20 mx-auto mt-4 flex w-fit max-w-full items-center gap-2.5 sm:gap-4 lg:ml-auto lg:mr-0">
+                {heroSocials.map(({ label, href, Icon }) => (
+                  <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} className="grid size-10 place-items-center rounded-full border border-[#8da320]/70 bg-[#a4be2d]/75 text-[#17271c] shadow-[0_4px_12px_#10200818] backdrop-blur-sm transition-[transform,background-color,color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-[#153B2B] hover:text-[#d7ea72] hover:shadow-[0_7px_18px_#10200825] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#153B2B] sm:size-12">
+                    <Icon size={21} aria-hidden />
+                  </a>
+                ))}
+              </nav>
             </div>
           </div>
         </div>

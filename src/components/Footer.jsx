@@ -1,11 +1,7 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpRight, EnvelopeSimple, InstagramLogo, LinkedinLogo, MapPin, Phone, XLogo, YoutubeLogo } from '@phosphor-icons/react'
 
 const email = 'connect@hashirusman.online'
-const wordmark = 'Hashir Usman'
-const WORDMARK_COLOR = '#e3e8df'   // base letter color
-const WORDMARK_ACCENT = '#a4be2d'  // first letter of each word (H and U)
 const groups = [
   { title: 'Explore', links: [['My Work', '/ventures'], ['About', '/about'], ['Founderverse', '/founderverse']] },
   { title: 'Opportunities', links: [['Join my team', '/opportunities#hiring'], ['Internships', '/opportunities#internships'], ['Become a Co-Founder', '/opportunities#co-founder']] },
@@ -16,110 +12,6 @@ const socials = [
   { label: 'Instagram', href: 'https://www.instagram.com/', Icon: InstagramLogo },
   { label: 'YouTube', href: 'https://www.youtube.com/', Icon: YoutubeLogo },
 ]
-
-// Hover pose for each letter of the wordmark (y in %, r in deg). Index matches the characters.
-const poses = [
-  { y: -6, r: -4 },   // H
-  { y: -14, r: 5 },   // A
-  { y: -26, r: -9 },  // S
-  { y: -8, r: 6 },    // H
-  { y: -30, r: -12 }, // I
-  { y: 10, r: 24 },   // R
-  null,               // space
-  { y: -16, r: -6 },  // U
-  { y: -5, r: 8 },    // S
-  { y: -24, r: -7 },  // M
-  { y: -10, r: 5 },   // A
-  { y: -18, r: -5 },  // N
-]
-
-function Wordmark({ text }) {
-  const wrapRef = useRef(null)
-  const textRef = useRef(null)
-  const [hovered, setHovered] = useState(null)
-  const [reduced, setReduced] = useState(false)
-
-  // Scale the wordmark so it always spans the full container width
-  useLayoutEffect(() => {
-    const fit = () => {
-      const wrap = wrapRef.current
-      const el = textRef.current
-      if (!wrap || !el) return
-      const test = 100
-      el.style.fontSize = `${test}px`
-      const natural = el.offsetWidth
-      if (natural > 0) el.style.fontSize = `${(test * wrap.clientWidth) / natural}px`
-    }
-    fit()
-    const ro = new ResizeObserver(fit)
-    ro.observe(wrapRef.current)
-    if (document.fonts?.ready) document.fonts.ready.then(fit)
-    return () => ro.disconnect()
-  }, [text])
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const update = () => setReduced(mq.matches)
-    update()
-    mq.addEventListener('change', update)
-    return () => mq.removeEventListener('change', update)
-  }, [])
-
-  return (
-    <div
-      ref={wrapRef}
-      className="w-full cursor-default"
-      style={{ paddingTop: 6 }}
-      onPointerLeave={(e) => { if (e.pointerType === 'mouse') setHovered(null) }}
-    >
-      <div
-        ref={textRef}
-        aria-hidden
-        className="select-none"
-        style={{
-          display: 'flex',
-          width: 'max-content',
-          whiteSpace: 'nowrap',
-          lineHeight: 0.8,
-          letterSpacing: '-.04em',
-          fontFamily: '"Kirang Haerang", cursive',
-          fontWeight: 400,
-        }}
-      >
-        {text.split('').map((char, i) => {
-          if (char === ' ') {
-            return <span key={i} style={{ display: 'inline-block', flexShrink: 0, width: '.14em' }} />
-          }
-          const pose = poses[i] || { y: -10, r: 4 }
-          const isInitial = i === 0 || text[i - 1] === ' '
-          const on = hovered === i && !reduced
-          return (
-            // Outer span stays still and receives the pointer; inner span is the one that moves.
-            <span
-              key={i}
-              style={{ display: 'inline-block' }}
-              onPointerEnter={(e) => { if (e.pointerType === 'mouse') setHovered(i) }}
-              onPointerDown={(e) => { if (e.pointerType !== 'mouse') setHovered((h) => (h === i ? null : i)) }}
-            >
-              <span
-                style={{
-                  display: 'inline-block',
-                  transformOrigin: 'center',
-                  willChange: 'transform',
-                  color: isInitial ? WORDMARK_ACCENT : WORDMARK_COLOR,
-                  transform: on ? `translateY(${pose.y}%) rotate(${pose.r}deg)` : 'translateY(0) rotate(0deg)',
-                  transition: 'transform 500ms cubic-bezier(.34,1.56,.64,1)',
-                }}
-              >
-                {char}
-              </span>
-            </span>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
 
 export default function Footer() {
   return (
