@@ -30,7 +30,19 @@ const LOGO_ASSETS = {
   ezka: 'ezka.png',
   'hosther-hostels': 'Hosther•hostels.png',
   'ai-designers': 'aidesignersecosystem.png',
+  'ai-institute': '/ai-institute.png',
+  'aisen-studio': '/aisen-studio.png',
+  'coffee-klatch': '/coffee-klatch.png',
+  'global-venture': '/global-venture.png',
+  'tanza-opticals': '/tanza-opticals.png',
+  'tempest-automotive': '/tempest-automotive.png',
+  terminal: '/terminal.png',
+  'tp-group-of-companies': '/tp.png',
+  'vinayaka-hospital': '/vinayaka-hospital.png',
+  'warrior-mens': '/warrior.png',
+  'wayanad-trade-centre': '/wayanad.png',
   'sol-for-her': 'sOl.png',
+  sol: 'sOl.png',
   'nothing-else': 'nothingelse.png',
   'bare-logic': 'barelogic.png',
   'shameers-cars': '/social-media/shameerscars.png',
@@ -38,6 +50,8 @@ const LOGO_ASSETS = {
 
 const LOGO_SCALE = {
   nkreatives: 1.45,
+  'hosther-hostels': 2.2,
+  'curry-bag': 3.2,
   'shameers-cars': 1.15,
 }
 
@@ -49,14 +63,34 @@ const WORK_GALLERIES = {
   oxtel: [
     ['oxtelinstaprof.jpeg', 'Oxtel Instagram profile'],
   ],
+  'coffee-klatch': [
+    ['coffee-klatch-insta.png', 'Coffee Klatch Instagram post'],
+    ['coffee-klatch-posts.png', 'Coffee Klatch social posts'],
+  ],
   carzo: [
     ['carzo.jpeg', 'Carzo brand logo', '/carzo.jpeg'],
+    ['carzo-posts.png', 'Carzo social posts'],
   ],
   'bare-logic': [
     ['barelogic.png', 'Bare Logic brand logo', '/ventures/barelogic.png'],
   ],
+  'nothing-else': [
+    ['nothing-else-post.png', 'Nothing Else social post'],
+    ['nothing-else-post2.png', 'Nothing Else social post'],
+  ],
+  'no-two': [
+    ['notwo-post.png', 'No Two social post'],
+    ['notwo-post2.png', 'No Two social post'],
+  ],
+  founderverse: [
+    ['fv.png', 'Founderverse social post'],
+  ],
   dayone: [
     ['davone.png', 'DayOne brand logo', '/ventures/davone.png'],
+    ['dayoneinsta.png', 'DayOne Instagram profile'],
+    ['dayonepost1.png', 'DayOne Instagram post'],
+    ['dayonepost2.png', 'DayOne Instagram post'],
+    ['instagrampost3.png', 'DayOne Instagram post'],
   ],
   'moon-bliss': [
     ['moonbliss-post.png', 'MoonBliss social post'],
@@ -65,6 +99,7 @@ const WORK_GALLERIES = {
   ],
   zaati: [
     ['zaati-insta.png', 'Zaati Instagram post'],
+    ['zaati-insta-posts.png', 'Zaati Instagram posts'],
   ],
   'shameers-cars': [
     ['shameers-reels.png', "Shameer's Cars content"],
@@ -72,6 +107,9 @@ const WORK_GALLERIES = {
   'aisen-studio': [
     ['aisen-posts.png', 'Aisen Studio social posts'],
     ['aisenstudio-insta-prof.png', 'Aisen Studio Instagram profile'],
+  ],
+  'ai-institute': [
+    ['aiinstitute-insta-posts.png', 'AI Institute Instagram post'],
   ],
 }
 
@@ -82,32 +120,48 @@ const WORK_PACKAGING = {
 
 const WORK_VIDEOS = {
   nkreatives: [
-    { src: 'https://www.instagram.com/reel/DXt4ZYLgP2J/embed', title: 'NKreatives Instagram reel 1', thumbnail: '/social-media/nkreactives-insta-prof.jpeg' },
-    { src: 'https://www.instagram.com/reel/DV8ogXLEbcC/embed', title: 'NKreatives Instagram reel 2', thumbnail: '/social-media/nkreactives-insta-prof.jpeg' },
+    { src: 'https://www.instagram.com/reel/DXt4ZYLgP2J/embed', title: 'NKreatives Instagram reel' },
+    { src: 'https://www.instagram.com/reel/DV8ogXLEbcC/embed', title: 'NKreatives Instagram reel' },
   ],
   oxtel: [
-    { src: 'https://www.instagram.com/reel/C6S8Ei4rGV-/embed', title: 'Oxtel Instagram reel 1', thumbnail: '/social-media/oxtelinstaprof.jpeg' },
-    { src: 'https://www.instagram.com/reel/DBRHBrZyo0F/embed', title: 'Oxtel Instagram reel 2', thumbnail: '/social-media/oxtelinstaprof.jpeg' },
+    { src: 'https://www.instagram.com/reel/C6S8Ei4rGV-/embed', title: 'Oxtel Instagram reel' },
+    { src: 'https://www.instagram.com/reel/DBRHBrZyo0F/embed', title: 'Oxtel Instagram reel' },
   ],
   carzo: [
-    { src: 'https://www.instagram.com/reel/Db8QT0Tznb1/embed', title: 'Carzo Instagram reel', thumbnail: '/social-media/carzoreels.png' },
+    { src: 'https://www.instagram.com/reel/Db8QT0Tznb1/embed', title: 'Carzo Instagram reel' },
+    { src: 'https://www.instagram.com/reel/Deg2XMDTgi5/embed', title: 'Carzo Instagram reel' },
+    { src: 'https://www.instagram.com/reel/De1deFLzllt/embed', title: 'Carzo Instagram reel' },
   ],
   dayone: [
-    { src: 'https://www.instagram.com/reel/De3mc-kNwdD/embed', title: 'DayOne Instagram reel', thumbnail: '/social-media/dayoneinsta.png' },
+    { src: 'https://www.instagram.com/reel/De3mc-kNwdD/embed', title: 'DayOne Instagram reel' },
+  ],
+  'nothing-else': [
+    { src: 'https://www.instagram.com/reel/DfEsErLT1ob/embed', title: 'Nothing Else Instagram reel' },
+  ],
+  'no-two': [
+    { src: 'https://www.instagram.com/reel/DfCb6ech3Cu/embed', title: 'No Two Instagram reel' },
+  ],
+  zaati: [
+    { src: 'https://www.instagram.com/reel/DdHNBvJqj16/embed', title: 'Zaati Instagram reel' },
+    { src: 'https://www.instagram.com/reel/DZveBOeN1dd/embed', title: 'Zaati Instagram reel' },
   ],
   'moon-bliss': [
-    { src: 'https://www.instagram.com/reel/DfCb-eBAwIj/embed', title: 'MoonBliss Instagram reel', thumbnail: '/social-media/moonbliss-reels.png' },
-    { src: 'https://www.instagram.com/reel/DYZd31XttAK/embed', title: 'MoonBliss Instagram reel 2', thumbnail: '/social-media/moonbliss-reels.png' },
+    { src: 'https://www.instagram.com/reel/DfCb-eBAwIj/embed', title: 'MoonBliss Instagram reel' },
+    { src: 'https://www.instagram.com/reel/DYZd31XttAK/embed', title: 'MoonBliss Instagram reel' },
   ],
   'house-of-bliss': [
-    { src: 'https://www.instagram.com/reel/DV-S-H-D1SJ/embed', title: 'House of Bliss Instagram reel', thumbnail: '/ventures/HOUSE-of-Biss.png' },
+    { src: 'https://www.instagram.com/reel/DV-S-H-D1SJ/embed', title: 'House of Bliss Instagram reel' },
   ],
   'aisen-studio': [
-    { src: 'https://www.instagram.com/reel/DVm70zikRKw/embed', title: 'Aisen Studio Instagram reel', thumbnail: '/social-media/aisenstudio-insta-prof.png' },
+    { src: 'https://www.instagram.com/reel/DVm70zikRKw/embed', title: 'Aisen Studio Instagram reel' },
+  ],
+  'ai-institute': [
+    { src: 'https://www.instagram.com/reel/DNVR0stP4NS/embed', title: 'AI Institute Instagram reel' },
+    { src: 'https://www.instagram.com/reel/DK1eipgJnVD/embed', title: 'AI Institute Instagram reel' },
   ],
   'shameers-cars': [
-    { src: 'https://www.instagram.com/reel/DGVwJYTTFV_/embed', title: "Shameer's Cars Instagram reel", thumbnail: '/social-media/shameers-reels.png' },
-    { src: 'https://www.instagram.com/reel/DHaVnHiy-SF/embed', title: "Shameer's Cars Instagram reel 2", thumbnail: '/social-media/shameers-reels.png' },
+    { src: 'https://www.instagram.com/reel/DGVwJYTTFV_/embed', title: "Shameer's Cars Instagram reel" },
+    { src: 'https://www.instagram.com/reel/DHaVnHiy-SF/embed', title: "Shameer's Cars Instagram reel" },
   ],
 }
 
@@ -164,7 +218,6 @@ function DeferredInstagramEmbed({ src, title, thumbnail }) {
           <span aria-hidden className="absolute left-1/2 top-1/2 grid size-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/80 bg-black/35 shadow-lg backdrop-blur-sm transition-transform group-hover:scale-110">
             <svg viewBox="0 0 24 24" className="ml-0.5 size-5 fill-current"><path d="M7 4.8c0-.77.84-1.25 1.5-.85l10.1 6.2a1 1 0 0 1 0 1.7l-10.1 6.2A1 1 0 0 1 7 17.2V4.8Z" /></svg>
           </span>
-          <span className="absolute inset-x-0 bottom-0 p-3 text-xs font-extrabold leading-snug drop-shadow">{title}</span>
         </button>
       )}
     </div>
@@ -182,7 +235,9 @@ function SocialAssetGrid({ items }) {
           <div className="grid aspect-[4/5] place-items-center overflow-hidden bg-[#f3f0eb]">
             <img src={src || `/social-media/${file}`} alt={label} loading="lazy" decoding="async" className="block h-full w-full object-contain" />
           </div>
-          <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
+          {!/instagram|social post/i.test(label) && (
+            <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
+          )}
         </figure>
       ))}
     </div>
@@ -285,12 +340,12 @@ const FEATURED = [
 ]
 
 const WORK_FILTERS = [
-  ['all', `All ${FEATURED.length}`],
   ['ceo', 'Business head'],
   ['founder', 'Founder'],
   ['marketing', 'Marketing lead'],
   ['creative', 'Creative director'],
-  ['marketing360', '360 Degree Marketing'],
+  ['advisor', 'Consultant / Advisor'],
+  ['event-head', 'Event head'],
 ]
 
 const MARKETING_STRATEGIES = [
@@ -301,7 +356,6 @@ const MARKETING_STRATEGIES = [
 
 const matchesWorkFilter = (item, filter) => {
   if (filter === 'all') return true
-  if (filter === 'marketing360') return item.mkt.some((scope) => scope.includes('360°'))
   return item.filter === filter
 }
 
@@ -319,7 +373,7 @@ const BRANDS = [
   ['founderverse', 'The Founderverse', 'Startup education'], ['hyzo', 'Hyzo', 'Brand concept'],
   ['ezka', 'Ezka', 'Fashion & lifestyle'], ['dayone', 'DayOne', 'Venture studio'],
   ['no-two', 'No Two', 'Skincare'], ['hosther-hostels', 'Hosther Hostels', 'Hospitality'],
-  ['ai-designers', 'AI Designers', 'Tech community'], ['sol-for-her', 'Sol.', "Women's fashion"],
+  ['ai-designers', 'AI Designers', 'Tech community'], ['sol', 'Sol.', "Women's fashion"],
   ['nothing-else', 'Nothing Else', 'FMCG'], ['bare-logic', 'Bare Logic', 'Skincare'],
 ].sort((a, b) => a[1].localeCompare(b[1], 'en', { sensitivity: 'base' }))
 
@@ -421,8 +475,26 @@ const PROJECTS = [
   search: [p.name, p.sector, p.role, INDUSTRIES[p.ind], ...p.l, ...p.b, ...p.m].join(' ').toLowerCase(),
 }))
 
-const countBy = (key) => PROJECTS.reduce((acc, p) => ((acc[p[key]] = (acc[p[key]] || 0) + 1), acc), {})
-const IND_COUNTS = countBy('ind')
+const FEATURED_NAMES = new Set(FEATURED.map((item) => item.name.trim().toLowerCase()))
+const ROLE_ACCENTS = { ceo: '#ff5a52', founder: '#ff5a52', marketing: '#7ee2a8', creative: '#c9b8ff', advisor: '#c9b8ff', 'event-head': '#ffe14d' }
+const ALL_WORK = [
+  ...FEATURED,
+  ...PROJECTS.filter((project) => !FEATURED_NAMES.has(project.name.trim().toLowerCase())).map((project) => ({
+    ...project,
+    slug: project.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+    filter: project.roleKey,
+    accent: ROLE_ACCENTS[project.roleKey] || '#c9b8ff',
+    headline: project.role,
+    summary: project.note || `Selected responsibilities across ${project.l.length + project.b.length + project.m.length} areas of leadership, brand and growth work.`,
+    note: project.note || `${project.role} scope across leadership, brand and growth responsibilities.`,
+    lead: [...project.l, ...project.b],
+    mkt: project.m,
+  })),
+]
+const ROLE_LABELS = {
+  ceo: 'Business head', founder: 'Founder / Co-founder', marketing: 'Marketing lead',
+  creative: 'Creative director', advisor: 'Consultant / Advisor', 'event-head': 'Event head',
+}
 
 /* ---------- Data: static copy blocks ---------- */
 
@@ -534,16 +606,13 @@ function Bar({ n, max, fill }) {
   )
 }
 
-function FilterChips({ map, value, onChange, counts, total, small, label }) {
+function FilterChips({ map, value, onChange, small, label }) {
   const cls = small ? CHIP_SM : CHIP
   return (
     <div className="flex flex-wrap gap-2" role="group" aria-label={label}>
-      <button type="button" className={`${cls} ${value === 'all' ? 'bg-[#141414] text-white' : 'bg-white'}`} onClick={() => onChange('all')}>
-        All<span className="opacity-60 ml-1">{total}</span>
-      </button>
       {Object.entries(map).map(([k, text]) => (
-        <button key={k} type="button" className={`${cls} ${value === k ? 'bg-[#141414] text-white' : 'bg-white'}`} onClick={() => onChange(k)}>
-          {text}<span className="opacity-60 ml-1">{counts[k] || 0}</span>
+        <button key={k} type="button" className={`${cls} ${value === k ? 'bg-[#141414] text-white' : 'bg-white'}`} onClick={() => onChange(value === k ? 'all' : k)}>
+          {text}
         </button>
       ))}
     </div>
@@ -594,11 +663,11 @@ export default function CreativePortfolio() {
 
   const [active, setActive] = useState('dashboard')
   const [headerVisible, setHeaderVisible] = useState(true)
-  const [workFilter, setWorkFilter] = useState('all')
+  const [workFilter, setWorkFilter] = useState('ceo')
   const [current, setCurrent] = useState(0)
   const [caseOpen, setCaseOpen] = useState(false)
   const [query, setQuery] = useState('')
-  const [indFilter, setIndFilter] = useState('all')
+  const [roleIndexFilter, setRoleIndexFilter] = useState('ceo')
   const [openRows, setOpenRows] = useState(() => new Set())
 
   /* ---------- Document title ---------- */
@@ -680,7 +749,7 @@ export default function CreativePortfolio() {
   }, [])
 
   /* ---------- Case dialog ---------- */
-  const visibleCases = FEATURED.map((_, i) => i).filter((i) => matchesWorkFilter(FEATURED[i], workFilter))
+  const visibleCases = ALL_WORK.map((_, i) => i).filter((i) => matchesWorkFilter(ALL_WORK[i], workFilter))
 
   const openCase = (i) => {
     setCurrent(i)
@@ -694,14 +763,14 @@ export default function CreativePortfolio() {
   const onDialogClick = (e) => {
     if (e.target === dialogRef.current || e.target.closest('[data-close]')) dialogRef.current.close()
   }
-  const c = FEATURED[current]
+  const c = ALL_WORK[current]
   const workGallery = WORK_GALLERIES[c.slug] || []
   const workPackaging = WORK_PACKAGING[c.slug] || []
   const workVideos = WORK_VIDEOS[c.slug] || []
 
   /* ---------- Project index ---------- */
   const visibleProjects = PROJECTS.map((p, i) => ({ p, i })).filter(({ p }) =>
-    (indFilter === 'all' || p.ind === indFilter) &&
+    (roleIndexFilter === 'all' || p.roleKey === roleIndexFilter) &&
     (!query || p.search.includes(query)))
 
   const toggleRow = (i) =>
@@ -770,9 +839,9 @@ export default function CreativePortfolio() {
           aria-label="Sections"
           className="relative max-[1024px]:hidden"
         >
-          <div className="hu-checker sticky top-[calc(var(--topbar-h)_+_20px)] flex flex-col max-h-[calc(100vh_-_var(--topbar-h)_-_40px)] bg-[#ffe14d] border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] pt-[22px] px-4 pb-4 overflow-y-auto max-[1024px]:static max-[1024px]:max-h-[calc(100vh_-_var(--topbar-h)_-_30px)]">
+          <div className="hu-checker sticky top-[calc(var(--topbar-h)_+_20px)] flex flex-col max-h-[calc(100vh_-_var(--topbar-h)_-_40px)] bg-[#ffe14d] border-[3px] border-[#141414] rounded-[18px] max-[760px]:rounded-[14px] shadow-[6px_6px_0_#141414] max-[760px]:shadow-[4px_4px_0_#141414] pt-[22px] px-4 pb-4 overflow-hidden">
             <p className="font-black text-[1rem] tracking-[0.04em] uppercase px-2 pb-3">Navigation</p>
-            <ol>
+            <ol className="min-h-0 flex-1 overflow-y-auto">
               {SIDE_NAV.map(([id, no, label], i) => (
                 <li key={id} className={i > 0 ? 'border-t-2 border-[#141414]' : ''}>
                   <a
@@ -788,13 +857,19 @@ export default function CreativePortfolio() {
                 </li>
               ))}
             </ol>
-            <div className="hu-checker relative mt-[18px] px-4 py-[18px] bg-[#5468ff] text-white border-[3px] border-[#141414] rounded-[14px]">
+            <div className="hu-checker relative mt-3 shrink-0 px-4 py-[18px] bg-[#5468ff] text-white border-[3px] border-[#141414] rounded-[14px]">
               <span className="absolute -top-[18px] right-2 text-[2.4rem] text-[#ffe14d] leading-none [text-shadow:2px_2px_0_#141414]" aria-hidden="true">✦</span>
               <p className="font-black uppercase tracking-[0.03em] mb-1.5">The mindset</p>
               <p className="font-bold text-[1.05rem] leading-[1.3]">Build with clarity.<br />Scale with intention.</p>
             </div>
           </div>
         </aside>
+
+        <div className="hu-checker relative hidden max-[1024px]:block px-5 py-4 bg-[#5468ff] text-white border-[3px] border-[#141414] rounded-[14px] shadow-[4px_4px_0_#141414]">
+          <span className="absolute -top-3 right-3 text-[2rem] text-[#ffe14d] leading-none [text-shadow:2px_2px_0_#141414]" aria-hidden="true">✦</span>
+          <p className="font-black uppercase tracking-[0.03em] mb-1">The mindset</p>
+          <p className="font-bold text-[1.05rem] leading-[1.3]">Build with clarity.<br />Scale with intention.</p>
+        </div>
 
         <main className="min-w-0 flex flex-col gap-[clamp(48px,6vw,80px)]">
           {/* ============ 01 DASHBOARD ============ */}
@@ -949,7 +1024,7 @@ export default function CreativePortfolio() {
                     key={role}
                     type="button"
                     className={`${CHIP} ${workFilter === role ? 'bg-[#141414] text-white' : 'bg-white'}`}
-                    onClick={() => setWorkFilter(role)}
+                    onClick={() => setWorkFilter(workFilter === role ? 'all' : role)}
                   >
                     {label}
                   </button>
@@ -958,30 +1033,7 @@ export default function CreativePortfolio() {
             </header>
 
             <div className={`grid grid-cols-2 max-[760px]:grid-cols-1 ${GAP}`}>
-              {workFilter === 'marketing360' ? MARKETING_STRATEGIES.map((strategy) => (
-                <article
-                  key={strategy.slug}
-                  data-reveal
-                  data-in="true"
-                  className={`${CARD} ${REVEAL} flex flex-col gap-[14px] bg-[#fffdf8]`}
-                >
-                  <div className="flex items-center gap-4">
-                    <Logo slug={strategy.slug} name={strategy.name} className="size-[86px] shrink-0 overflow-hidden rounded-xl border-[3px] border-[#141414]" />
-                    <div>
-                      <p className="text-[0.74rem] font-extrabold uppercase tracking-[0.05em] text-[#5b5b5b]">Marketing strategy</p>
-                      <h3 className="mt-1 text-[length:clamp(1.25rem,2vw,1.6rem)] font-black leading-[1.05]">{strategy.name}</h3>
-                    </div>
-                  </div>
-                  <a
-                    href={strategy.file}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`${BTN_CORE} ${BTN_DARK} mt-auto w-fit bg-[#ffe14d] px-4 py-2 text-[0.85rem] text-[#141414]`}
-                  >
-                    View strategy <span aria-hidden="true">↗</span>
-                  </a>
-                </article>
-              )) : FEATURED.map((f, i) => {
+              {ALL_WORK.map((f, i) => {
                 const shown = matchesWorkFilter(f, workFilter)
                 return (
                   <button
@@ -1071,7 +1123,7 @@ export default function CreativePortfolio() {
                     className="w-full font-semibold py-3 pr-4 pl-11 border-[3px] border-[#141414] rounded-xl bg-[#fff8ec] focus:[outline:none] focus:shadow-[4px_4px_0_#141414] focus:bg-white"
                   />
                 </label>
-                <FilterChips map={INDUSTRIES} value={indFilter} onChange={setIndFilter} counts={IND_COUNTS} total={PROJECTS.length} label="Filter by industry" />
+                <FilterChips map={ROLE_LABELS} value={roleIndexFilter} onChange={setRoleIndexFilter} label="Filter projects by role" />
               </div>
 
               <div className="flex flex-wrap gap-4 items-center text-[0.78rem] font-extrabold uppercase" aria-hidden="true">
@@ -1086,10 +1138,6 @@ export default function CreativePortfolio() {
               <ul className="flex flex-col gap-2.5">
                 {visibleProjects.map(({ p, i }) => {
                   const open = openRows.has(i)
-                  const projectSlug = p.name.toLowerCase().replaceAll(' ', '-')
-                  const projectGallery = WORK_GALLERIES[projectSlug] || []
-                  const projectPackaging = WORK_PACKAGING[projectSlug] || []
-                  const projectVideos = p.name === 'Carzo' ? [] : (WORK_VIDEOS[projectSlug] || [])
                   return (
                     <li key={p.name} className={`border-2 border-[#141414] rounded-xl bg-[#fffdf8] overflow-hidden ${open ? 'shadow-[4px_4px_0_#141414]' : ''}`}>
                       <button
@@ -1134,37 +1182,6 @@ export default function CreativePortfolio() {
                               {items.length ? <Tags items={items} itemClass={GROUPS[k].tag} /> : <p className="text-[0.82rem] text-[#5b5b5b]">—</p>}
                             </div>
                           ))
-                        )}
-                        {projectGallery.length > 0 && (
-                          <section aria-label={`${p.name} image gallery`} className="col-span-full flex flex-col gap-3">
-                            <h5 className="text-[0.9rem] font-black uppercase">Social media</h5>
-                            <SocialAssetGrid items={projectGallery} />
-                          </section>
-                        )}
-                        {projectPackaging.length > 0 && (
-                          <section aria-label={`${p.name} packaging`} className="col-span-full flex flex-col gap-3">
-                            <h5 className="text-[0.9rem] font-black uppercase">Product packaging concept</h5>
-                            <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
-                              {projectPackaging.map(([file, label]) => (
-                                <figure key={file} className="m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
-                                  <div className="grid aspect-[4/5] place-items-center overflow-hidden bg-[#f3f0eb]"><img src={`/packaging/${file}`} alt={label} loading="lazy" decoding="async" className="block h-full w-full object-contain" /></div>
-                                  <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
-                                </figure>
-                              ))}
-                            </div>
-                          </section>
-                        )}
-                        {open && projectVideos.length > 0 && (
-                          <section aria-label={`${p.name} video gallery`} className="col-span-full flex flex-col gap-3">
-                            <h5 className="text-[0.9rem] font-black uppercase">Videos</h5>
-                            <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
-                              {projectVideos.map(({ src, title, thumbnail }) => (
-                                <div key={src} className="min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
-                                  <DeferredInstagramEmbed src={src} title={title} thumbnail={thumbnail} />
-                                </div>
-                              ))}
-                            </div>
-                          </section>
                         )}
                       </div>
                     </li>
@@ -1273,7 +1290,7 @@ export default function CreativePortfolio() {
               <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
                 {workPackaging.map(([file, label]) => (
                   <figure key={file} className="m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
-                    <div className="grid aspect-[4/5] place-items-center overflow-hidden bg-[#f3f0eb]"><img src={`/packaging/${file}`} alt={label} loading="lazy" decoding="async" className="block h-full w-full object-contain" /></div>
+                    <div className={`grid ${file === 'nothingelse.png' ? 'aspect-[16/9]' : 'aspect-[4/5]'} place-items-center overflow-hidden bg-[#f3f0eb]`}><img src={`/packaging/${file}`} alt={label} loading="lazy" decoding="async" className="block h-full w-full object-contain" /></div>
                     <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
                   </figure>
                 ))}

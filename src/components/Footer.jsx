@@ -127,9 +127,9 @@ export default function Footer() {
       <div className="mx-auto w-full max-w-[1600px] px-6 pb-6 pt-10 sm:px-8 sm:pt-12 xl:px-10">
         <div className="grid grid-cols-2 gap-x-6 gap-y-9 lg:grid-cols-12 lg:items-start lg:gap-x-8">
           <section className="col-span-2 lg:col-span-4 lg:pr-10" aria-labelledby="footer-about-title">
-            <p className="mb-4 max-w-md text-xs font-semibold uppercase tracking-[.18em] text-[#a4be2d]">Startup Architect. Venture Builder. Business Consultant.</p>
             <h2 id="footer-about-title" className="sr-only">Hashir Usman</h2>
             <img src="/logo.png" alt="Hashir Usman" className="h-16 w-16 object-contain" />
+            <p className="mt-4 mb-0 max-w-md text-xs font-semibold uppercase tracking-[.18em] text-[#a4be2d]">Startup Architect. Venture Builder. Business Consultant.</p>
             <p className="mt-3 max-w-sm text-sm leading-7 text-[#b8c4b4] sm:text-[15px]">Building startups, strengthening businesses, and figuring things out along the way.</p>
             <Link to="/contact?about=strategy-call" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#a4be2d] no-underline transition-colors hover:text-[#c5d96a]">Book a Strategy Call <ArrowUpRight size={17} aria-hidden /></Link>
           </section>
@@ -159,10 +159,6 @@ export default function Footer() {
               {socials.map(({ label, href, Icon }) => <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} className="text-[#e3e8df] no-underline transition-colors hover:text-[#a4be2d]"><Icon size={24} aria-hidden /></a>)}
             </div>
           </section>
-        </div>
-
-        <div className="mt-4 lg:mt-6">
-          <Wordmark text={wordmark} />
         </div>
 
         <div className="mt-5 flex flex-col items-center justify-between gap-3 text-xs text-[#9eac99] md:flex-row md:items-end">

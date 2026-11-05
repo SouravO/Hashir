@@ -121,13 +121,40 @@ export default function BookingDialog({ onClose, triggerRef }) {
   useEffect(() => {
     aliveRef.current = true
     const raf = requestAnimationFrame(() => setEntered(true))
+    const scrollY = window.scrollY
     const prevOverflow = document.body.style.overflow
+    const prevDocumentOverflow = document.documentElement.style.overflow
+    const prevBodyPosition = document.body.style.position
+    const prevBodyTop = document.body.style.top
+    const prevBodyWidth = document.body.style.width
     document.body.style.overflow = 'hidden'
+    document.documentElement.style.overflow = 'hidden'
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.width = '100%'
+    const routeWheelToDialog = (event) => {
+      const panel = panelRef.current
+      if (!panel || event.ctrlKey || event.deltaY === 0) return
+      event.preventDefault()
+      const scale = event.deltaMode === WheelEvent.DOM_DELTA_LINE
+        ? 16
+        : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+          ? window.innerHeight
+          : 1
+      panel.scrollTop += event.deltaY * scale
+    }
+    document.addEventListener('wheel', routeWheelToDialog, { capture: true, passive: false })
     panelRef.current?.focus({ preventScroll: true })
     return () => {
       aliveRef.current = false
       cancelAnimationFrame(raf)
       document.body.style.overflow = prevOverflow
+      document.documentElement.style.overflow = prevDocumentOverflow
+      document.body.style.position = prevBodyPosition
+      document.body.style.top = prevBodyTop
+      document.body.style.width = prevBodyWidth
+      document.removeEventListener('wheel', routeWheelToDialog, true)
+      window.scrollTo(0, scrollY)
       /* read at close time on purpose: we want the opener that is current when the dialog goes away */
       // eslint-disable-next-line react-hooks/exhaustive-deps
       const t = triggerRef.current
@@ -249,8 +276,8 @@ export default function BookingDialog({ onClose, triggerRef }) {
       : ['We couldn’t send your request', `${status.message || 'Something went wrong on our side.'} Nothing was confirmed.`])
 
   return createPortal(
-    <div className="fixed inset-0 z-[100]">
-      <div aria-hidden onClick={closeFromUi} className={`absolute inset-0 bg-[#101310]/65 backdrop-blur-sm transition-opacity duration-300 motion-reduce:transition-none ${shown ? 'opacity-100' : 'opacity-0'}`} />
+    <div className="fixed inset-0 z-[300]">
+      <div aria-hidden onClick={closeFromUi} onWheel={(event) => event.preventDefault()} onTouchMove={(event) => event.preventDefault()} className={`absolute inset-0 touch-none bg-[#101310]/65 backdrop-blur-sm transition-opacity duration-300 motion-reduce:transition-none ${shown ? 'opacity-100' : 'opacity-0'}`} />
       <div className="pointer-events-none absolute inset-0 flex items-end justify-center sm:items-center sm:p-6">
         <div
           ref={panelRef}
@@ -259,9 +286,9 @@ export default function BookingDialog({ onClose, triggerRef }) {
           aria-labelledby="bk-title"
           aria-describedby="bk-sub"
           tabIndex={-1}
-          className={`pointer-events-auto flex w-full flex-col overflow-hidden bg-[#F2F3EF] text-[#101310] shadow-[0_40px_100px_-30px_rgba(0,0,0,.6)] outline-none transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none max-h-[calc(100dvh_-_env(safe-area-inset-top)_-_0.5rem)] max-sm:rounded-t-3xl sm:max-h-[min(92dvh,900px)] sm:max-w-[640px] sm:rounded-[28px] ${shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-6 scale-[.98] opacity-0'}`}
+          className={`pointer-events-auto flex h-[calc(100dvh_-_env(safe-area-inset-top)_-_0.5rem)] w-full touch-pan-y flex-col overflow-x-hidden overflow-y-auto overscroll-y-contain bg-[#F2F3EF] text-[#101310] shadow-[0_40px_100px_-30px_rgba(0,0,0,.6)] outline-none transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none max-sm:rounded-t-3xl sm:h-[min(92dvh,900px)] sm:max-w-[640px] sm:rounded-[28px] ${shown ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-6 scale-[.98] opacity-0'}`}
         >
-          <header className="relative shrink-0 bg-[#153B2B] px-6 pb-7 pt-6 sm:px-8">
+          <header className="sticky top-0 z-10 shrink-0 bg-[#153B2B] px-6 pb-7 pt-6 sm:px-8">
             <p className="m-0 pr-12 text-[13px] font-semibold uppercase tracking-[.12em] text-[#A4BE2D]">Let’s make moves</p>
             <h2 id="bk-title" className="m-0 mt-2 text-[clamp(26px,4vw,34px)] font-bold leading-[1.1] tracking-[-.03em] text-white">Got something in mind?</h2>
             <p id="bk-sub" className="m-0 mt-2 text-base text-[#F2F3EF]/85 sm:text-[17px]">Pick a date, find a time, and let’s talk.</p>
@@ -270,7 +297,7 @@ export default function BookingDialog({ onClose, triggerRef }) {
             </button>
           </header>
 
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6 sm:px-8 sm:pb-8">
+          <div className="shrink-0 px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6 sm:px-8 sm:pb-8">
             {status.state === 'success' ? (
               <div className="py-6 text-center">
                 <CheckCircle weight="fill" size={60} aria-hidden className="mx-auto text-[#A4BE2D]" />
