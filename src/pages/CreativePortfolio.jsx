@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FacebookLogo, InstagramLogo, LinkedinLogo, WhatsappLogo, YoutubeLogo } from '@phosphor-icons/react'
 
 /* =========================================================
    HU STUDIO — Creative Portfolio (page route)
@@ -42,14 +41,6 @@ const LOGO_SCALE = {
   'shameers-cars': 1.15,
 }
 
-const HERO_SOCIALS = [
-  { label: 'Facebook', href: 'https://www.facebook.com/', Icon: FacebookLogo },
-  { label: 'Instagram', href: 'https://www.instagram.com/', Icon: InstagramLogo },
-  { label: 'YouTube', href: 'https://www.youtube.com/', Icon: YoutubeLogo },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/', Icon: LinkedinLogo },
-  { label: 'WhatsApp', href: 'https://www.whatsapp.com/', Icon: WhatsappLogo },
-]
-
 // Social media examples shown inside each selected work's case detail.
 const WORK_GALLERIES = {
   nkreatives: [
@@ -68,9 +59,9 @@ const WORK_GALLERIES = {
     ['davone.png', 'DayOne brand logo', '/ventures/davone.png'],
   ],
   'moon-bliss': [
-    ['moonbliss-post.png', 'Moon Bliss social post'],
-    ['moonbliss-post2.png', 'Moon Bliss social post'],
-    ['moonbliss-reels.png', 'Moon Bliss content'],
+    ['moonbliss-post.png', 'MoonBliss social post'],
+    ['moonbliss-post2.png', 'MoonBliss social post'],
+    ['moonbliss-reels.png', 'MoonBliss content'],
   ],
   zaati: [
     ['zaati-insta.png', 'Zaati Instagram post'],
@@ -105,8 +96,8 @@ const WORK_VIDEOS = {
     { src: 'https://www.instagram.com/reel/De3mc-kNwdD/embed', title: 'DayOne Instagram reel', thumbnail: '/social-media/dayoneinsta.png' },
   ],
   'moon-bliss': [
-    { src: 'https://www.instagram.com/reel/DfCb-eBAwIj/embed', title: 'Moon Bliss Instagram reel', thumbnail: '/social-media/moonbliss-reels.png' },
-    { src: 'https://www.instagram.com/reel/DYZd31XttAK/embed', title: 'Moon Bliss Instagram reel 2', thumbnail: '/social-media/moonbliss-reels.png' },
+    { src: 'https://www.instagram.com/reel/DfCb-eBAwIj/embed', title: 'MoonBliss Instagram reel', thumbnail: '/social-media/moonbliss-reels.png' },
+    { src: 'https://www.instagram.com/reel/DYZd31XttAK/embed', title: 'MoonBliss Instagram reel 2', thumbnail: '/social-media/moonbliss-reels.png' },
   ],
   'house-of-bliss': [
     { src: 'https://www.instagram.com/reel/DV-S-H-D1SJ/embed', title: 'House of Bliss Instagram reel', thumbnail: '/ventures/HOUSE-of-Biss.png' },
@@ -220,7 +211,7 @@ const FEATURED = [
     note: 'A portfolio-wide view: linking creative and marketing work to operational priorities and venture progress.',
   },
   {
-    slug: 'moon-bliss', name: 'Moon Bliss', sector: "Women's wellness", role: 'CEO / Business Head',
+    slug: 'moon-bliss', name: 'MoonBliss', sector: "Women's wellness", role: 'CEO / Business Head',
     filter: 'ceo', accent: '#c9b8ff',
     headline: 'From proposition to market experience',
     summary: 'A broad business and marketing leadership role across a menstrual-wellness venture, connecting product storytelling, brand experience, go-to-market and commercial coordination.',
@@ -305,7 +296,7 @@ const WORK_FILTERS = [
 const MARKETING_STRATEGIES = [
   { slug: 'bare-logic', name: 'Bare Logic', file: '/pdf/MARKETING%20STRATEGY_compressed.pdf' },
   { slug: 'nothing-else', name: 'Nothing Else', file: '/pdf/MARKETING%20STRATEGY%20for%20Nothing%20else_compressed.pdf' },
-  { slug: 'moon-bliss', name: 'Moon Bliss', file: '/pdf/Safari_compressed.pdf' },
+  { slug: 'moon-bliss', name: 'MoonBliss', file: '/pdf/Safari_compressed.pdf' },
 ]
 
 const matchesWorkFilter = (item, filter) => {
@@ -320,7 +311,7 @@ const BRANDS = [
   ['admos', 'Admos', 'Consumer electronics / GCC'],
   ['oxtel', 'Oxtel', 'Hospitality'],
   ['start-x', 'Start-X', 'Startup ecosystem'], ['hey-dossa', 'Hey Dossa', 'Food & beverage'],
-  ['moon-bliss', 'Moon Bliss', "Women's wellness"], ['zaati', 'Zaati', 'Restaurant'],
+  ['moon-bliss', 'MoonBliss', "Women's wellness"], ['zaati', 'Zaati', 'Restaurant'],
   ['de-coff', 'De Coff', 'Café'], ['house-of-bliss', 'House of Bliss', 'Lifestyle'],
   ['hungry-potato', 'Hungry Potato', 'Food & beverage'], ['carbroker', 'CarBroker', 'Automotive'],
   ['carzo', 'Carzo', 'Automotive / car selling'],
@@ -359,7 +350,7 @@ const PROJECTS = [
     ['Operations / SOPs'], ['Brand strategy', 'Naming & identity', 'Brand architecture', 'Social design'], ['Social strategy', 'Go-to-market']),
   P('Oxtel', 'Hospitality', 'venture', 'Consultant / Advisor', 'advisor',
     [], [], [], 'Instagram profile and reels.'),
-  P('Moon Bliss', "Women's wellness", 'style', 'CEO / Business Head', 'ceo', L_ALL, B_ALL, M_ALL),
+  P('MoonBliss', "Women's wellness", 'style', 'CEO / Business Head', 'ceo', L_ALL, B_ALL, M_ALL),
   P('Zaati', 'Restaurant', 'food', 'CMO / Head of Marketing', 'marketing',
     ['Marketing leadership', 'Operations / SOPs'], B_ALL, ['Social strategy', '360° marketing', 'Sales & BD', 'Influencers / PR']),
   P('De Coff', 'Café', 'food', 'Founder / Co-founder', 'founder',
@@ -436,7 +427,7 @@ const IND_COUNTS = countBy('ind')
 /* ---------- Data: static copy blocks ---------- */
 
 const RANGE = [
-  ['Business leadership', 'CEO / business-head responsibilities at DayOne Venture Studio and Moon Bliss; founder-led work across selected consumer and education ventures.'],
+  ['Business leadership', 'CEO / business-head responsibilities at DayOne Venture Studio and MoonBliss; founder-led work across selected consumer and education ventures.'],
   ['Marketing direction', 'CMO or marketing-lead scopes across restaurant, startup ecosystem, creative-community and hospitality projects.'],
   ['Creative agency execution', 'Creative Director scope at NKreatives, Coffee Klatch and Wayanad Trade Centre, alongside cross-sector creative assignments.'],
   ['Entrepreneurial thinking', 'Hands-on exposure to FMCG, skincare, fashion, hospitality, automotive, education, healthcare and other business categories.'],
@@ -808,13 +799,6 @@ export default function CreativePortfolio() {
         <main className="min-w-0 flex flex-col gap-[clamp(48px,6vw,80px)]">
           {/* ============ 01 DASHBOARD ============ */}
           <section className={SECTION} id="dashboard" aria-labelledby="dash-title">
-            <nav aria-label="Social media profiles" className="mb-6 flex flex-wrap items-center gap-3 sm:mb-8 sm:gap-4">
-              {HERO_SOCIALS.map(({ label, href, Icon }) => (
-                <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} className="grid size-11 place-items-center rounded-full border-2 border-[#141414] bg-white text-[#1554a3] shadow-[2px_2px_0_#141414] transition-[transform,background-color,color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-[#1554a3] hover:text-white hover:shadow-[3px_4px_0_#141414] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5468ff] sm:size-12">
-                  <Icon size={21} weight="regular" aria-hidden />
-                </a>
-              ))}
-            </nav>
             <div className={`grid grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] max-[1024px]:grid-cols-1 ${GAP}`}>
               <article
                 data-reveal

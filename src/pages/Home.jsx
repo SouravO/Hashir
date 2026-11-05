@@ -791,8 +791,8 @@ export default function Home() {
     <main id="main" className="overflow-x-clip font-sans text-[#171a17]">
       {/* 1. Hero */}
       <section id="home" aria-labelledby="hero-title" className="relative flex min-h-[calc(100svh-72px)] flex-col max-[768px]:min-h-[calc(100svh-64px)]">
-        <div className="mx-auto flex w-full max-w-[1720px] flex-1 flex-col px-5 py-10 sm:px-8 sm:py-12 lg:px-12 xl:px-16 2xl:px-20">
-          <nav aria-label="Social media profiles" className="absolute left-5 top-5 z-20 flex items-center gap-3 sm:left-8 sm:top-6 sm:gap-4 lg:left-[max(3rem,calc((100vw-1720px)/2+3rem))] xl:left-[max(4rem,calc((100vw-1720px)/2+4rem))]">
+        <div className="mx-auto flex w-full max-w-[1720px] flex-1 flex-col px-5 pb-10 pt-6 sm:px-8 sm:pb-12 sm:pt-8 lg:px-12 lg:pt-12 xl:px-16 2xl:px-20">
+          <nav aria-label="Social media profiles" className="relative z-20 mb-7 flex w-fit max-w-full items-center gap-2.5 sm:gap-4 lg:absolute lg:left-[max(3rem,calc((100vw-1720px)/2+3rem))] lg:top-5 lg:mb-0 xl:left-[max(4rem,calc((100vw-1720px)/2+4rem))]">
             {heroSocials.map(({ label, href, Icon }) => (
               <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} className="grid size-10 place-items-center rounded-full border border-[#8da320]/70 bg-[#a4be2d]/75 text-[#17271c] shadow-[0_4px_12px_#10200818] backdrop-blur-sm transition-[transform,background-color,color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-[#153B2B] hover:text-[#d7ea72] hover:shadow-[0_7px_18px_#10200825] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#153B2B] sm:size-12">
                 <Icon size={21} aria-hidden />
