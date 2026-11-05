@@ -493,10 +493,7 @@ function Problem() {
           {costs.map((item, i) => <StackCard key={item.a} i={i} n={n} p={p} Icon={item.Icon} item={item} fix={books[COST_FIX[i]]} />)}
         </div>
 
-        <div className="mt-20 flex flex-col items-start justify-between gap-8 border-t border-white/15 pt-10 sm:mt-28 md:flex-row md:items-end">
-          <Lines as="p" lines={['Four costs.', <span key="b" className="text-[#a4be2d]">Ten books to fix them.</span>]} className={`m-0 text-[clamp(26px,3.6vw,48px)] ${headline}`} />
-          <Cta to="#collection" track="cta-bridge">See the ten books</Cta>
-        </div>
+        
       </div>
     </Stage>
   )
@@ -545,7 +542,6 @@ function Collection() {
     return () => { window.removeEventListener('resize', measure); clearTimeout(t) }
   }, [])
   const x = useTransform(p, [0, 1], [0, -dims.max])
-  const ghost = useTransform(p, [0, 1], ['4%', '-30%'])
   // Fast scrolling bends the shelf slightly, like a page being turned.
   const velocity = useSpring(useVelocity(p), { damping: 40, stiffness: 300 })
   const skewX = useTransform(velocity, [-0.6, 0.6], [5, -5])
@@ -557,7 +553,6 @@ function Collection() {
     <Stage id="collection" innerRef={ref} labelledby="collection-title" style={{ height: dims.vh ? dims.max + dims.vh : '300svh' }} className="bg-gradient-to-b from-[#0e2018] to-[#101310]">
       <div className="sticky top-0 flex h-[100svh] items-center overflow-hidden">
         <div aria-hidden className="absolute -left-40 top-0 size-[520px] rounded-full bg-[#153B2B]/70 blur-[120px]" />
-        <motion.span aria-hidden style={{ x: ghost, y: '-50%', WebkitTextStroke: '2px rgba(164,190,45,.2)' }} className="pointer-events-none absolute left-0 top-1/2 select-none text-[clamp(280px,48vw,760px)] font-extrabold leading-none tracking-[-.06em] text-transparent">10</motion.span>
         <motion.div ref={track} style={reduce ? { x } : { x, skewX }} className="relative flex w-max items-center gap-6 pb-6 pl-5 pr-[12vw] pt-6 sm:gap-8 sm:pl-12 xl:pl-[max(3rem,calc((100vw-1200px)/2+2.5rem))]">
           <div className="w-[80vw] shrink-0 pr-4 sm:w-[520px]">
             <Lines as="h2" id="collection-title" lines={['Ten books.', <span key="c" className="text-[#a4be2d]">Every part of building a business.</span>]} delay={100} className={`${headline} text-[clamp(28px,4vw,54px)]`} />
