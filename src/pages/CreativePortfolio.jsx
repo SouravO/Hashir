@@ -9,49 +9,49 @@ import { Link } from 'react-router-dom'
    ========================================================= */
 
 const LOGO_ASSETS = {
-  admos: '/Admos.png',
-  oxtel: '/oxtel.png',
-  dayone: 'davone.png',
-  nkreatives: '/nk.png',
-  carzo: '/carzo.jpeg',
-  founderverse: '/fv-logo.png',
-  'start-x': 'START-x.png',
-  'hey-dossa': 'heydossa.png',
-  'moon-bliss': 'moonBLISS.png',
-  zaati: 'zaati.png',
-  'de-coff': 'DE-COFF.png',
-  'house-of-bliss': 'HOUSE-of-Biss.png',
-  'hungry-potato': 'hungry-potato.png',
-  carbroker: 'CarBrOker.png',
-  'curry-bag': 'CURRY-BAG.png',
-  'suite-spot': 'SUITE-SPOT.png',
-  'no-two': 'NOWO.png',
-  hyzo: 'hyzo.jpeg',
-  ezka: 'ezka.png',
-  'hosther-hostels': 'Hosther•hostels.png',
-  'ai-designers': 'aidesignersecosystem.png',
-  'ai-institute': '/ai-institute.png',
-  'aisen-studio': '/aisen-studio.png',
-  'coffee-klatch': '/coffee-klatch.png',
-  'global-venture': '/global-venture.png',
-  'tanza-opticals': '/tanza-opticals.png',
-  'tempest-automotive': '/tempest-automotive.png',
-  terminal: '/terminal.png',
-  'tp-group-of-companies': '/tp.png',
-  'vinayaka-hospital': '/vinayaka-hospital.png',
-  'warrior-mens': '/warrior.png',
-  'wayanad-trade-centre': '/wayanad.png',
-  'sol-for-her': 'sOl.png',
-  sol: 'sOl.png',
-  'nothing-else': 'nothingelse.png',
-  'bare-logic': 'barelogic.png',
-  'shameers-cars': '/social-media/shameerscars.png',
-  popsi: 'popsi.png',
-  'the-grid-store': 'the-grid-store.png',
-  'beyond-the-business': 'beyondthebussiness.jpeg',
-  celebrations: 'celebrations-e.jpeg',
-  xyklon: '/xyklon.png',
-  'hand-revolution': '/hand-revolution.jpeg',
+  'admos': '/brand-logos/admos.png',
+  'oxtel': '/brand-logos/oxtel.png',
+  'dayone': '/brand-logos/dayone.png',
+  'nkreatives': '/brand-logos/nkreatives.png',
+  'carzo': '/brand-logos/carzo.jpeg',
+  'founderverse': '/brand-logos/founderverse.png',
+  'start-x': '/brand-logos/start-x.png',
+  'hey-dossa': '/brand-logos/hey-dossa.png',
+  'moon-bliss': '/brand-logos/moon-bliss.png',
+  'zaati': '/brand-logos/zaati.png',
+  'de-coff': '/brand-logos/de-coff.png',
+  'house-of-bliss': '/brand-logos/house-of-bliss.png',
+  'hungry-potato': '/brand-logos/hungry-potato.png',
+  'carbroker': '/brand-logos/carbroker.png',
+  'curry-bag': '/brand-logos/curry-bag.png',
+  'suite-spot': '/brand-logos/suite-spot.png',
+  'no-two': '/brand-logos/no-two.png',
+  'hyzo': '/brand-logos/hyzo.jpeg',
+  'ezka': '/brand-logos/ezka.png',
+  'hosther-hostels': '/brand-logos/hosther-hostels.png',
+  'ai-designers': '/brand-logos/ai-designers.png',
+  'ai-institute': '/brand-logos/ai-institute.png',
+  'aisen-studio': '/brand-logos/aisen-studio.png',
+  'coffee-klatch': '/brand-logos/coffee-klatch.png',
+  'global-venture': '/brand-logos/global-venture.png',
+  'tanza-opticals': '/brand-logos/tanza-opticals.png',
+  'tempest-automotive': '/brand-logos/tempest-automotive.png',
+  'terminal': '/brand-logos/terminal.png',
+  'tp-group-of-companies': '/brand-logos/tp-group-of-companies.png',
+  'vinayaka-hospital': '/brand-logos/vinayaka-hospital.png',
+  'warrior-mens': '/brand-logos/warrior-mens.png',
+  'wayanad-trade-centre': '/brand-logos/wayanad-trade-centre.png',
+  'sol-for-her': '/brand-logos/sol-for-her.png',
+  'sol': '/brand-logos/sol.png',
+  'nothing-else': '/brand-logos/nothing-else.png',
+  'bare-logic': '/brand-logos/bare-logic.png',
+  'shameers-cars': '/brand-logos/shameers-cars.png',
+  'popsi': '/brand-logos/popsi.png',
+  'the-grid-store': '/brand-logos/the-grid-store.png',
+  'beyond-the-business': '/brand-logos/beyond-the-business.jpeg',
+  'celebrations': '/brand-logos/celebrations.jpeg',
+  'xyklon': '/brand-logos/xyklon.png',
+  'hand-revolution': '/brand-logos/hand-revolution.jpeg',
 }
 
 const ZOOMED_LOGOS = new Set(['nkreatives', 'curry-bag', 'ai-institute', 'tempest-automotive', 'vinayaka-hospital', 'wayanad-trade-centre', 'beyond-the-business'])
@@ -94,6 +94,7 @@ const WORK_GALLERIES = {
     ['dayonepost1.png', 'DayOne Instagram post'],
     ['dayonepost2.png', 'DayOne Instagram post'],
     ['instagrampost3.png', 'DayOne Instagram post'],
+    ['dayone-crm.png', 'DayOne CRM dashboard'],
   ],
   'moon-bliss': [
     ['moonbliss-post.png', 'MoonBliss social post'],
@@ -237,11 +238,11 @@ function SocialAssetGrid({ items }) {
       style={{ gridTemplateColumns: `repeat(auto-fill, minmax(min(100%, 150px), ${hasBareLogicLogo ? 250 : 190}px))` }}
     >
       {items.map(([file, label, src]) => (
-        <figure key={file} className="m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
-          <div className={`grid ${hasBareLogicLogo && file === 'barelogic.png' ? 'aspect-square' : 'aspect-[4/5]'} place-items-center overflow-hidden bg-[#f3f0eb]`}>
+        <figure key={file} className={`m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414] ${file === 'dayone-crm.png' ? 'col-span-2 max-[500px]:col-span-1' : ''}`}>
+          <div className={`grid ${file === 'dayone-crm.png' ? 'aspect-video' : hasBareLogicLogo && file === 'barelogic.png' ? 'aspect-square' : 'aspect-[4/5]'} place-items-center overflow-hidden bg-[#f3f0eb]`}>
             <img src={src || `/social-media/${file}`} alt={label} loading="lazy" decoding="async" className={`block h-full w-full object-contain ${hasBareLogicLogo && file === 'barelogic.png' ? 'scale-[1.65]' : ''}`} />
           </div>
-          {!/instagram|social post/i.test(label) && (
+          {file !== 'dayone-crm.png' && !/instagram|social post/i.test(label) && (
             <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
           )}
         </figure>
