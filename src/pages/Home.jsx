@@ -1,10 +1,8 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, ChartLineUp, Compass, FacebookLogo, Gear, InstagramLogo, LinkedinLogo, SquaresFour, WhatsappLogo, X, YoutubeLogo } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { brandImage, brands } from '../data/brands'
-
-const Lanyard = lazy(() => import('../components/Lanyard'))
 
 /* ---------- Editable content (taken from the HU. content blueprint) ---------- */
 const statement = 'I build businesses, and fix a few things along the way. I work with *startup founders*, *business owners*, and *teams* to turn ideas into plans, and plans into action.'
@@ -135,254 +133,21 @@ function CountUp({ to, suffix = '' }) {
 
 const Arrow = () => <ArrowUpRight size={18} aria-hidden className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
 
-/* ---------- Strategic framework visual: one corporate office building, built from the ground up as you scroll ----------
-   `s` runs from 0 to 3 and is tied to the four stages (Opportunity, Business, Launch, Growth).
-
-   0.00         Blank panel (only the corner frame marks).
-   0.00 - 0.95  OPPORTUNITY  Ground line draws in, piles are driven, the foundation slab is poured.
-   0.95 - 1.95  BUSINESS     The two-storey podium is framed, then the steel frame of the tower rises floor by floor
-                             (slabs, columns, bracing), finishing with the stepped upper section.
-   1.50 - 2.60  LAUNCH       Glass curtain wall follows the frame up the front and side faces.
-   2.60 - 3.00  GROWTH       Crisp roof edges and rooftop plant room, entrance with canopy, trees, windows light up,
-                             and the green HU. flag is raised on the roof. Finished building.
-
-   Shape: a tall glass office tower seen from a corner, so the front face, the shaded side face and the roofs are all visible.
-   A wide podium at the base, a 12-floor main tower, and a narrower 4-floor upper section that steps back at the top.
-   Every roof has a solid edge band (parapet). No antenna, no mast. The only thing above the plant room is the flagpole.
-   Everything is placed with pt(X, Y, Z): X across, Y up, Z depth into the scene.
-
-   Layout: on desktop (lg+) the visual is a sticky column beside the stages. On phones and tablets it is a
-   sticky panel pinned under the site header while the stages scroll beneath it, so it is visible on every screen.
-*/
-const GROUND = 340
-const K = 0.42 /* how far one unit of depth shifts right on screen */
-const L = 0.2 /* how far one unit of depth shifts up on screen */
-const PODIUM = { x0: 82, w: 190, z0: 0, d: 110, base: 0, floors: 2, fh: 20, mx: 8, mz: 4 }
-const MAIN = { x0: 122, w: 110, z0: 22, d: 66, base: 40, floors: 12, fh: 15, mx: 5, mz: 3 }
-const UPPER = { x0: 133, w: 88, z0: 33, d: 44, base: 220, floors: 4, fh: 15, mx: 4, mz: 2 }
-const PODIUM_TOP = PODIUM.base + PODIUM.floors * PODIUM.fh
-const MAIN_TOP = MAIN.base + MAIN.floors * MAIN.fh
-const UPPER_TOP = UPPER.base + UPPER.floors * UPPER.fh
-const TOTAL_FLOORS = PODIUM.floors + MAIN.floors + UPPER.floors
-const PILES = [86, 114, 142, 170, 198, 226, 254, 276]
-const up = (n) => Math.min(1, Math.max(0, n))
-const fade = (v) => ({ opacity: v, transition: 'opacity 350ms ease-out' })
-const grow = (origin, axis, v) => ({ transformOrigin: origin, transform: `${axis}(${v})`, opacity: v, transition: 'transform 350ms ease-out, opacity 350ms ease-out' })
-const CALM = [0.7, 1.45, 2.4, 3] /* representative build states when motion is reduced (one per stage) */
-const captions = ['Breaking ground', 'Foundation laid', 'Structure rising', 'Facade going on', 'Finishing touches', 'Complete']
-const pileLines = PILES.map((x) => `M${x} 350V374`).join('')
-const pt = (X, Y, Z) => `${(X + K * Z).toFixed(1)} ${(GROUND - Y - L * Z).toFixed(1)}`
-const poly = (...p) => `M${p.join('L')}Z`
-const DARK = '#171a1b'
-/* Flagpole standing on the rooftop plant room: screen position of its base, pole height, and flag size. */
-const FLAG = { x: UPPER.x0 + 44 + K * (UPPER.z0 + 22), y: GROUND - (UPPER_TOP + 9) - L * (UPPER.z0 + 22), pole: 24, w: 28, h: 15 }
-
-/* One block of floors with a front face and a shaded right face.
-   skel(i) grows the frame of floor i (0 to 1), wall(i) fills it with glass, lit lights the windows. */
-function Block({ x0, w, z0, d, base, floors, fh, mx, mz, skel, wall, lit, seed = 0 }) {
-  const xr = x0 + w
-  const z1 = z0 + d
-  const bwF = w / mx
-  const bwS = d / mz
-  return (
-    <g>
-      {Array.from({ length: floors }, (_, i) => {
-        const yb = base + fh * i
-        const yt = yb + fh
-        const a = skel(i)
-        const b = wall(i)
-        const front = poly(pt(x0, yt, z0), pt(xr, yt, z0), pt(xr, yb, z0), pt(x0, yb, z0))
-        const side = poly(pt(xr, yt, z0), pt(xr, yt, z1), pt(xr, yb, z1), pt(xr, yb, z0))
-        const frontPosts = Array.from({ length: mx + 1 }, (__, c) => `M${pt(x0 + c * bwF, yt, z0)}L${pt(x0 + c * bwF, yb, z0)}`).join('')
-        const sidePosts = Array.from({ length: mz + 1 }, (__, c) => `M${pt(xr, yt, z0 + c * bwS)}L${pt(xr, yb, z0 + c * bwS)}`).join('')
-        return (
-          <g key={i} style={{ transformOrigin: `${x0 + w / 2}px ${GROUND - yb}px`, transform: `scaleY(${a})`, opacity: a, transition: 'transform 350ms ease-out, opacity 350ms ease-out' }}>
-            {/* solid backing so nothing behind the face shows through */}
-            <path d={front} fill={DARK} stroke="none" />
-            <path d={side} fill={DARK} stroke="none" />
-            {/* glass: the front catches more light than the side */}
-            <path d={front} fill="#f8f9f6" stroke="none" style={fade(b * 0.09)} />
-            <path d={side} fill="#f8f9f6" stroke="none" style={fade(b * 0.03)} />
-            {/* steel bracing: visible on the bare frame, hidden once the glass arrives */}
-            {Array.from({ length: mx }, (__, c) => ((i + c) % 2 === 0
-              ? <path key={`x${c}`} d={`M${pt(x0 + c * bwF, yb, z0)}L${pt(x0 + (c + 1) * bwF, yt, z0)}`} strokeOpacity=".35" style={fade(a * (1 - b))} />
-              : null))}
-            {/* floor edges and mullions */}
-            <path d={`M${pt(x0, yt, z0)}L${pt(xr, yt, z0)}L${pt(xr, yt, z1)}${frontPosts}${sidePosts}`} />
-            {i === 0 && <path d={`M${pt(x0, yb, z0)}L${pt(xr, yb, z0)}L${pt(xr, yb, z1)}`} strokeWidth="1.6" />}
-            {/* heavier corner piers: they give the building its clean vertical edges */}
-            <path d={`M${pt(x0, yt, z0)}L${pt(x0, yb, z0)}M${pt(xr, yt, z0)}L${pt(xr, yb, z0)}`} strokeWidth="2.2" strokeLinecap="square" />
-            <path d={`M${pt(xr, yt, z1)}L${pt(xr, yb, z1)}`} strokeWidth="1.4" />
-            {/* ribbon windows, front face */}
-            {Array.from({ length: mx }, (__, c) => {
-              const on = (i * 3 + c + seed) % 4 === 0
-              return <rect key={`f${c}`} x={x0 + c * bwF + 3.5 + K * z0} y={GROUND - yb - fh * 0.72 - L * z0} width={bwF - 7} height={fh * 0.42} fill={on ? '#a4be2d' : '#f8f9f6'} stroke="none" style={fade(b * (on ? 0.2 + 0.7 * lit : 0.16))} />
-            })}
-            {/* ribbon windows, side face (in perspective, dimmer) */}
-            {Array.from({ length: mz }, (__, c) => {
-              const on = (i * 2 + c + seed) % 5 === 0
-              const za = z0 + c * bwS + 3
-              const zb = z0 + (c + 1) * bwS - 3
-              return <path key={`s${c}`} d={poly(pt(xr, yb + fh * 0.72, za), pt(xr, yb + fh * 0.72, zb), pt(xr, yb + fh * 0.3, zb), pt(xr, yb + fh * 0.3, za))} fill={on ? '#a4be2d' : '#f8f9f6'} stroke="none" style={fade(b * (on ? 0.15 + 0.45 * lit : 0.09))} />
-            })}
-          </g>
-        )
-      })}
-    </g>
-  )
-}
-
-/* Flat roof seen from above, finished with a solid edge band (parapet) along the front and the side. */
-function Roof({ x0, w, z0, d, y, v, inset = 3, lip = 3 }) {
-  const xr = x0 + w
-  const z1 = z0 + d
-  const bandF = poly(pt(x0, y, z0), pt(xr, y, z0), pt(xr, y - lip, z0), pt(x0, y - lip, z0))
-  const bandS = poly(pt(xr, y, z0), pt(xr, y, z1), pt(xr, y - lip, z1), pt(xr, y - lip, z0))
-  return (
-    <g style={fade(v)} strokeLinejoin="round">
-      <path d={bandF} fill={DARK} stroke="none" />
-      <path d={bandS} fill={DARK} stroke="none" />
-      <path d={poly(pt(x0, y, z0), pt(xr, y, z0), pt(xr, y, z1), pt(x0, y, z1))} fill="#f8f9f6" fillOpacity=".07" strokeWidth="1.8" />
-      <path d={poly(pt(x0 + inset, y, z0 + inset), pt(xr - inset, y, z0 + inset), pt(xr - inset, y, z1 - inset), pt(x0 + inset, y, z1 - inset))} strokeOpacity=".45" />
-      <path d={bandF} fill="#f8f9f6" fillOpacity=".2" strokeWidth="1.6" />
-      <path d={bandS} fill="#f8f9f6" fillOpacity=".08" strokeWidth="1.6" />
-    </g>
-  )
-}
-
-/* Small solid box, used for the rooftop plant room. */
-function Box({ x0, w, z0, d, y, h, v }) {
-  const xr = x0 + w
-  const z1 = z0 + d
-  const yt = y + h
-  const front = poly(pt(x0, yt, z0), pt(xr, yt, z0), pt(xr, y, z0), pt(x0, y, z0))
-  const side = poly(pt(xr, yt, z0), pt(xr, yt, z1), pt(xr, y, z1), pt(xr, y, z0))
-  const top = poly(pt(x0, yt, z0), pt(xr, yt, z0), pt(xr, yt, z1), pt(x0, yt, z1))
-  return (
-    <g style={fade(v)} strokeLinejoin="round">
-      <path d={front} fill={DARK} />
-      <path d={side} fill={DARK} />
-      <path d={top} fill={DARK} />
-      <path d={front} fill="#f8f9f6" fillOpacity=".1" stroke="none" />
-      <path d={side} fill="#f8f9f6" fillOpacity=".04" stroke="none" />
-      <path d={top} fill="#f8f9f6" fillOpacity=".14" stroke="none" />
-      <path d={[1, 2].map((k) => `M${pt(x0, y + (h * k) / 3, z0)}L${pt(xr, y + (h * k) / 3, z0)}`).join('')} strokeOpacity=".4" />
-    </g>
-  )
-}
-
-function Building({ s }) {
-  const groundP = up(s / 0.15)
-  const piles = up((s - 0.2) / 0.4)
-  const slab = up((s - 0.5) / 0.45)
-  const podFrame = up((s - 0.95) / 0.25) * PODIUM.floors
-  const mainFrame = up((s - 1.2) / 0.5) * MAIN.floors
-  const upperFrame = up((s - 1.7) / 0.25) * UPPER.floors
-  const built = podFrame + mainFrame + upperFrame
-  const podGlass = up((s - 1.8) / 0.4) * PODIUM.floors
-  const mainGlass = up((s - 1.5) / 0.9) * MAIN.floors
-  const upperGlass = up((s - 2.3) / 0.3) * UPPER.floors
-  const podRoof = up((s - 2.2) / 0.2)
-  const mainRoof = up((s - 2.4) / 0.2)
-  const cap = up((s - 2.6) / 0.2)
-  const crown = up((s - 2.6) / 0.25)
-  const door = up((s - 2.65) / 0.2)
-  const trees = up((s - 2.75) / 0.2)
-  const lit = up((s - 2.7) / 0.3)
-  const flagP = up((s - 2.75) / 0.2)
-  const capIdx = s < 0.35 ? 0 : s < 0.95 ? 1 : s < 1.95 ? 2 : s < 2.6 ? 3 : s < 2.95 ? 4 : 5
-  const doorX = PODIUM.x0 + PODIUM.w / 2
-  const poleTop = FLAG.y - FLAG.pole
-  const flagTop = poleTop + 2
-  const flagPath = `M${FLAG.x} ${flagTop}C${FLAG.x + FLAG.w * 0.3} ${flagTop - 2.5} ${FLAG.x + FLAG.w * 0.65} ${flagTop + 2.5} ${FLAG.x + FLAG.w} ${flagTop}V${flagTop + FLAG.h}C${FLAG.x + FLAG.w * 0.65} ${flagTop + FLAG.h + 2.5} ${FLAG.x + FLAG.w * 0.3} ${flagTop + FLAG.h - 2.5} ${FLAG.x} ${flagTop + FLAG.h}Z`
-  return (
-    <svg viewBox="0 0 400 400" className="h-full w-full" fill="none" stroke="#f8f9f6" strokeWidth="1" aria-hidden>
-      <path d="M12 36V12H36M364 12H388V36" strokeOpacity=".5" />
-
-      {/* OPPORTUNITY: the scene starts blank. The ground line draws in from the centre, then the soil line */}
-      <path d="M12 340H388" strokeOpacity=".6" style={grow('200px 340px', 'scaleX', groundP)} />
-      <path d="M24 352H376" strokeOpacity=".2" strokeDasharray="2 6" style={grow('200px 352px', 'scaleX', up((s - 0.08) / 0.12))} />
-
-      {/* OPPORTUNITY: piles driven into the ground, then the foundation slab is poured on top */}
-      <g strokeOpacity=".6" strokeWidth="1.5" style={grow('0px 352px', 'scaleY', piles)}><path d={pileLines} /></g>
-      <g style={grow('177px 340px', 'scaleX', slab)} strokeLinejoin="round">
-        <path d={poly(pt(76, 0, -4), pt(278, 0, -4), pt(278, 0, 114), pt(76, 0, 114))} fill="#f8f9f6" fillOpacity=".07" strokeOpacity=".3" />
-        <path d={poly(pt(76, 0, -4), pt(278, 0, -4), pt(278, -8, -4), pt(76, -8, -4))} fill="#f8f9f6" fillOpacity=".14" strokeOpacity=".8" />
-        <path d={poly(pt(278, 0, -4), pt(278, 0, 114), pt(278, -8, 114), pt(278, -8, -4))} fill="#f8f9f6" fillOpacity=".06" strokeOpacity=".5" />
-      </g>
-
-      {/* BUSINESS + LAUNCH: podium first, then the tower, then the stepped upper section. Frame first, then glass follows it up */}
-      <Block {...PODIUM} skel={(i) => up(podFrame - i)} wall={(i) => up(podGlass - i)} lit={lit} seed={3} />
-      <Roof x0={PODIUM.x0} w={PODIUM.w} z0={PODIUM.z0} d={PODIUM.d} y={PODIUM_TOP} v={podRoof} lip={2.5} />
-      <Block {...MAIN} skel={(i) => up(mainFrame - i)} wall={(i) => up(mainGlass - i)} lit={lit} />
-      <Roof x0={MAIN.x0} w={MAIN.w} z0={MAIN.z0} d={MAIN.d} y={MAIN_TOP} v={mainRoof} />
-      <Block {...UPPER} skel={(i) => up(upperFrame - i)} wall={(i) => up(upperGlass - i)} lit={lit} seed={1} />
-
-      {/* GROWTH: crisp roof edge and rooftop plant room */}
-      <Roof x0={UPPER.x0} w={UPPER.w} z0={UPPER.z0} d={UPPER.d} y={UPPER_TOP} v={cap} />
-      <Box x0={UPPER.x0 + 22} w={44} z0={UPPER.z0 + 10} d={24} y={UPPER_TOP} h={9} v={crown} />
-
-      {/* GROWTH: flagpole on the plant room with the green HU. flag */}
-      <g style={fade(flagP)}>
-        <path d={`M${FLAG.x} ${FLAG.y}V${poleTop}`} strokeWidth="1.4" />
-        <circle cx={FLAG.x} cy={poleTop - 1.5} r="1.6" fill="#a4be2d" stroke="none" />
-      </g>
-      <g style={grow(`${FLAG.x}px ${flagTop + FLAG.h / 2}px`, 'scaleX', flagP)}>
-        <path d={flagPath} fill="#a4be2d" stroke="none" />
-        <text x={FLAG.x + FLAG.w / 2} y={flagTop + FLAG.h / 2 + 3} textAnchor="middle" fontSize="8.5" fontWeight="800" fill={DARK} stroke="none">HU.</text>
-      </g>
-
-      {/* GROWTH: entrance with canopy */}
-      <g style={fade(door)}>
-        <rect x={doorX - 12} y={GROUND - 16} width="24" height="16" fill={DARK} />
-        <path d={`M${doorX} ${GROUND - 16}V${GROUND}`} strokeOpacity=".6" />
-        <path d={poly(pt(doorX - 19, 18, 0), pt(doorX + 19, 18, 0), pt(doorX + 19, 18, -9), pt(doorX - 19, 18, -9))} fill="#a4be2d" fillOpacity=".25" stroke="#a4be2d" strokeWidth="1.5" />
-      </g>
-
-      {/* GROWTH: street trees */}
-      <g style={fade(trees)}>
-        <path d="M52 340V330M346 340V330" />
-        <circle cx="52" cy="324" r="6" strokeOpacity=".7" />
-        <circle cx="346" cy="324" r="6" strokeOpacity=".7" />
-      </g>
-
-      {/* caption */}
-      {captions.map((t, k) => <text key={t} x="14" y="388" fill="#a4be2d" stroke="none" fontSize="13" fontWeight="600" style={fade(capIdx === k ? 1 : 0)}>{t}</text>)}
-      <text x="386" y="388" textAnchor="end" fill="#f8f9f6" fillOpacity=".6" stroke="none" fontSize="13">Floors {Math.round(built)} / {TOTAL_FLOORS}</text>
-    </svg>
-  )
-}
-
 function Framework() {
   const [active, setActive] = useState(0)
-  const [progress, setProgress] = useState(0)
   const refs = useRef([])
-  const stickyRef = useRef(null)
-  /* One scroll loop drives both the active stage and the continuous build progress.
-     Progress is 0 until the first stage reaches the reading line, then one unit per stage, so the building grows with every scroll.
-     Desktop: the reading line is the middle of the screen. Phones/tablets: it sits just below the pinned building panel. */
+
   useEffect(() => {
     let raf = 0
     const run = () => {
       raf = 0
-      const vh = window.innerHeight
-      let line = vh * 0.5
-      const box = stickyRef.current
-      if (box && window.innerWidth < 1024) {
-        const bottom = (parseFloat(getComputedStyle(box).top) || 0) + box.offsetHeight
-        line = bottom + (vh - bottom) * 0.2
-      }
+      const line = window.innerHeight * 0.5
       const tops = refs.current.map((el) => (el ? el.getBoundingClientRect().top + 24 : 0))
-      let v = 0
       let idx = 0
       for (let i = tops.length - 1; i >= 0; i -= 1) {
-        if (line >= tops[i]) { idx = i; v = i + (i < tops.length - 1 ? Math.min(1, (line - tops[i]) / (tops[i + 1] - tops[i])) : 0); break }
+        if (line >= tops[i]) { idx = i; break }
       }
       setActive(idx)
-      if (!calm()) {
-        const q = Math.round(v * 50) / 50
-        setProgress((prev) => (Math.abs(prev - q) < 0.01 ? prev : q))
-      }
     }
     const queue = () => { if (!raf) raf = requestAnimationFrame(run) }
     queue()
@@ -390,47 +155,33 @@ function Framework() {
     window.addEventListener('resize', queue)
     return () => { cancelAnimationFrame(raf); window.removeEventListener('scroll', queue); window.removeEventListener('resize', queue) }
   }, [])
-  const jump = (i) => refs.current[i]?.scrollIntoView({ behavior: calm() ? 'auto' : 'smooth', block: 'center' })
+
   return (
-    <section id="framework" className="bg-[#f2f3ef] pb-24 pt-8 sm:pb-28 sm:pt-16" aria-labelledby="framework-title">
+    <section id="framework" className="bg-[#173b2b] pb-24 pt-8 text-[#f8f9f6] sm:pb-28 sm:pt-16" aria-labelledby="framework-title">
       <div className={wrap}>
-        <header className="mb-14 max-w-3xl sm:mb-20">
-          <Reveal className={eyebrow}>From idea to actual business</Reveal>
+        <header className="mb-12 max-w-3xl sm:mb-16">
+          <Reveal className="mb-5 flex items-center gap-3 text-[13px] font-semibold text-[#d6e88a] before:h-px before:w-8 before:bg-[#a4be2d]">From idea to actual business</Reveal>
           <Heading id="framework-title" lines={['That idea in your head?', 'Give it somewhere to go.']} className={h2cls} />
         </header>
-        {/* Phones show the stages without the animated visual; tablet and desktop keep the pinned building. */}
-        <div className="grid lg:grid-cols-12 lg:gap-16">
-          <div className="pointer-events-none z-20 col-start-1 row-start-1 max-[767px]:hidden lg:pointer-events-auto lg:z-auto lg:col-span-5">
-            <div ref={stickyRef} className="pointer-events-auto sticky top-16 -mx-5 bg-[#f2f3ef] px-5 pb-3 pt-2 sm:-mx-7 sm:px-7 md:top-[72px] lg:top-28 lg:mx-0 lg:bg-transparent lg:p-0">
-              <div className="h-[min(42svh,340px)] bg-[#171a1b] p-3 sm:p-5 md:h-[min(46svh,460px)] lg:aspect-square lg:h-auto lg:p-6">
-                <Building s={calm() ? CALM[active] : progress} />
-              </div>
-              <div className="mt-4 hidden grid-cols-4 border-t border-[#171a1b]/20 lg:grid">
-                {stages.map(([name], i) => (
-                  <button key={name} type="button" onClick={() => jump(i)} aria-label={`Go to stage ${i + 1}: ${name}`} className={`border-t-2 pt-3 text-left text-[13px] font-semibold transition-colors duration-500 -mt-px ${active === i ? 'border-[#7c9318] text-[#171a17]' : 'border-transparent text-[#72766f] hover:text-[#171a17]'}`}>{name}</button>
-                ))}
-              </div>
-            </div>
-          </div>
-          <ol className="col-start-1 row-start-1 pt-[calc(min(42svh,340px)_+_3rem)] md:pt-[calc(min(46svh,460px)_+_3rem)] max-[767px]:pt-0 lg:col-span-7 lg:col-start-6 lg:pt-0">
-            {stages.map(([name, desc, out], i) => {
-              const reached = active >= i
-              return (
-                <li key={name} ref={(el) => { refs.current[i] = el }} className="relative min-h-0 pb-10 pl-12 sm:min-h-[38svh] sm:pb-14 sm:pl-14 lg:min-h-[48vh] lg:pb-0">
-                  <span className={`absolute left-0 top-1 z-10 grid size-7 place-items-center rounded-full border text-[11px] font-bold transition-colors duration-700 ${reached ? 'border-[#a4be2d] bg-[#a4be2d] text-[#1e2618]' : 'border-[#c4c9b9] bg-[#f2f3ef] text-[#72766f]'}`}>{i + 1}</span>
-                  {i < stages.length - 1 && (
-                    <span className="absolute bottom-0 left-[13px] top-9 w-px bg-[#d0d5c6]" aria-hidden>
-                      <span className="absolute inset-0 origin-top bg-[#7c9318]" style={{ transform: `scaleY(${active > i ? 1 : 0})`, transition: `transform 900ms ${EASE}` }} />
-                    </span>
-                  )}
-                  <h3 className="text-[clamp(34px,4.4vw,60px)] font-extrabold leading-none tracking-[-.045em] transition-colors duration-700" style={{ color: reached ? '#171a17' : '#8e9487' }}>{name}</h3>
-                  <p className="mt-5 max-w-[460px] text-lg leading-[1.55] text-[#4a4f47]">{desc}</p>
-                  <p className="mt-6 max-w-[460px] border-t border-[#d0d5c6] pt-4 text-sm text-[#72766f]">What comes out: <span className={`font-semibold transition-colors duration-700 ${reached ? 'text-[#617319]' : ''}`}>{out}</span></p>
-                </li>
-              )
-            })}
-          </ol>
-        </div>
+        <ol className="relative grid items-start gap-5 lg:grid-cols-12 lg:gap-y-3">
+          <svg aria-hidden className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full overflow-visible lg:block" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M41.7 12 C48 16 52 31 58.3 37 S48 56 41.7 62 S52 81 58.3 88" fill="none" stroke="#a4be2d" strokeOpacity=".55" strokeWidth="1.4" strokeDasharray="3 5" vectorEffect="non-scaling-stroke" />
+            {[[41.7, 12], [58.3, 37], [41.7, 62], [58.3, 88]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r=".55" fill="#a4be2d" />)}
+          </svg>
+          {stages.map(([name, desc, out], i) => {
+            const reached = active >= i
+            return (
+              <li key={name} ref={(el) => { refs.current[i] = el }} className={`relative z-10 self-start rounded-[22px] border bg-gradient-to-br from-white via-white to-[#f1f5e8] p-6 text-[#171a17] shadow-[0_16px_44px_rgba(0,0,0,.12)] transition-[border-color,box-shadow,background-color] duration-500 sm:p-7 lg:col-span-5 ${i === 0 ? 'lg:col-start-1 lg:row-start-1' : i === 1 ? 'lg:col-start-8 lg:row-start-2' : i === 2 ? 'lg:col-start-1 lg:row-start-3' : 'lg:col-start-8 lg:row-start-4'} ${reached ? 'border-[#a4be2d] shadow-[0_20px_50px_rgba(0,0,0,.2)]' : 'border-[#cdd9b2]'}`}>
+                <span aria-hidden className="mb-5 block h-1 w-10 rounded-full bg-[#a4be2d]" />
+                <h3 className="m-0 text-[clamp(32px,4vw,54px)] font-extrabold leading-none tracking-[-.045em]">{name}</h3>
+                <p className="mb-0 mt-4 max-w-[460px] text-base leading-[1.6] text-[#4a4f47] sm:text-lg">{desc}</p>
+                <div className="mt-5 border-t border-[#cbd5b2] pt-4">
+                  <p className="m-0 text-sm font-semibold leading-[1.55] text-[#617319]">{out}</p>
+                </div>
+              </li>
+            )
+          })}
+        </ol>
       </div>
     </section>
   )
@@ -539,7 +290,7 @@ function Portfolio() {
 
       <div className="w-full max-w-none px-0">
         <h2 id="brands-title" className="mb-[clamp(24px,3svh,36px)] text-center text-[clamp(30px,4.5vw,54px)] font-extrabold leading-[1.05] tracking-[-.055em] text-white">
-          Ventures <span className="text-[#a4be2d]">I’ve helped build</span>
+          Brands <span className="text-[#a4be2d]">I’ve helped build</span>
         </h2>
 
         <MobileVentureCarousel />
@@ -754,31 +505,14 @@ function Conversation() {
 
 function Positioning() {
   const [statRef, progress] = useScrollProgress()
-  const [lanyardRef, showLanyard] = useInView('600px 0px')
 
   return (
-    <section id="positioning" aria-labelledby="positioning-title" className="relative isolate overflow-hidden bg-[#171a1b] py-28 text-[#f8f9f6] sm:py-40">
-      <div ref={lanyardRef} aria-hidden="true" className="absolute inset-0 z-20 hidden lg:block">
-        {showLanyard && (
-          <Suspense fallback={<div className="h-full w-full" />}>
-            <Lanyard
-              frontImage="/images/hashir-portrait.webp"
-              cardColor="#f8f9f6"
-              strapColor="#a4be2d"
-              finish="matte"
-              size={0.5}
-              anchor="left"
-              strapLength={0.62}
-              breeze={0.32}
-              damping={0.62}
-              className="h-full w-full"
-            />
-          </Suspense>
-        )}
-      </div>
+    <section id="positioning" aria-labelledby="positioning-title" className="relative isolate overflow-x-clip bg-[#171a1b] py-28 text-[#f8f9f6] sm:py-40">
       <div className={`${wrap} relative z-10 grid gap-10 lg:grid-cols-12`}>
         <div className="relative z-10 lg:col-span-3">
-         
+          <h3 className="lg:sticky lg:top-24 m-0 max-w-[12ch] text-[clamp(24px,2.5vw,36px)] font-bold leading-[1.05] tracking-[-.04em] text-white">
+            A clearer way to <span className="text-[#a4be2d]">build.</span>
+          </h3>
         </div>
         <div ref={statRef} className="relative z-10 lg:col-span-9">
           <h2 id="positioning-title" className="text-[clamp(30px,4.8vw,68px)] font-bold leading-[1.1] tracking-[-.04em]">
