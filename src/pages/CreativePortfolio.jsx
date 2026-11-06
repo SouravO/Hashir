@@ -46,6 +46,12 @@ const LOGO_ASSETS = {
   'nothing-else': 'nothingelse.png',
   'bare-logic': 'barelogic.png',
   'shameers-cars': '/social-media/shameerscars.png',
+  popsi: 'popsi.png',
+  'the-grid-store': 'the-grid-store.png',
+  'beyond-the-business': 'beyondthebussiness.jpeg',
+  celebrations: 'celebrations-e.jpeg',
+  xyklon: '/xyklon.png',
+  'hand-revolution': '/hand-revolution.jpeg',
 }
 
 const LOGO_SCALE = {
@@ -370,6 +376,10 @@ const BRANDS = [
   ['no-two', 'No Two', 'Skincare'], ['hosther-hostels', 'Hosther Hostels', 'Hospitality'],
   ['ai-designers', 'AI Designers', 'Tech community'], ['sol', 'Sol.', "Women's fashion"],
   ['nothing-else', 'Nothing Else', 'FMCG'], ['bare-logic', 'Bare Logic', 'Skincare'],
+  ['popsi', 'POPSI', 'Beverages'], ['the-grid-store', 'The Grid Store', 'Electronics / e-commerce'],
+  ['beyond-the-business', 'Beyond the Business', 'Management consultancy / digital marketing'],
+  ['celebrations', 'Celebrations', 'Corporate events'], ['xyklon', 'Xyklon', 'Mobile accessories / GCC'],
+  ['hand-revolution', 'Hand Revolution', 'Footwear / e-commerce'],
 ].sort((a, b) => a[1].localeCompare(b[1], 'en', { sensitivity: 'base' }))
 
 /* ---------- Data: full project index ---------- */
@@ -466,6 +476,18 @@ const PROJECTS = [
     [], [], ['Social strategy', 'Paid media', '360° marketing', 'Sales & BD', 'Influencers / PR']),
   P('Tanza Opticals', 'Optical / retail healthcare', 'consumer', 'Consultant / Advisor', 'advisor',
     [], ['Creative direction', 'Content production'], ['360° marketing']),
+  P('POPSI', 'Beverages', 'food', 'Consultant / Advisor', 'advisor',
+    [], ['Brand strategy', 'Naming & identity', 'Creative direction'], ['Go-to-market', 'Social strategy']),
+  P('The Grid Store', 'Electronics / e-commerce', 'consumer', 'Consultant / Advisor', 'advisor',
+    [], ['Brand strategy', 'Naming & identity', 'Brand architecture'], ['Go-to-market', 'Web / digital']),
+  P('Beyond the Business', 'Management consultancy / digital marketing', 'corporate', 'CMO / Head of Marketing', 'marketing',
+    ['Marketing leadership'], ['Brand strategy', 'Creative direction'], ['Social strategy', '360° marketing', 'Growth & revenue']),
+  P('Celebrations', 'Events / corporate', 'food', 'Event Head', 'event-head',
+    ['Team leadership', 'Operations / SOPs'], ['Creative direction'], ['Social strategy']),
+  P('Xyklon', 'Mobile accessories / GCC', 'consumer', 'Consultant / Advisor', 'advisor',
+    ['Operations / SOPs'], ['Brand strategy'], ['Growth & revenue']),
+  P('Hand Revolution', 'Footwear / e-commerce', 'consumer', 'Founder / Co-founder', 'founder',
+    ['CEO / business leadership', 'Operations / SOPs'], ['Brand strategy'], ['Growth & revenue', 'Web / digital']),
 ].sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })).map((p) => ({
   ...p,
   search: [p.name, p.sector, p.role, INDUSTRIES[p.ind], ...p.l, ...p.b, ...p.m].join(' ').toLowerCase(),
@@ -1103,7 +1125,7 @@ export default function CreativePortfolio() {
                   key={slug}
                   className="relative m-0 border-[3px] border-[#141414] rounded-[14px] overflow-hidden bg-white shadow-[4px_4px_0_#141414] hover:shadow-[7px_7px_0_#141414]"
                 >
-                  <Logo slug={slug} name={name} cover={!['admos', 'founderverse', 'oxtel'].includes(slug)} className="block w-full aspect-[453/293]" />
+                  <Logo slug={slug} name={name} cover={!['admos', 'founderverse', 'oxtel', 'xyklon'].includes(slug)} className={`block w-full aspect-[453/293] ${slug === 'xyklon' ? 'bg-white' : ''}`} />
                   <figcaption className="flex flex-col gap-px px-2.5 py-2 text-[0.76rem] font-extrabold border-t-[3px] border-[#141414] bg-[#fffdf8]">
                     {name}
                     <small className="font-semibold text-[#5b5b5b] normal-case">{sector}</small>
