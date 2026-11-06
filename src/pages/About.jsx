@@ -134,10 +134,10 @@ function Fade({ as: Tag = 'div', delay = 0, className = '', children }) {
 
 const journeyChapters = [
   ['Kerala, India', 'Ice Grills', 'The first business instinct', 'An early attempt to build something of my own introduced me to customers, everyday decisions and the gap between an interesting idea and an operating business.', 'A venture begins when an idea meets reality.'],
-  ['United Kingdom', 'MBA / Healthcare Work', 'Learning beyond the classroom', 'I moved to the UK in 2019 for my MBA and also worked in healthcare. The experience taught me responsibility, communication and the value of understanding people.', 'People come before processes.'],
-  ['United Kingdom', 'Asian Supermarket / Covid Period', 'Operations, every single day', 'Work in a supermarket brought me closer to stock, suppliers, accounts, customer expectations and closing responsibilities. I began to see the discipline behind daily business.', 'Operations keep a business working.'],
-  ['United Kingdom / Brighton', 'Merryhands UK / Suite Spot', 'Learning to win business', 'Healthcare services, business development and hospitality-related marketing exposed me to client relationships, commercial thinking and the work required to create demand.', 'Growth needs a dependable way to serve customers.'],
-  ['Calicut, Kerala', 'Axeutro Business Solution', 'Reading the numbers', 'Back in Calicut, I worked in business development at a CA firm. Finance, reporting, bookkeeping, internal controls and operating processes became part of my business education.', 'Understand the business behind the sales.'],
+  ['United Kingdom', 'University of Bedforshire', 'Learning beyond the classroom', 'I moved to the UK in 2019 for my MBA and also worked in healthcare. The experience taught me responsibility, communication and the value of understanding people.', 'People come before processes.'],
+  ['United Kingdom', 'Goldens nottinghamltd', 'Operations, every single day', 'Work in a supermarket as manager brought me closer to stock, suppliers, accounts, customer expectations and closing responsibilities. I began to see the discipline behind daily business.', 'Operations keep a business working.'],
+  ['United Kingdom / Brighton', 'Suit Spot Ventures Limited', 'Learning to win business', 'Healthcare services, business development and hospitality-related marketing exposed me to client relationships, commercial thinking and the work required to create demand.', 'Growth needs a dependable way to serve customers.'],
+  ['Calicut, Kerala', 'Axentro Business Solution', 'Reading the numbers', 'Back in Calicut, I worked in business development at a CA firm. Finance, reporting, bookkeeping, internal controls and operating processes became part of my business education.', 'Understand the business behind the sales.'],
   ['Kerala', 'Manager of Consultation', 'Diagnose before you prescribe', 'Business development and consulting work broadened my exposure to business scanning, process improvement, SOPs and organisational systems.', 'Good answers begin with better questions.'],
   ['Kerala, India', 'Nkreatives / Creative Director', 'Making strategy visible', 'Creative direction brought together positioning, brand communication, campaigns, social content and delivery teams. I learned to connect expression to commercial objectives.', 'Creativity works harder with a clear purpose.'],
   ['Kerala, India', 'MoonBliss / CEO', 'Owning the decisions', 'Leading a wellness venture meant bringing brand, product, marketing, operations and growth planning together, while taking responsibility beyond recommendations.', 'Ownership turns a plan into action.'],
@@ -215,11 +215,13 @@ function Chapter({ c: [place, org, title, body, lesson], i }) {
       <article aria-labelledby={`chapter-${i + 1}`} className="lg:grid lg:grid-cols-[36fr_28fr_36fr] lg:items-start">
         <header style={rise} className={`lg:row-start-1 ${right ? 'lg:col-start-3' : 'lg:col-start-1 lg:text-right'}`}>
           <span aria-hidden className="block bg-gradient-to-b from-[#a4be2d] to-[#a4be2d]/25 bg-clip-text text-[clamp(64px,9vw,136px)] font-extrabold leading-[.85] tracking-[-.07em] text-transparent">{String(i + 1).padStart(2, '0')}</span>
-          <p className={`m-0 mt-5 flex items-center gap-1.5 text-[15px] font-semibold text-white ${right ? '' : 'lg:justify-end'}`}>
+          <p className={`m-0 mt-5 text-[clamp(19px,1.7vw,25px)] font-bold leading-[1.12] tracking-[-.025em] text-white`}>
+            {org}
+          </p>
+          <p className={`m-0 mt-2 flex items-center gap-1.5 text-[14px] font-medium text-white/60 ${right ? '' : 'lg:justify-end'}`}>
             <MapPin size={15} weight="fill" aria-hidden className="shrink-0 text-[#a4be2d]" />
             {place}
           </p>
-          <p className="m-0 mt-1 text-[14px] leading-[1.4] text-white/60">{org}</p>
         </header>
         <div style={rise} className={`relative mt-7 border border-white/10 bg-white/[.04] p-6 transition-colors duration-700 group-data-[on=true]:border-[#a4be2d]/45 md:p-8 lg:row-start-1 lg:mt-0 lg:p-6 xl:p-8 ${right ? 'lg:col-start-1' : 'lg:col-start-3'}`}>
           <span aria-hidden className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-[#a4be2d] transition-transform duration-[900ms] group-data-[on=true]:scale-x-100 motion-reduce:transition-none" />
