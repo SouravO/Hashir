@@ -54,12 +54,9 @@ const LOGO_ASSETS = {
   'hand-revolution': '/hand-revolution.jpeg',
 }
 
-const LOGO_SCALE = {
-  nkreatives: 1.45,
-  'hosther-hostels': 2.2,
-  'curry-bag': 3.2,
-  'shameers-cars': 1.15,
-}
+const ZOOMED_LOGOS = new Set(['nkreatives', 'curry-bag', 'ai-institute', 'tempest-automotive', 'vinayaka-hospital', 'wayanad-trade-centre', 'beyond-the-business'])
+const LOGO_BACKGROUNDS = { 'curry-bag': '#050505', 'tempest-automotive': '#d41450' }
+const LOGO_SIZES = { 'curry-bag': 'size-[180%]', 'beyond-the-business': 'size-[140%] translate-y-[8%]' }
 
 // Social media examples shown inside each selected work's case detail.
 const WORK_GALLERIES = {
@@ -171,18 +168,20 @@ const WORK_VIDEOS = {
   ],
 }
 
-function Logo({ slug, name, className = '', cover = false }) {
+function Logo({ slug, name, className = '', cover = false, style }) {
   const asset = LOGO_ASSETS[slug]
   if (asset) {
     return (
-      <span className={`relative block overflow-hidden ${className}`}>
+      <span style={style} className={`relative block overflow-hidden ${className}`}>
         <img
           src={asset.startsWith('/') ? asset : `/ventures/${asset}`}
           alt={`${name} logo`}
           loading="lazy"
           decoding="async"
-          style={LOGO_SCALE[slug] ? { transform: `scale(${LOGO_SCALE[slug]})`, transformOrigin: 'center' } : undefined}
-          className={`absolute inset-0 size-full bg-white ${cover ? 'object-cover' : 'object-contain'}`}
+          fetchPriority="low"
+          draggable={false}
+          style={ZOOMED_LOGOS.has(slug) ? { backgroundColor: 'transparent' } : undefined}
+          className={`absolute ${ZOOMED_LOGOS.has(slug) ? `inset-0 m-auto ${LOGO_SIZES[slug] || 'size-[82%]'} object-contain` : 'inset-0 size-full bg-white'} ${cover ? 'object-cover' : 'object-contain'}`}
         />
       </span>
     )
@@ -380,6 +379,14 @@ const BRANDS = [
   ['beyond-the-business', 'Beyond the Business', 'Management consultancy / digital marketing'],
   ['celebrations', 'Celebrations', 'Corporate events'], ['xyklon', 'Xyklon', 'Mobile accessories / GCC'],
   ['hand-revolution', 'Hand Revolution', 'Footwear / e-commerce'],
+  ['terminal', 'Terminal', "Men's fashion"], ['nkreatives', 'NKreatives', 'Creative / marketing agency'],
+  ['coffee-klatch', 'Coffee Klatch', 'Café'], ['global-venture', 'Global Venture', 'Construction / design'],
+  ['wayanad-trade-centre', 'Wayanad Trade Centre', 'Commercial / trade'],
+  ['tempest-automotive', 'Tempest Automotive', 'Automotive'], ['warrior-mens', 'Warrior Mens', 'Fashion'],
+  ['tp-group-of-companies', 'TP Group of Companies', 'Building materials / corporate'],
+  ['vinayaka-hospital', 'Vinayaka Hospital', 'Healthcare'], ['aisen-studio', 'Aisen Studio', "Women's fashion"],
+  ['ai-institute', 'AI Institute', 'Education'], ['tanza-opticals', 'Tanza Opticals', 'Optical / retail healthcare'],
+  ['shameers-cars', "Shameer's Cars", 'Automotive'],
 ].sort((a, b) => a[1].localeCompare(b[1], 'en', { sensitivity: 'base' }))
 
 /* ---------- Data: full project index ---------- */
@@ -1123,9 +1130,10 @@ export default function CreativePortfolio() {
               {BRANDS.map(([slug, name, sector]) => (
                 <figure
                   key={slug}
+                  style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 320px' }}
                   className="relative m-0 border-[3px] border-[#141414] rounded-[14px] overflow-hidden bg-white shadow-[4px_4px_0_#141414] hover:shadow-[7px_7px_0_#141414]"
                 >
-                  <Logo slug={slug} name={name} cover={!['admos', 'founderverse', 'oxtel', 'xyklon'].includes(slug)} className={`block w-full aspect-[453/293] ${slug === 'xyklon' ? 'bg-white' : ''}`} />
+                  <Logo slug={slug} name={name} cover={!['admos', 'founderverse', 'oxtel', 'xyklon', ...ZOOMED_LOGOS].includes(slug)} className="block w-full aspect-[453/293] bg-white" style={{ backgroundColor: LOGO_BACKGROUNDS[slug] || '#fff' }} />
                   <figcaption className="flex flex-col gap-px px-2.5 py-2 text-[0.76rem] font-extrabold border-t-[3px] border-[#141414] bg-[#fffdf8]">
                     {name}
                     <small className="font-semibold text-[#5b5b5b] normal-case">{sector}</small>
