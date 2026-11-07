@@ -10,7 +10,7 @@ const socials = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/', Icon: LinkedinLogo },
   { label: 'X', href: 'https://x.com/', Icon: XLogo },
   { label: 'Instagram', href: 'https://www.instagram.com/hashir_usman__?psln=Zmg0YnZyM29sdWsx', Icon: InstagramLogo },
-  { label: 'YouTube', href: 'https://www.youtube.com/', Icon: YoutubeLogo },
+  { label: 'YouTube', href: 'https://youtube.com/@thehashirusman?si=U52e3Kiem_73L2mq', Icon: YoutubeLogo },
 ]
 
 export default function Footer() {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUpRight, ChartLineUp, Compass, FacebookLogo, Gear, InstagramLogo, LinkedinLogo, SquaresFour, WhatsappLogo, X, YoutubeLogo } from '@phosphor-icons/react'
+import { ArrowUpRight, ChartLineUp, Compass, FacebookLogo, Gear, InstagramLogo, LinkedinLogo, SquaresFour, WhatsappLogo, YoutubeLogo } from '@phosphor-icons/react'
 import { Link } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { brandImage, brands } from '../data/brands'
@@ -52,7 +52,7 @@ const dotted = '[background-image:radial-gradient(#d5e48145_.8px,transparent_1px
 const heroSocials = [
   { label: 'Facebook', href: 'https://www.facebook.com/', Icon: FacebookLogo },
   { label: 'Instagram', href: 'https://www.instagram.com/hashir_usman__?psln=Zmg0YnZyM29sdWsx', Icon: InstagramLogo },
-  { label: 'YouTube', href: 'https://www.youtube.com/', Icon: YoutubeLogo },
+  { label: 'YouTube', href: 'https://youtube.com/@thehashirusman?si=U52e3Kiem_73L2mq', Icon: YoutubeLogo },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/', Icon: LinkedinLogo },
   { label: 'WhatsApp', href: 'https://wa.me/919633442126', Icon: WhatsappLogo },
 ]
@@ -576,14 +576,10 @@ export default function Home() {
   }, [])
   useEffect(() => {
     if (!heroInView) return undefined
-    let dismissed = false
-    try { dismissed = window.sessionStorage.getItem('founderverse-promo-dismissed-static-v3') === '1' } catch { /* Storage may be unavailable. */ }
-    if (dismissed) return undefined
     const popupTimer = window.setTimeout(() => setShowStartupPopup(true), 2000)
     return () => window.clearTimeout(popupTimer)
   }, [heroInView])
   const dismissStartupPopup = () => {
-    try { window.sessionStorage.setItem('founderverse-promo-dismissed-static-v3', '1') } catch { /* Dismiss for this page view if Storage is unavailable. */ }
     setShowStartupPopup(false)
   }
   const line = (d) => ({ strokeDashoffset: ready ? 0 : 1, transition: `stroke-dashoffset 850ms ${EASE} ${d}ms` })
@@ -665,22 +661,24 @@ export default function Home() {
       <Conversation />
     </main>
     {showStartupPopup && createPortal(
-      <aside aria-label="Founderverse promotion" className="fixed bottom-[calc(12px_+_env(safe-area-inset-bottom))] left-1/2 z-[110] h-[220px] w-[min(370px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-[18px] border border-white/15 bg-[#10382D] p-3 text-white shadow-[0_18px_46px_rgba(7,24,17,.48)] animate-startup-popup sm:bottom-6 sm:left-auto sm:right-6 sm:h-[220px] sm:w-[370px] sm:translate-x-0 lg:h-[235px] lg:w-[400px]">
-        <button type="button" onClick={dismissStartupPopup} aria-label="Close Founderverse promotion" className="absolute right-2 top-2 z-10 inline-flex size-7 items-center justify-center rounded-full border border-white/15 bg-white/[.06] text-white/75 transition-colors hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C4D638]"><X size={15} aria-hidden /></button>
+      <aside aria-label="Founderverse promotion" className="fixed bottom-[calc(12px_+_env(safe-area-inset-bottom))] left-1/2 z-[110] h-[244px] w-[min(370px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-[18px] border border-white/15 bg-[#10382D] p-3 text-white shadow-[0_18px_46px_rgba(7,24,17,.48)] animate-startup-popup sm:bottom-6 sm:left-auto sm:right-6 sm:h-[240px] sm:w-[370px] sm:translate-x-0 lg:h-[250px] lg:w-[400px]">
         <div className="flex h-full flex-col">
-          <p className="m-0 min-h-3 pr-8 text-[10px] font-bold uppercase tracking-[.2em] text-[#C4D638] sm:text-[11px]">FOUNDERVERSE</p>
-          <div className="mt-1.5 flex min-h-0 flex-1 items-center gap-2.5 sm:gap-3">
-            <div className="h-[108px] w-[70px] shrink-0 overflow-hidden rounded-[6px] border border-[#F7F7F2]/55 bg-[#f5f1e5] shadow-[0_7px_18px_rgba(0,0,0,.35)] max-[380px]:h-[100px] max-[380px]:w-[65px]">
+          <div className="flex min-h-3 items-center justify-between gap-2 pr-1">
+            <p className="m-0 text-[10px] font-bold uppercase tracking-[.2em] text-[#C4D638] sm:text-[11px]">FOUNDERVERSE</p>
+            <button type="button" onClick={dismissStartupPopup} className="text-[11px] font-medium text-white/60 underline decoration-white/30 underline-offset-2 transition-colors hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C4D638]">Maybe later</button>
+          </div>
+          <div className="mt-2 flex min-h-0 flex-1 items-center gap-2.5 sm:gap-3">
+            <div className="h-[150px] w-[98px] shrink-0 overflow-hidden rounded-[6px] border border-[#F7F7F2]/55 bg-[#f5f1e5] shadow-[0_7px_18px_rgba(0,0,0,.35)] max-[380px]:h-[138px] max-[380px]:w-[90px]">
               <img src="/book.png" alt="Understanding Your Customer, an illustrated Founderverse book" className="size-full object-cover" />
             </div>
-            <div className="min-w-0 flex-1 self-center">
-              <h2 className="m-0 line-clamp-3 text-[17px] font-bold leading-[1.07] tracking-[-.035em] text-white sm:text-[19px] lg:text-[20px]">Don't just build an idea. Build something people need.</h2>
-              <p className="m-0 mt-1.5 line-clamp-3 text-[12px] leading-[1.35] text-[#D5DFD8] sm:text-[13px]">Illustrated business books to help aspiring founders understand customers and take smarter next steps.</p>
+            <div className="flex min-w-0 flex-1 flex-col items-start gap-1.5">
+              <h2 className="m-0 line-clamp-3 text-[16px] font-bold leading-[1.08] tracking-[-.035em] text-white sm:text-[17px] lg:text-[18px]">Most founders quit for just 4 reasons. Which one's coming for you?</h2>
+              <p className="m-0 line-clamp-3 text-[11px] leading-[1.3] text-[#D5DFD8] sm:text-[12px]">Honest lessons from someone who's failed, rebuilt and still building.</p>
+              <Link to="/founderverse" onClick={dismissStartupPopup} className="group mt-0.5 flex min-h-[36px] w-full shrink-0 items-center justify-between rounded-[8px] bg-[#C4D638] px-3 text-[12px] font-bold text-[#10251b] no-underline shadow-[inset_0_1px_0_rgba(255,255,255,.55)] transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#d4e66a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:text-[13px]">
+                Find out →
+              </Link>
             </div>
           </div>
-          <Link to="/founderverse" onClick={dismissStartupPopup} className="group mt-2 flex h-[39px] shrink-0 items-center justify-between rounded-[8px] bg-[#C4D638] px-3.5 text-[13px] font-bold text-[#10251b] no-underline shadow-[inset_0_1px_0_rgba(255,255,255,.55)] transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#d4e66a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:text-[14px]">
-            Explore Founderverse ↗
-          </Link>
         </div>
       </aside>,
       document.body,
