@@ -4,42 +4,39 @@ import { ArrowLeft, ArrowUpRight, Briefcase, EnvelopeSimple, GraduationCap, Hand
 const openings = [
   {
     id: 'hiring',
-    number: '01',
     title: 'Join my team',
     eyebrow: 'Build with us',
     description: 'Bring sharp thinking, a bias for action, and care for the details. Tell us where you do your best work and how you could help us build.',
     note: 'Open to exceptional people across strategy, operations, growth, and creative work.',
     Icon: Briefcase,
     value: 'Join my team',
-    background: '#d9ee72',
-    foreground: '#202b20',
-    tag: '01 / THE TEAM',
+    background: '#d7f36a',
+    foreground: '#153b2b',
+    tag: 'THE TEAM',
   },
   {
     id: 'internships',
-    number: '02',
     title: 'Internships',
     eyebrow: 'Learn by doing',
     description: 'Get close to the work, take ownership of real projects, and learn how ideas become businesses. Curiosity and follow-through matter most.',
     note: 'Share what you’re studying, what you’re curious about, and when you’re available.',
     Icon: GraduationCap,
     value: 'Internship',
-    background: '#ffb79f',
-    foreground: '#321b18',
-    tag: '02 / THE START',
+    background: '#a9d744',
+    foreground: '#153b2b',
+    tag: 'THE START',
   },
   {
     id: 'co-founder',
-    number: '03',
     title: 'Become a co-founder',
     eyebrow: 'Make something matter',
     description: 'Have a point of view, complementary strengths, and the appetite to build for the long haul? Let’s explore what we could create together.',
     note: 'Tell us about the problem you want to solve and the part you want to play.',
     Icon: Handshake,
     value: 'Become a Co-Founder',
-    background: '#b9c9ff',
-    foreground: '#172342',
-    tag: '03 / THE BIG IDEA',
+    background: '#72c76a',
+    foreground: '#153b2b',
+    tag: 'THE BIG IDEA',
   },
 ]
 
@@ -95,13 +92,11 @@ export default function Opportunities() {
           <span className="pb-1 text-xs text-[#697064]">Choose a card to get started ↗</span>
         </div>
         <div className="grid gap-3 md:grid-cols-3">
-          {openings.map(({ id, number, title, description, Icon, value, background, foreground, tag }) => (
-            <article id={id} key={id} style={{ backgroundColor: background, color: foreground }} className="group relative isolate flex min-h-[285px] scroll-mt-28 flex-col overflow-hidden rounded-[24px] border border-black/5 p-5 shadow-[0_16px_34px_-28px_#18220d88] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_44px_-26px_#18220daa] sm:min-h-[310px] sm:p-7">
+          {openings.map(({ id, title, description, Icon, value, background, foreground, tag }) => (
+            <article id={id} key={id} style={{ backgroundColor: background, color: foreground }} className="group relative isolate flex min-h-[285px] scroll-mt-28 flex-col overflow-hidden rounded-[10px] border border-black/5 p-5 shadow-[0_16px_34px_-28px_#18220d88] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_44px_-26px_#18220daa] sm:min-h-[310px] sm:p-7">
               <span aria-hidden className="pointer-events-none absolute -right-12 -top-12 z-0 size-48 rounded-full border border-current/20 transition-transform duration-500 group-hover:scale-125" />
-              <span aria-hidden className="pointer-events-none absolute -bottom-12 -right-2 z-0 select-none text-[150px] font-black leading-none tracking-[-.1em] opacity-[.07]">{number}</span>
               <div className="relative z-10 flex items-center justify-between text-[10px] font-bold tracking-[.16em]"><span>{tag}</span><span className="grid size-10 place-items-center rounded-full border border-current/25"><Icon size={21} weight="light" aria-hidden /></span></div>
-              <span className="relative z-10 mt-7 text-[10px] font-semibold uppercase tracking-[.15em] opacity-60">{number} / 03</span>
-              <h3 className="relative z-10 mt-1 text-[clamp(25px,3vw,34px)] font-semibold leading-[1.02] tracking-[-.045em]">{title}</h3>
+              <h3 className="relative z-10 mt-8 text-[clamp(25px,3vw,34px)] font-semibold leading-[1.02] tracking-[-.045em]">{title}</h3>
               <p className="relative z-10 mt-3 max-w-[34ch] text-xs leading-5 opacity-75">{description}</p>
               <button type="button" onClick={() => chooseRole(value)} className="relative z-10 mt-auto inline-flex min-h-11 items-center gap-2 self-start pt-4 text-sm font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current">Apply <ArrowUpRight size={17} aria-hidden /></button>
             </article>

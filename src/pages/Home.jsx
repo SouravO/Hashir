@@ -526,16 +526,38 @@ function Positioning() {
 
 export default function Home() {
   const [ready, setReady] = useState(calm)
+  const [heroInView, setHeroInView] = useState(false)
   const [showStartupPopup, setShowStartupPopup] = useState(false)
   useEffect(() => {
     document.title = 'Hashir Usman | Startup Architect, Venture Builder & Business Consultant'
     const frame = requestAnimationFrame(() => setReady(true))
-    const popupTimer = window.setTimeout(() => setShowStartupPopup(true), 1800)
     return () => {
       cancelAnimationFrame(frame)
-      window.clearTimeout(popupTimer)
     }
   }, [])
+  useEffect(() => {
+    const hero = document.getElementById('home')
+    if (!hero) return undefined
+    if (!('IntersectionObserver' in window)) {
+      setHeroInView(true)
+      return undefined
+    }
+    const observer = new IntersectionObserver(([entry]) => setHeroInView(entry.isIntersecting), { threshold: 0.1 })
+    observer.observe(hero)
+    return () => observer.disconnect()
+  }, [])
+  useEffect(() => {
+    if (!heroInView) return undefined
+    let dismissed = false
+    try { dismissed = window.sessionStorage.getItem('founderverse-promo-dismissed-static-v3') === '1' } catch { /* Storage may be unavailable. */ }
+    if (dismissed) return undefined
+    const popupTimer = window.setTimeout(() => setShowStartupPopup(true), 2000)
+    return () => window.clearTimeout(popupTimer)
+  }, [heroInView])
+  const dismissStartupPopup = () => {
+    try { window.sessionStorage.setItem('founderverse-promo-dismissed-static-v3', '1') } catch { /* Dismiss for this page view if Storage is unavailable. */ }
+    setShowStartupPopup(false)
+  }
   const line = (d) => ({ strokeDashoffset: ready ? 0 : 1, transition: `stroke-dashoffset 850ms ${EASE} ${d}ms` })
 
   return (
@@ -614,22 +636,24 @@ export default function Home() {
       {/* 6. Strategy calls & numbers */}
       <Conversation />
     </main>
-    {showStartupPopup && createPortal(
-      <aside aria-label="Explore Founderverse" className="fixed bottom-5 right-4 z-[110] w-[min(380px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-[#c5a65e]/70 bg-[linear-gradient(135deg,#1c4936_0%,#10251b_100%)] p-3 text-white shadow-[0_18px_46px_#10131065] animate-startup-popup sm:bottom-6 sm:right-6 sm:p-4">
-        <button type="button" onClick={() => setShowStartupPopup(false)} aria-label="Close Founderverse promotion" className="absolute right-2 top-2 z-10 inline-flex size-8 items-center justify-center rounded-full border border-white/15 bg-black/20 text-white/80 transition-colors hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4e77d]"><X size={16} aria-hidden /></button>
-        <div className="flex items-center gap-3">
-          <div className="shrink-0 rounded-lg border border-[#d5bb72]/55 bg-[#f4f0df] p-1 shadow-[0_5px_16px_#0005]">
-            <img src="/book.png" alt="Startup guide book cover" className="h-[82px] w-[58px] rounded-[4px] object-cover sm:h-[92px] sm:w-[66px]" />
+    {showStartupPopup && heroInView && createPortal(
+      <aside aria-label="Founderverse promotion" className="fixed bottom-[calc(12px_+_env(safe-area-inset-bottom))] left-1/2 z-[110] h-[220px] w-[min(370px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-[18px] border border-white/15 bg-[#10382D] p-3 text-white shadow-[0_18px_46px_rgba(7,24,17,.48)] animate-startup-popup sm:bottom-6 sm:left-auto sm:right-6 sm:h-[220px] sm:w-[370px] sm:translate-x-0 lg:h-[235px] lg:w-[400px]">
+        <button type="button" onClick={dismissStartupPopup} aria-label="Close Founderverse promotion" className="absolute right-2 top-2 z-10 inline-flex size-7 items-center justify-center rounded-full border border-white/15 bg-white/[.06] text-white/75 transition-colors hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C4D638]"><X size={15} aria-hidden /></button>
+        <div className="flex h-full flex-col">
+          <p className="m-0 min-h-3 pr-8 text-[10px] font-bold uppercase tracking-[.2em] text-[#C4D638] sm:text-[11px]">FOUNDERVERSE</p>
+          <div className="mt-1.5 flex min-h-0 flex-1 items-center gap-2.5 sm:gap-3">
+            <div className="h-[108px] w-[70px] shrink-0 overflow-hidden rounded-[6px] border border-[#F7F7F2]/55 bg-[#f5f1e5] shadow-[0_7px_18px_rgba(0,0,0,.35)] max-[380px]:h-[100px] max-[380px]:w-[65px]">
+              <img src="/book.png" alt="Understanding Your Customer, an illustrated Founderverse book" className="size-full object-cover" />
+            </div>
+            <div className="min-w-0 flex-1 self-center">
+              <h2 className="m-0 line-clamp-3 text-[17px] font-bold leading-[1.07] tracking-[-.035em] text-white sm:text-[19px] lg:text-[20px]">Don't just build an idea. Build something people need.</h2>
+              <p className="m-0 mt-1.5 line-clamp-3 text-[12px] leading-[1.35] text-[#D5DFD8] sm:text-[13px]">Illustrated business books to help aspiring founders understand customers and take smarter next steps.</p>
+            </div>
           </div>
-          <div className="min-w-0 flex-1 pr-6">
-            <p className="m-0 text-[9px] font-bold uppercase tracking-[.18em] text-[#d5bb72]">Got an idea worth building?</p>
-            <h2 className="m-0 mt-1.5 text-[19px] font-bold leading-tight tracking-[-.035em] sm:text-[22px]">Make your next move count.</h2>
-            <p className="m-0 mt-1.5 text-[11px] leading-[1.45] text-white/75 sm:text-xs">Explore the playbooks for testing ideas, winning customers, and building a business that lasts.</p>
-          </div>
+          <Link to="/founderverse" onClick={dismissStartupPopup} className="group mt-2 flex h-[39px] shrink-0 items-center justify-between rounded-[8px] bg-[#C4D638] px-3.5 text-[13px] font-bold text-[#10251b] no-underline shadow-[inset_0_1px_0_rgba(255,255,255,.55)] transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-[#d4e66a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:text-[14px]">
+            Explore Founderverse ↗
+          </Link>
         </div>
-        <Link to="/founderverse" onClick={() => setShowStartupPopup(false)} className="mt-3 flex min-h-10 items-center justify-between rounded-lg border border-[#e2c878]/70 bg-[#c3d646] px-3.5 text-xs font-bold text-[#172218] no-underline shadow-[inset_0_1px_0_#ffffff80] transition-[background-color,transform] hover:-translate-y-px hover:bg-[#d3e66b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-          Discover Founderverse <Arrow />
-        </Link>
       </aside>,
       document.body,
     )}
