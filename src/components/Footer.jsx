@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, EnvelopeSimple, InstagramLogo, LinkedinLogo, MapPin, Phone, XLogo, YoutubeLogo } from '@phosphor-icons/react'
+import { ArrowUpRight, EnvelopeSimple, InstagramLogo, LinkedinLogo, MapPin, Phone, WhatsappLogo, XLogo, YoutubeLogo } from '@phosphor-icons/react'
 
 const email = 'connect@hashirusman.online'
 const groups = [
@@ -44,6 +44,7 @@ export default function Footer() {
             <h2 id="footer-contact-title" className="mb-5 text-xs font-bold uppercase tracking-[.16em] text-[#a4be2d]">Get in touch</h2>
             <address className="flex flex-col gap-3.5 not-italic text-base sm:text-[17px]">
               <a className="flex items-center gap-3 font-light text-[#e3e8df] no-underline transition-colors hover:text-[#c5d96a]" href="tel:+917789800898"><Phone size={19} weight="light" className="shrink-0 text-[#a4be2d]" aria-hidden /><span>+91 77 898 00 898</span></a>
+              <a className="flex items-center gap-3 font-light text-[#e3e8df] no-underline transition-colors hover:text-[#c5d96a]" href="https://wa.me/919633442126" target="_blank" rel="noreferrer"><WhatsappLogo size={19} weight="light" className="shrink-0 text-[#a4be2d]" aria-hidden /><span>WhatsApp +91 96334 42126</span></a>
               <a className="flex items-center gap-3 break-all font-light text-[#e3e8df] no-underline transition-colors hover:text-[#c5d96a]" href={`mailto:${email}`}><EnvelopeSimple size={19} weight="light" className="shrink-0 text-[#a4be2d]" aria-hidden /><span className="border-b border-[#e3e8df]/70 pb-0.5">{email}</span></a>
               <span className="flex items-center gap-3 font-light text-[#e3e8df]"><MapPin size={19} weight="light" className="shrink-0 text-[#a4be2d]" aria-hidden /><span>Bengaluru, India</span></span>
             </address>

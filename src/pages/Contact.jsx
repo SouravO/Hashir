@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { ArrowUpRight, CaretDown, EnvelopeSimple, Lightbulb, LinkedinLogo, MapPin, Phone, UserCircle } from '@phosphor-icons/react'
+import { ArrowUpRight, CaretDown, EnvelopeSimple, Lightbulb, LinkedinLogo, MapPin, Phone, UserCircle, WhatsappLogo } from '@phosphor-icons/react'
 
 const reveal = 'opacity-0 translate-y-5 transition-all duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:opacity-100 motion-reduce:translate-y-0'
 
@@ -199,6 +199,7 @@ export default function Contact() {
           <div className="flex flex-col">
             <a href="mailto:connect@hashirusman.online" className={linkClass}><span className={iconClass}><EnvelopeSimple size={20} weight="light" aria-hidden /></span><span className="min-w-0"><span className="mb-1 block text-[10px] font-semibold uppercase tracking-[.18em] text-[#9eac99]">Email</span><span className="block break-all text-sm font-medium">connect@hashirusman.online</span></span><ArrowUpRight size={16} className={arrowClass} aria-hidden /></a>
             <a href="tel:+917789800898" className={linkClass}><span className={iconClass}><Phone size={20} weight="light" aria-hidden /></span><span><span className="mb-1 block text-[10px] font-semibold uppercase tracking-[.18em] text-[#9eac99]">Phone</span><span className="block text-sm font-medium">+91 77 898 00 898</span></span><ArrowUpRight size={16} className={arrowClass} aria-hidden /></a>
+            <a href="https://wa.me/919633442126" target="_blank" rel="noreferrer" className={linkClass}><span className={iconClass}><WhatsappLogo size={20} weight="light" aria-hidden /></span><span><span className="mb-1 block text-[10px] font-semibold uppercase tracking-[.18em] text-[#9eac99]">WhatsApp</span><span className="block text-sm font-medium">+91 96334 42126</span></span><ArrowUpRight size={16} className={arrowClass} aria-hidden /></a>
             <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" className={linkClass}><span className={iconClass}><LinkedinLogo size={20} weight="light" aria-hidden /></span><span><span className="mb-1 block text-[10px] font-semibold uppercase tracking-[.18em] text-[#9eac99]">LinkedIn</span><span className="block text-sm font-medium">Connect on LinkedIn</span></span><ArrowUpRight size={16} className={arrowClass} aria-hidden /></a>
           </div>
           <div className="mt-auto pt-10"><div className="h-px bg-[#465243]" /><p className="mt-5 flex items-center gap-2 text-sm text-[#b8c4b4]"><MapPin size={17} weight="light" className="text-[#a4be2d]" aria-hidden /> Bengaluru, India<span className="relative ml-auto flex size-2.5" aria-hidden><span className="absolute inline-flex size-full animate-ping rounded-full bg-[#a4be2d] opacity-60" /><span className="relative inline-flex size-2.5 rounded-full bg-[#a4be2d]" /></span></p></div>

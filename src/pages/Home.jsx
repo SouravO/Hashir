@@ -54,7 +54,7 @@ const heroSocials = [
   { label: 'Instagram', href: 'https://www.instagram.com/hashir_usman__?psln=Zmg0YnZyM29sdWsx', Icon: InstagramLogo },
   { label: 'YouTube', href: 'https://www.youtube.com/', Icon: YoutubeLogo },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/', Icon: LinkedinLogo },
-  { label: 'WhatsApp', href: 'https://www.whatsapp.com/', Icon: WhatsappLogo },
+  { label: 'WhatsApp', href: 'https://wa.me/919633442126', Icon: WhatsappLogo },
 ]
 
 function useInView(margin = '0px 0px 280px 0px') {
