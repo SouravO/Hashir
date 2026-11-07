@@ -51,7 +51,7 @@ const h2cls = 'text-[clamp(34px,5vw,66px)] font-extrabold leading-[1.02] trackin
 const dotted = '[background-image:radial-gradient(#d5e48145_.8px,transparent_1px)] [background-size:12px_12px]'
 const heroSocials = [
   { label: 'Facebook', href: 'https://www.facebook.com/', Icon: FacebookLogo },
-  { label: 'Instagram', href: 'https://www.instagram.com/', Icon: InstagramLogo },
+  { label: 'Instagram', href: 'https://www.instagram.com/hashir_usman__?psln=Zmg0YnZyM29sdWsx', Icon: InstagramLogo },
   { label: 'YouTube', href: 'https://www.youtube.com/', Icon: YoutubeLogo },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/', Icon: LinkedinLogo },
   { label: 'WhatsApp', href: 'https://www.whatsapp.com/', Icon: WhatsappLogo },
@@ -133,51 +133,71 @@ function CountUp({ to, suffix = '' }) {
 
 const Arrow = () => <ArrowUpRight size={18} aria-hidden className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
 
-function Framework() {
-  const [active, setActive] = useState(0)
-  const refs = useRef([])
+/* ---------- Framework: four stages ----------
+   Desktop (lg and up): a single row of four cards hanging from a horizontal progress line that fills lime as you scroll.
+   Tablet and phone: the same four cards stacked and centered, each sliding in from the left, right, left, right as it scrolls into view.
+   Reduced-motion visitors get everything in place straight away. */
+function StageReveal({ from, className = '', children }) {
+  const [ref, seen] = useInView('0px 0px -12% 0px')
+  const off = from === 'left' ? '-56px' : '56px'
+  return (
+    <li ref={ref} className={className} style={{ opacity: seen ? 1 : 0, transform: seen ? 'none' : `translateX(${off})`, transition: `opacity 700ms ${EASE}, transform 700ms ${EASE}` }}>
+      {children}
+    </li>
+  )
+}
 
-  useEffect(() => {
-    let raf = 0
-    const run = () => {
-      raf = 0
-      const line = window.innerHeight * 0.5
-      const tops = refs.current.map((el) => (el ? el.getBoundingClientRect().top + 24 : 0))
-      let idx = 0
-      for (let i = tops.length - 1; i >= 0; i -= 1) {
-        if (line >= tops[i]) { idx = i; break }
-      }
-      setActive(idx)
-    }
-    const queue = () => { if (!raf) raf = requestAnimationFrame(run) }
-    queue()
-    window.addEventListener('scroll', queue, { passive: true })
-    window.addEventListener('resize', queue)
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('scroll', queue); window.removeEventListener('resize', queue) }
-  }, [])
+function StageCard({ name, desc, out, reached }) {
+  return (
+    <div className={`flex flex-1 flex-col rounded-[22px] border bg-gradient-to-br from-white via-white to-[#f1f5e8] p-6 text-[#171a17] transition-[border-color,box-shadow] duration-500 sm:p-7 ${reached ? 'border-[#a4be2d] shadow-[0_20px_50px_rgba(0,0,0,.22)]' : 'border-[#cdd9b2] shadow-[0_16px_44px_rgba(0,0,0,.12)]'}`}>
+      <span aria-hidden className="mb-5 block h-1 w-10 rounded-full bg-[#a4be2d]" />
+      <h3 className="m-0 text-[clamp(28px,7.5vw,38px)] font-extrabold leading-[1.05] tracking-[-.04em] lg:text-[clamp(26px,2.3vw,34px)]">{name}</h3>
+      <p className="mb-0 mt-3 text-[15px] leading-[1.6] text-[#4a4f47]">{desc}</p>
+      <div className="mt-auto pt-6">
+        <p className="m-0 rounded-xl bg-[#eaf0d3] px-4 py-3 text-[13.5px] font-semibold leading-[1.5] text-[#4f5f10]">{out}</p>
+      </div>
+    </div>
+  )
+}
+
+function Framework() {
+  const [roadRef, p] = useScrollProgress()
+  const step = p * (stages.length - 1)
 
   return (
-    <section id="framework" className="bg-[#173b2b] pb-24 pt-8 text-[#f8f9f6] sm:pb-28 sm:pt-16" aria-labelledby="framework-title">
+    <section id="framework" className="relative isolate overflow-hidden bg-[#173b2b] pb-24 pt-8 text-[#f8f9f6] sm:pb-28 sm:pt-16" aria-labelledby="framework-title">
+      <span aria-hidden className="pointer-events-none absolute -right-20 -top-20 -z-10 size-64 rounded-full bg-[#1c4833] sm:size-96 lg:-right-24 lg:-top-24 lg:size-[26rem]" />
+      <span aria-hidden className="pointer-events-none absolute -right-40 -top-40 -z-10 hidden size-[40rem] rounded-full border border-[#a4be2d]/10 sm:block" />
       <div className={wrap}>
         <header className="mb-12 max-w-3xl sm:mb-16">
           <Reveal className="mb-5 flex items-center gap-3 text-[13px] font-semibold text-[#d6e88a] before:h-px before:w-8 before:bg-[#a4be2d]">From idea to actual business</Reveal>
           <Heading id="framework-title" lines={['That idea in your head?', 'Give it somewhere to go.']} className={h2cls} />
         </header>
-        <ol className="relative grid items-start gap-5 lg:grid-cols-12 lg:gap-y-3">
-          <svg aria-hidden className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full overflow-visible lg:block" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <path d="M41.7 12 C48 16 52 31 58.3 37 S48 56 41.7 62 S52 81 58.3 88" fill="none" stroke="#a4be2d" strokeOpacity=".55" strokeWidth="1.4" strokeDasharray="3 5" vectorEffect="non-scaling-stroke" />
-            {[[41.7, 12], [58.3, 37], [41.7, 62], [58.3, 88]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r=".55" fill="#a4be2d" />)}
-          </svg>
+
+        {/* tablet + phone: alternating cards that slide in from the sides */}
+        <ol className="m-0 flex list-none flex-col gap-5 p-0 lg:hidden">
+          {stages.map(([name, desc, out], i) => (
+            <StageReveal key={name} from={i % 2 === 0 ? 'left' : 'right'} className="mx-auto flex w-full flex-col md:max-w-[560px]">
+              <StageCard name={name} desc={desc} out={out} reached />
+            </StageReveal>
+          ))}
+        </ol>
+
+        {/* desktop: four cards on a progress line */}
+        <ol ref={roadRef} className="relative m-0 hidden list-none grid-cols-4 gap-5 p-0 lg:grid">
           {stages.map(([name, desc, out], i) => {
-            const reached = active >= i
+            const reached = step >= i
+            const fill = Math.min(1, Math.max(0, step - i))
+            const last = i === stages.length - 1
             return (
-              <li key={name} ref={(el) => { refs.current[i] = el }} className={`relative z-10 self-start rounded-[22px] border bg-gradient-to-br from-white via-white to-[#f1f5e8] p-6 text-[#171a17] shadow-[0_16px_44px_rgba(0,0,0,.12)] transition-[border-color,box-shadow,background-color] duration-500 sm:p-7 lg:col-span-5 ${i === 0 ? 'lg:col-start-1 lg:row-start-1' : i === 1 ? 'lg:col-start-8 lg:row-start-2' : i === 2 ? 'lg:col-start-1 lg:row-start-3' : 'lg:col-start-8 lg:row-start-4'} ${reached ? 'border-[#a4be2d] shadow-[0_20px_50px_rgba(0,0,0,.2)]' : 'border-[#cdd9b2]'}`}>
-                <span aria-hidden className="mb-5 block h-1 w-10 rounded-full bg-[#a4be2d]" />
-                <h3 className="m-0 text-[clamp(32px,4vw,54px)] font-extrabold leading-none tracking-[-.045em]">{name}</h3>
-                <p className="mb-0 mt-4 max-w-[460px] text-base leading-[1.6] text-[#4a4f47] sm:text-lg">{desc}</p>
-                <div className="mt-5 border-t border-[#cbd5b2] pt-4">
-                  <p className="m-0 text-sm font-semibold leading-[1.55] text-[#617319]">{out}</p>
-                </div>
+              <li key={name} className="relative flex flex-col pt-9">
+                {!last && (
+                  <span aria-hidden className="absolute left-0 top-0 h-px w-[calc(100%+1.25rem)] bg-white/20">
+                    <span className="block h-full w-full origin-left bg-[#a4be2d] transition-transform duration-300 ease-out motion-reduce:transition-none" style={{ transform: `scaleX(${fill})` }} />
+                  </span>
+                )}
+                <span aria-hidden className={`absolute left-0 top-0 block size-[11px] -translate-y-1/2 rounded-full border transition-colors duration-300 ${reached ? 'border-[#a4be2d] bg-[#a4be2d]' : 'border-white/30 bg-[#173b2b]'}`} />
+                <StageCard name={name} desc={desc} out={out} reached={reached} />
               </li>
             )
           })}
@@ -306,23 +326,31 @@ function Portfolio() {
     </section>
   )
 }
+
+/* ---------- Core expertise cards ----------
+   Four compact panels in a checkerboard of warm white and deep green (the green ties into the Framework section below).
+   Each panel: a round icon beside the copy (stacked on phones), a soft lime circle tucked into the top-right corner,
+   a hairline above the tags, and a very small lift on hover. */
 const EXPERTISE_ICONS = [SquaresFour, Compass, ChartLineUp, Gear]
 
 function TechCard({ e, i }) {
   const Icon = EXPERTISE_ICONS[i]
+  const dark = i === 1 || i === 2
   return (
-    <article className="group flex h-full min-h-[320px] flex-col rounded-[22px] border border-white/10 bg-[#171a1b] p-7 transition-colors duration-300 hover:border-[#a4be2d]/45 hover:bg-[#1c211d] sm:min-h-[340px] sm:p-9">
-      <div className="flex items-start justify-between">
-        <span className="grid size-14 place-items-center rounded-2xl bg-[#a4be2d]/10 text-[#b8d23c]">
-          <Icon size={30} weight="light" aria-hidden />
-        </span>
-        <span className="grid size-9 place-items-center rounded-full border border-white/15 text-xs font-semibold tabular-nums text-[#a4be2d]">0{i + 1}</span>
-      </div>
-      <div className="mt-auto pt-9">
-        <h3 className="text-[clamp(24px,2.4vw,34px)] font-bold leading-[1.1] tracking-[-.035em] text-white">{e.title}</h3>
-        <p className="mt-3 max-w-[44ch] text-[15px] leading-[1.65] text-[#b7beb0]">{e.desc}</p>
-        <ul className="mt-6 flex flex-wrap gap-2 border-t border-white/10 pt-5 text-[11px]">
-          {e.tags.map((tag) => <li key={tag} className="rounded-full border border-white/15 px-3 py-1.5 text-[#d2d8cb]">{tag}</li>)}
+    <article
+      className={`group relative isolate flex h-full flex-col gap-5 overflow-hidden rounded-[20px] border p-6 transition-[transform,box-shadow] duration-500 ease-out hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0 sm:flex-row sm:gap-6 sm:p-7 ${dark ? 'border-[#2c5642] bg-gradient-to-br from-[#1b4733] to-[#122f22] text-white shadow-[0_18px_40px_-26px_rgba(16,40,28,.7)] hover:shadow-[0_24px_48px_-26px_rgba(16,40,28,.8)]' : 'border-[#d9e0c6] bg-gradient-to-br from-white via-white to-[#f1f5e6] text-[#171a17] shadow-[0_18px_40px_-28px_rgba(40,52,20,.35)] hover:shadow-[0_24px_48px_-28px_rgba(40,52,20,.45)]'}`}
+    >
+      <span aria-hidden className={`pointer-events-none absolute -right-10 -top-10 -z-10 size-32 rounded-full transition-transform duration-700 ease-out group-hover:scale-125 motion-reduce:transition-none sm:size-36 ${dark ? 'bg-[#a4be2d]/10' : 'bg-[#a4be2d]/20'}`} />
+
+      <span className={`grid size-12 shrink-0 place-items-center rounded-full border transition-colors duration-300 ${dark ? 'border-[#a4be2d]/45 text-[#c8e24a] group-hover:bg-[#a4be2d] group-hover:text-[#173b2b]' : 'border-[#173b2b]/20 text-[#173b2b] group-hover:bg-[#173b2b] group-hover:text-[#c8e24a]'}`}>
+        <Icon size={24} weight="light" aria-hidden />
+      </span>
+
+      <div className="min-w-0 flex-1">
+        <h3 className="text-[clamp(22px,2vw,28px)] font-bold leading-[1.1] tracking-[-.03em]">{e.title}</h3>
+        <p className={`mt-2 max-w-[44ch] text-[15px] leading-[1.6] ${dark ? 'text-[#bccbb9]' : 'text-[#4a4f47]'}`}>{e.desc}</p>
+        <ul className={`mt-4 flex flex-wrap gap-1.5 border-t pt-4 text-[11.5px] ${dark ? 'border-white/15' : 'border-[#d9e0c6]'}`}>
+          {e.tags.map((tag) => <li key={tag} className={`rounded-full border px-3 py-1 ${dark ? 'border-white/20 text-[#dbe5d3]' : 'border-[#cdd7b4] bg-white/60 text-[#3a4136]'}`}>{tag}</li>)}
         </ul>
       </div>
     </article>
@@ -617,7 +645,7 @@ export default function Home() {
             </div>
             <Reveal delay={200} className="lg:col-span-4"><p className="max-w-[380px] text-[15px] leading-[1.65] text-[#72766f]">From that first crazy idea to a business that’s ready for its next big move.</p></Reveal>
           </header>
-          <div className="grid gap-4 md:grid-cols-2 lg:gap-6">
+          <div className="grid gap-4 md:grid-cols-2 lg:gap-5">
             {expertise.map((item, index) => (
               <Reveal key={item.title} delay={(index % 2) * 100} className="h-full">
                 <TechCard e={item} i={index} />

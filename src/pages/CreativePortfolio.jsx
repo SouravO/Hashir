@@ -91,19 +91,20 @@ const WORK_GALLERIES = {
   dayone: [
     ['davone.png', 'DayOne brand logo', '/ventures/davone.png'],
     ['dayoneinsta.png', 'DayOne Instagram profile'],
-    ['dayonepost1.png', 'DayOne Instagram post'],
-    ['dayonepost2.png', 'DayOne Instagram post'],
-    ['instagrampost3.png', 'DayOne Instagram post'],
+    ['dayonepost1.png', 'DayOne Instagram post 1'],
+    ['dayonepost2.png', 'DayOne Instagram post 2'],
+    ['instagrampost3.png', 'DayOne Instagram post 3'],
     ['dayone-crm.png', 'DayOne CRM dashboard'],
+    ['dayone-monthly-performance.png', 'DayOne monthly performance'],
   ],
   'moon-bliss': [
-    ['moonbliss-post.png', 'MoonBliss social post'],
-    ['moonbliss-post2.png', 'MoonBliss social post'],
+    ['moonbliss-post.png', 'MoonBliss social post 1'],
+    ['moonbliss-post2.png', 'MoonBliss social post 2'],
     ['moonbliss-reels.png', 'MoonBliss content'],
   ],
   zaati: [
-    ['zaati-insta.png', 'Zaati Instagram post'],
-    ['zaati-insta-posts.png', 'Zaati Instagram posts'],
+    ['zaati-insta.png', 'Zaati Instagram post 1'],
+    ['zaati-insta-posts.png', 'Zaati Instagram posts 2'],
   ],
   'shameers-cars': [
     ['shameers-reels.png', "Shameer's Cars content"],
@@ -113,7 +114,7 @@ const WORK_GALLERIES = {
     ['aisenstudio-insta-prof.png', 'Aisen Studio Instagram profile'],
   ],
   'ai-institute': [
-    ['aiinstitute-insta-posts.png', 'AI Institute Instagram post'],
+    ['aiinstitute-insta-posts.png', 'AI Institute Instagram posts'],
   ],
 }
 
@@ -232,20 +233,33 @@ function DeferredInstagramEmbed({ src, title, thumbnail }) {
 
 function SocialAssetGrid({ items }) {
   const hasBareLogicLogo = items.some(([file, , src]) => file === 'barelogic.png' && src === '/ventures/barelogic.png')
+  const sections = [
+    { title: 'Brand identity', items: items.filter(([file, , src]) => Boolean(src) || (file === 'carzo.jpeg')) },
+    { title: 'CRM & business systems', items: items.filter(([file]) => /crm|dashboard|performance|analytics|report/i.test(file)) },
+    { title: 'Social media', items: items.filter(([file, , src]) => !src && file !== 'carzo.jpeg' && !/crm|dashboard|performance|analytics|report/i.test(file)) },
+  ].filter(({ items: sectionItems }) => sectionItems.length)
+
   return (
-    <div
-      className="grid items-start gap-3"
-      style={{ gridTemplateColumns: `repeat(auto-fill, minmax(min(100%, 150px), ${hasBareLogicLogo ? 250 : 190}px))` }}
-    >
-      {items.map(([file, label, src]) => (
-        <figure key={file} className={`m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414] ${file === 'dayone-crm.png' ? 'col-span-2 max-[500px]:col-span-1' : ''}`}>
-          <div className={`grid ${file === 'dayone-crm.png' ? 'aspect-video' : hasBareLogicLogo && file === 'barelogic.png' ? 'aspect-square' : 'aspect-[4/5]'} place-items-center overflow-hidden bg-[#f3f0eb]`}>
-            <img src={src || `/social-media/${file}`} alt={label} loading="lazy" decoding="async" className={`block h-full w-full object-contain ${hasBareLogicLogo && file === 'barelogic.png' ? 'scale-[1.65]' : ''}`} />
+    <div className="flex flex-col gap-5">
+      {sections.map(({ title, items: sectionItems }) => (
+        <section key={title} aria-label={title} className="flex flex-col gap-2">
+          <h5 className="m-0 text-[0.72rem] font-black uppercase tracking-[0.08em] text-[#5b5b5b]">{title}</h5>
+          <div
+            className="grid items-start gap-3"
+            style={{ gridTemplateColumns: `repeat(auto-fill, minmax(min(100%, 150px), ${hasBareLogicLogo ? 250 : 190}px))` }}
+          >
+            {sectionItems.map(([file, label, src]) => (
+              <figure key={file} className={`m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414] ${['dayone-crm.png', 'dayone-monthly-performance.png'].includes(file) ? 'col-span-2 max-[500px]:col-span-1' : ''}`}>
+                <div className={`grid ${['dayone-crm.png', 'dayone-monthly-performance.png'].includes(file) ? 'aspect-video' : hasBareLogicLogo && file === 'barelogic.png' ? 'aspect-square' : 'aspect-[4/5]'} place-items-center overflow-hidden bg-[#f3f0eb]`}>
+                  <img src={src || `/social-media/${file}`} alt={label} loading="lazy" decoding="async" className={`block h-full w-full object-contain ${hasBareLogicLogo && file === 'barelogic.png' ? 'scale-[1.65]' : ''}`} />
+                </div>
+                {!/instagram|social post|social posts/i.test(label) && (
+                  <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
+                )}
+              </figure>
+            ))}
           </div>
-          {file !== 'dayone-crm.png' && !/instagram|social post/i.test(label) && (
-            <figcaption className="border-t-2 border-[#141414] px-2 py-1.5 text-[0.7rem] font-bold leading-tight">{label}</figcaption>
-          )}
-        </figure>
+        </section>
       ))}
     </div>
   )
@@ -1343,12 +1357,12 @@ export default function CreativePortfolio() {
           )}
           {workVideos.length > 0 && (
             <section aria-label={`${c.name} videos`} className="flex flex-col gap-3">
-              <h4 className="text-[0.9rem] font-black uppercase">Videos</h4>
+              <h4 className="text-[0.9rem] font-black uppercase">Reels &amp; video</h4>
               <div className="grid items-start gap-3" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 150px), 190px))' }}>
                 {workVideos.map(({ src, title, thumbnail }) => (
-                  <div key={src} className="min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
+                  <figure key={src} className="m-0 min-w-0 overflow-hidden rounded-lg border-2 border-[#141414] bg-white shadow-[2px_2px_0_#141414]">
                     <DeferredInstagramEmbed src={src} title={title} thumbnail={thumbnail} />
-                  </div>
+                  </figure>
                 ))}
               </div>
             </section>

@@ -52,7 +52,7 @@ export default function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/admin" element={<Admin />} />
-              <Route path="/portfolio" element={<Navigate to="/ventures" replace />} />
+              <Route path="/portfolio" element={<CreativePortfolio />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>

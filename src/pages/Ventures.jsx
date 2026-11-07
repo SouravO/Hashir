@@ -120,12 +120,12 @@ function Chars({ as: Tag = 'div', text, delay = 0, className = '', ...rest }) {
   )
 }
 
-function Cover({ crop, tone = 'natural', on = true, priority = false, alt = '', image = VENTURE_IMAGE, className = '', mobileHeader = false, children }) {
+function Cover({ crop, tone = 'natural', on = true, priority = false, alt = '', image = VENTURE_IMAGE, className = '', mobileHeader = false, fit = 'cover', children }) {
   const { pos, zoom = 1, tx = 0, ty = 0 } = crop
   const priorityProps = priority ? { [FETCH_PRIORITY_PROP]: 'high' } : {}
   return (
-    <div className={`${mobileHeader ? 'absolute inset-x-0 top-0 h-[210px] lg:inset-0 lg:h-auto' : 'absolute inset-0'} overflow-hidden bg-[#153B2B] ${className}`}>
-      <div className={`size-full transition-transform duration-[1400ms] ${ease} motion-reduce:transition-none`} style={{ transform: `translate(${tx}%,${ty}%) scale(${zoom})` }}>
+    <div className={`${mobileHeader ? 'absolute inset-x-0 top-0 h-[210px] lg:inset-0 lg:h-auto' : 'absolute inset-0'} overflow-hidden ${fit === 'contain' ? 'bg-[#F2F3EF]' : 'bg-[#153B2B]'} ${className}`}>
+      <div className={`size-full transition-transform duration-[1400ms] ${ease} motion-reduce:transition-none`} style={{ transform: fit === 'contain' ? 'none' : `translate(${tx}%,${ty}%) scale(${zoom})` }}>
         <img
           src={image}
           alt={alt}
@@ -135,10 +135,10 @@ function Cover({ crop, tone = 'natural', on = true, priority = false, alt = '', 
           draggable={false}
           onError={(event) => { event.currentTarget.style.visibility = 'hidden' }}
           style={{ objectPosition: pos }}
-          className={`size-full object-cover transition-transform duration-[1800ms] ${ease} motion-reduce:transition-none ${TONES[tone].img} ${on ? 'scale-100' : 'scale-[1.12]'}`}
+          className={`size-full ${fit === 'contain' ? 'object-contain' : 'object-cover'} transition-transform duration-[1800ms] ${ease} motion-reduce:transition-none ${fit === 'contain' ? '' : TONES[tone].img} ${on || fit === 'contain' ? 'scale-100' : 'scale-[1.12]'}`}
         />
       </div>
-      <div aria-hidden className={`absolute inset-0 mix-blend-multiply ${TONES[tone].over}`} />
+      {fit !== 'contain' && <div aria-hidden className={`absolute inset-0 mix-blend-multiply ${TONES[tone].over}`} />}
       {children}
     </div>
   )
@@ -310,7 +310,6 @@ export default function Ventures() {
               <p className="m-0 mb-3 text-xs font-semibold text-[#a4be2d]">The collection</p>
               <Chars as="h2" id="collection-title" text="Here’s a little look around." className="text-[clamp(34px,5vw,72px)] font-extrabold leading-[.98] tracking-[-.055em]" />
             </div>
-              <p className="m-0 max-w-[38ch] text-[15px] leading-[1.7] text-[#b9c7b2] lg:col-span-4">{ventureBrands.length} startups and businesses. Filter by sector or open a row to see what I worked on.</p>
           </div>
           <Directory />
         </div>
@@ -345,7 +344,7 @@ export default function Ventures() {
                   </div>
                   <span aria-hidden className="absolute left-0 top-0 z-10 size-7 rounded-full bg-[#153B2B] lg:static lg:order-2 lg:mx-auto lg:size-12" />
                   <div className={`${right ? 'lg:order-1 lg:pr-10' : 'lg:order-3 lg:pl-10'}`}>
-                    <div className="relative aspect-[16/10] overflow-hidden rounded-[24px]"><Cover crop={item.crop} tone={item.tone} image={item.image} /></div>
+                    <div className="relative aspect-[16/9] overflow-hidden rounded-[24px] bg-[#F2F3EF]"><Cover crop={item.crop} tone={item.tone} image={item.image} fit="contain" /></div>
                   </div>
                 </li>
               )

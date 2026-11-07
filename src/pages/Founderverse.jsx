@@ -391,34 +391,28 @@ function Lit({ lines, className = '', ...rest }) {
   )
 }
 
-/* ---------- 2. Problem: two crossed bands, then four costs stacking up ---------- */
-// Drifts on its own, speeds up and reverses with page scroll, pauses on hover.
+/* ---------- 2. Problem: two quiet, slow moving question ribbons ---------- */
 function Marquee({ items, reverse = false, className = '' }) {
   const reduce = useReducedMotion()
   const x = useMotionValue(0)
-  const { scrollY } = useScroll()
-  const smooth = useSpring(useVelocity(scrollY), { damping: 50, stiffness: 400 })
-  const boost = useTransform(smooth, [0, 1000], [0, 5], { clamp: false })
   const hover = useRef(false)
   const base = reverse ? 1 : -1
   useAnimationFrame((_, delta) => {
     if (reduce || hover.current) return
-    const f = boost.get()
-    const dir = f < 0 ? -base : base
-    let v = x.get() + dir * 2.4 * (delta / 1000) * (1 + Math.abs(f))
+    let v = x.get() + base * 0.72 * (delta / 1000)
     if (v <= -50) v += 50
     if (v > 0) v -= 50
     x.set(v)
   })
   const xp = useTransform(x, (v) => `${v}%`)
   return (
-    <div className={`fv-marq overflow-hidden py-3 sm:py-4 ${className}`} onPointerEnter={() => { hover.current = true }} onPointerLeave={() => { hover.current = false }}>
+    <div className={`fv-marq relative overflow-hidden border-y border-[#C4D638]/20 bg-[linear-gradient(105deg,#10382D_0%,#174535_50%,#10382D_100%)] py-3.5 sm:py-4.5 ${className}`} onPointerEnter={() => { hover.current = true }} onPointerLeave={() => { hover.current = false }}>
       <motion.div style={{ x: xp }} className="flex w-max">
         {[0, 1].map((copy) => (
           <div key={copy} aria-hidden={copy === 1 ? true : undefined} className="flex shrink-0">
             {[...items, ...items].map((text, i) => (
-              <span key={`${copy}-${i}`} className="mr-6 inline-flex items-center gap-6 whitespace-nowrap text-[clamp(18px,2.4vw,32px)] font-bold tracking-[-.025em]">
-                {text}<span aria-hidden className="text-[.7em] text-[#C4D638]">✦</span>
+              <span key={`${copy}-${i}`} className="mr-8 inline-flex items-center gap-8 whitespace-nowrap text-[clamp(16px,2vw,25px)] font-semibold tracking-[-.02em] text-white/90 sm:mr-10 sm:gap-10">
+                {text}<span aria-hidden className="size-2 shrink-0 rounded-full bg-[#C4D638] shadow-[0_0_12px_#C4D63866]" />
               </span>
             ))}
           </div>
@@ -479,8 +473,8 @@ function Problem() {
   return (
     <Stage labelledby="problem-title" className="bg-gradient-to-b from-[#101310] via-[#101310] to-[#0e2018] pb-24 sm:pb-36">
       <div className="overflow-hidden py-14 sm:py-20" aria-label="Questions every founder has">
-        <Marquee items={questionRows[0]} className="border-y border-[#C4D638]/25 bg-[#153B2B] text-white" />
-        <Marquee items={questionRows[1]} reverse className="mt-2 border-b border-white/10 bg-[#10382D] text-white/90" />
+        <Marquee items={questionRows[0]} className="text-white" />
+        <Marquee items={questionRows[1]} reverse className="mt-3 text-white" />
       </div>
 
       <div className={`${wrap} pt-12 sm:pt-20`}>

@@ -9,7 +9,7 @@ const groups = [
 const socials = [
   { label: 'LinkedIn', href: 'https://www.linkedin.com/', Icon: LinkedinLogo },
   { label: 'X', href: 'https://x.com/', Icon: XLogo },
-  { label: 'Instagram', href: 'https://www.instagram.com/', Icon: InstagramLogo },
+  { label: 'Instagram', href: 'https://www.instagram.com/hashir_usman__?psln=Zmg0YnZyM29sdWsx', Icon: InstagramLogo },
   { label: 'YouTube', href: 'https://www.youtube.com/', Icon: YoutubeLogo },
 ]
 
