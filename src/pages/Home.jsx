@@ -664,7 +664,7 @@ export default function Home() {
       {/* 6. Strategy calls & numbers */}
       <Conversation />
     </main>
-    {showStartupPopup && heroInView && createPortal(
+    {showStartupPopup && createPortal(
       <aside aria-label="Founderverse promotion" className="fixed bottom-[calc(12px_+_env(safe-area-inset-bottom))] left-1/2 z-[110] h-[220px] w-[min(370px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-[18px] border border-white/15 bg-[#10382D] p-3 text-white shadow-[0_18px_46px_rgba(7,24,17,.48)] animate-startup-popup sm:bottom-6 sm:left-auto sm:right-6 sm:h-[220px] sm:w-[370px] sm:translate-x-0 lg:h-[235px] lg:w-[400px]">
         <button type="button" onClick={dismissStartupPopup} aria-label="Close Founderverse promotion" className="absolute right-2 top-2 z-10 inline-flex size-7 items-center justify-center rounded-full border border-white/15 bg-white/[.06] text-white/75 transition-colors hover:bg-white/15 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C4D638]"><X size={15} aria-hidden /></button>
         <div className="flex h-full flex-col">
