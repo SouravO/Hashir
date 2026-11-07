@@ -3,6 +3,7 @@ import { ArrowRight } from '@phosphor-icons/react'
 import { Link, useLocation } from 'react-router-dom'
 import { brands, groups } from '../data/brands'
 import BrandArtwork from '../components/BrandArtwork'
+import BlurText from '../components/BlurText'
 
 // One image for every placement. Swap this (or give a venture its own `image`) when real photos exist.
 const VENTURE_IMAGE = '/image.png'
@@ -16,10 +17,10 @@ const ventureBrands = brands
 
 // Each stage only points to projects documented in the collection above.
 const stages = [
-  { no: '01', title: 'Start from scratch', text: 'Some projects began as ideas: a coffee business concept and a used-car marketplace.', refs: ['DE COFF', 'CarBroker'], image: '/ven1.png', crop: { pos: '50% 50%', zoom: 1.05 }, tone: 'natural' },
-  { no: '02', title: 'Find the right direction', text: 'Others needed a clear identity and positioning: a women-focused hostel brand, a premium fashion identity, and a hostel discovery platform.', refs: ['Hosther Hostels', 'Ezkaa', 'Oxtel'], image: '/ven2.png', crop: { pos: '50% 50%', zoom: 1.5, tx: 8, ty: -4 }, tone: 'tint' },
-  { no: '03', title: 'Build the venture', text: 'Some needed venture structure: Moonbliss across strategy, positioning, brand, and go-to-market, NO TWO across architecture and product strategy, and Dayone across strategy and operations.', refs: ['Moonbliss', 'NO TWO', 'Dayone Venture Studio'], image: '/ven3.png', crop: { pos: '50% 50%', zoom: 1.7, tx: -8, ty: 6 }, tone: 'muted' },
-  { no: '04', title: 'Make it run', text: 'The operation behind the brand: kitchen and dish SOPs for Zaati, operational SOPs and menu engineering for Hungry Potato, and scaling, valuation, and AI planning for Hand Revolution.', refs: ['Zaati', 'Hungry Potato', 'Hand Revolution'], image: '/ven4.png', crop: { pos: '50% 50%', zoom: 1.3, tx: 4, ty: 8 }, tone: 'accent' },
+  { title: 'Start from scratch', text: 'Some projects began as ideas: a coffee business concept and a used-car marketplace.', refs: ['DE COFF', 'CarBroker'], image: '/ven1.png', crop: { pos: '50% 50%', zoom: 1.05 }, tone: 'natural' },
+  { title: 'Find the right direction', text: 'Others needed a clear identity and positioning: a women-focused hostel brand, a premium fashion identity, and a hostel discovery platform.', refs: ['Hosther Hostels', 'Ezkaa', 'Oxtel'], image: '/ven2.png', crop: { pos: '50% 50%', zoom: 1.5, tx: 8, ty: -4 }, tone: 'tint' },
+  { title: 'Build the venture', text: 'Some needed venture structure: Moonbliss across strategy, positioning, brand, and go-to-market, NO TWO across architecture and product strategy, and Dayone across strategy and operations.', refs: ['Moonbliss', 'NO TWO', 'Dayone Venture Studio'], image: '/ven3.png', crop: { pos: '50% 50%', zoom: 1.7, tx: -8, ty: 6 }, tone: 'muted' },
+  { title: 'Make it run', text: 'The operation behind the brand: kitchen and dish SOPs for Zaati, operational SOPs and menu engineering for Hungry Potato, and scaling, valuation, and AI planning for Hand Revolution.', refs: ['Zaati', 'Hungry Potato', 'Hand Revolution'], image: '/ven4.png', crop: { pos: '50% 50%', zoom: 1.3, tx: 4, ty: 8 }, tone: 'accent' },
 ]
 
 const TONES = {
@@ -209,7 +210,6 @@ function Directory() {
       <ul className="m-0 mt-8 list-none border-b border-white/15 p-0">
         {list.map((b) => {
           const on = open === b.id
-          const no = String(ventureBrands.indexOf(b) + 1).padStart(2, '0')
           return (
             <li key={b.id}>
               <article id={`brand-${b.id}`} className="scroll-mt-24 border-t border-white/15">
@@ -224,7 +224,7 @@ function Directory() {
                   >
                     <BrandArtwork b={b} alt={`${b.name} brand artwork`} className="size-14 shrink-0 rounded-xl sm:size-[72px]" imgClass={`transition-transform duration-700 ${ease} group-hover/row:scale-110`} />
                     <span className="min-w-0 flex-1">
-                      <span className="block text-xs font-semibold tabular-nums text-[#a4be2d]">{no}<span className="font-medium text-white/60"> · {b.category}</span></span>
+                      <span className="block text-xs font-medium text-white/60">{b.category}</span>
                       <span className={`mt-1 block truncate text-[22px] font-extrabold leading-[1.15] tracking-[-.025em] transition-colors duration-300 sm:text-[26px] ${on ? 'text-[#a4be2d]' : 'text-white group-hover/row:text-[#a4be2d]'}`}>{b.name}</span>
                     </span>
                     <span aria-hidden className={`grid size-9 shrink-0 place-items-center rounded-full border text-lg leading-none transition-[transform,background-color,border-color,color] duration-500 ${on ? 'rotate-45 border-[#a4be2d] bg-[#a4be2d] text-[#101310]' : 'border-white/40 text-white'}`}>+</span>
@@ -276,12 +276,30 @@ export default function Ventures() {
   return (
     <main id="main" ref={root} className="overflow-x-clip">
       {/* 01 Hero */}
-      <section data-p="top" aria-labelledby="ventures-title" className="bg-[#101310] pb-6 text-white">
-       
-        <div className={`${wrap} grid items-end gap-x-10 gap-y-5 pb-8 pt-6 lg:grid-cols-12`}>
-          <Chars as="h1" id="ventures-title" text="A few things I’ve had my hands in." delay={150} className="max-w-[13ch] text-[clamp(42px,6.2vw,104px)] font-extrabold leading-[.98] tracking-[-.055em] lg:col-span-8" />
-          <p className="m-0 max-w-[38ch] pb-2 text-[15px] leading-[1.7] text-[#dfe6d8] lg:col-span-4">Some started from scratch. Some needed a new direction. Others needed better operations, sales systems, or room to grow.</p>
+      <section data-p="top" aria-labelledby="ventures-title" className="relative isolate overflow-hidden bg-white text-[#153B2B]">
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_78%_15%,rgba(164,190,45,.16),transparent_48%),linear-gradient(115deg,#ffffff_0%,#f4f6ef_100%)]" />
+        <div className={`${wrap} relative grid items-end gap-x-10 gap-y-5 pb-[clamp(48px,7vw,96px)] pt-[clamp(40px,6vw,78px)] lg:grid-cols-12`}>
+          <div className="lg:col-span-9">
+            <BlurText
+              as="h1"
+              id="ventures-title"
+              text="A few things I’ve had my hands in."
+              effect="blur"
+              animateBy="words"
+              direction="top"
+              staggerFrom="start"
+              trigger="view"
+              delay={140}
+              stepDuration={0.6}
+              blur={9}
+              distance={30}
+              color="#153B2B"
+              fromColor="#617319"
+              className="max-w-[13ch] text-[clamp(42px,6.2vw,104px)] font-extrabold leading-[.98] tracking-[-.055em]"
+            />
+          </div>
         </div>
+        <div aria-hidden className="h-1 w-full bg-gradient-to-r from-[#153B2B] via-[#a4be2d] to-transparent" />
       </section>
 
       {/* 02 Collection: every project, with sector filters and an expandable row per project */}
@@ -289,7 +307,7 @@ export default function Ventures() {
         <div className={wrap}>
           <div className="grid items-end gap-x-6 gap-y-4 lg:grid-cols-12">
             <div className="lg:col-span-8">
-              <p className="m-0 mb-3 text-xs font-semibold text-[#a4be2d]">02 / The collection</p>
+              <p className="m-0 mb-3 text-xs font-semibold text-[#a4be2d]">The collection</p>
               <Chars as="h2" id="collection-title" text="Here’s a little look around." className="text-[clamp(34px,5vw,72px)] font-extrabold leading-[.98] tracking-[-.055em]" />
             </div>
               <p className="m-0 max-w-[38ch] text-[15px] leading-[1.7] text-[#b9c7b2] lg:col-span-4">{ventureBrands.length} startups and businesses. Filter by sector or open a row to see what I worked on.</p>
@@ -303,7 +321,7 @@ export default function Ventures() {
         <div className={wrap}>
           <div className="grid items-end gap-x-6 gap-y-4 lg:grid-cols-12">
             <div className="lg:col-span-8">
-              <p className="m-0 mb-3 text-xs font-semibold text-[#617319]">03 / How the work creates value</p>
+              <p className="m-0 mb-3 text-xs font-semibold text-[#617319]">How the work creates value</p>
               <Chars as="h2" id="value-title" text="From opportunity to something that runs." className="text-[clamp(34px,5vw,72px)] font-extrabold leading-[.98] tracking-[-.055em]" />
             </div>
             <p className="m-0 max-w-[38ch] border-l-2 border-[#a4be2d] pl-4 text-[14px] leading-[1.65] text-[#4f5a4d] lg:col-span-4">Each stage points to projects in the collection above. It is not a fixed process or a promise of results.</p>
@@ -315,7 +333,7 @@ export default function Ventures() {
               const right = i % 2 === 1
               return (
                 <li
-                  key={item.no}
+                  key={item.title}
                   data-p="enter"
                   style={{ opacity: 'calc(.15 + var(--p, 1) * .85)', transform: 'translateY(calc((1 - var(--p, 1)) * 44px))' }}
                   className="relative grid gap-5 pb-12 pl-11 last:pb-0 lg:grid-cols-[1fr_56px_1fr] lg:items-center lg:gap-0 lg:pl-0"
@@ -325,7 +343,7 @@ export default function Ventures() {
                     <p className="mt-3 max-w-[52ch] text-[15px] leading-[1.7] text-[#3a4137]">{item.text}</p>
                     <ul className="m-0 mt-4 flex list-none flex-wrap gap-2 p-0">{item.refs.map((ref) => <li key={ref} className={`${pill} border-[#101310]/20`}>{ref}</li>)}</ul>
                   </div>
-                  <span aria-hidden className="absolute left-0 top-0 z-10 grid size-7 place-items-center rounded-full bg-[#153B2B] text-[11px] font-bold text-[#a4be2d] lg:static lg:order-2 lg:mx-auto lg:size-12 lg:text-sm">{item.no}</span>
+                  <span aria-hidden className="absolute left-0 top-0 z-10 size-7 rounded-full bg-[#153B2B] lg:static lg:order-2 lg:mx-auto lg:size-12" />
                   <div className={`${right ? 'lg:order-1 lg:pr-10' : 'lg:order-3 lg:pl-10'}`}>
                     <div className="relative aspect-[16/10] overflow-hidden rounded-[24px]"><Cover crop={item.crop} tone={item.tone} image={item.image} /></div>
                   </div>
@@ -345,7 +363,7 @@ export default function Ventures() {
         </div>
         <div className={`${wrap} grid items-center gap-x-12 gap-y-8 py-[clamp(28px,4vw,56px)] lg:grid-cols-12`}>
           <div className="lg:col-span-7">
-            <p className="m-0 mb-4 text-xs font-semibold text-[#a4be2d]">04 / The next conversation</p>
+            <p className="m-0 mb-4 text-xs font-semibold text-[#a4be2d]">The next conversation</p>
             <Chars as="h2" id="close-title" text="Let’s put that brain to work." className="text-[clamp(40px,6.4vw,100px)] font-extrabold leading-[.95] tracking-[-.055em]" />
             <p className="mt-6 max-w-[46ch] text-[16px] leading-[1.7] text-[#dfe6d8]">A focused one-to-one conversation about your idea, your business, or the thing that’s keeping you stuck. No complicated process. Just a proper conversation about what matters.</p>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">

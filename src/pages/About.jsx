@@ -133,15 +133,15 @@ function Fade({ as: Tag = 'div', delay = 0, className = '', children }) {
 /* Chapters: [place, organisation, title, story, lesson] (copy from the career journey PDF).    */
 
 const journeyChapters = [
-  ['Kerala, India', 'Ice Grills', 'The first business instinct', 'An early attempt to build something of my own introduced me to customers, everyday decisions and the gap between an interesting idea and an operating business.', 'A venture begins when an idea meets reality.'],
+  ['Kerala, India', 'Ice Grills / Founder', 'The first business instinct', 'An early attempt to build something of my own introduced me to customers, everyday decisions and the gap between an interesting idea and an operating business.', 'A venture begins when an idea meets reality.'],
   ['United Kingdom', 'University of Bedforshire', 'Learning beyond the classroom', 'I moved to the UK in 2019 for my MBA and also worked in healthcare. The experience taught me responsibility, communication and the value of understanding people.', 'People come before processes.'],
-  ['United Kingdom', 'Goldens nottinghamltd', 'Operations, every single day', 'Work in a supermarket as manager brought me closer to stock, suppliers, accounts, customer expectations and closing responsibilities. I began to see the discipline behind daily business.', 'Operations keep a business working.'],
-  ['United Kingdom / Brighton', 'Suit Spot Ventures Limited', 'Learning to win business', 'Healthcare services, business development and hospitality-related marketing exposed me to client relationships, commercial thinking and the work required to create demand.', 'Growth needs a dependable way to serve customers.'],
-  ['Calicut, Kerala', 'Axentro Business Solution', 'Reading the numbers', 'Back in Calicut, I worked in business development at a CA firm. Finance, reporting, bookkeeping, internal controls and operating processes became part of my business education.', 'Understand the business behind the sales.'],
-  ['Kerala', 'Manager of Consultation', 'Diagnose before you prescribe', 'Business development and consulting work broadened my exposure to business scanning, process improvement, SOPs and organisational systems.', 'Good answers begin with better questions.'],
-  ['Kerala, India', 'Nkreatives / Creative Director', 'Making strategy visible', 'Creative direction brought together positioning, brand communication, campaigns, social content and delivery teams. I learned to connect expression to commercial objectives.', 'Creativity works harder with a clear purpose.'],
-  ['Kerala, India', 'MoonBliss / CEO', 'Owning the decisions', 'Leading a wellness venture meant bringing brand, product, marketing, operations and growth planning together, while taking responsibility beyond recommendations.', 'Ownership turns a plan into action.'],
-  ['Kerala, India', 'DayOne Venture Studio / CEO', 'Building with founders', 'Venture-studio leadership combines founder support, execution systems, marketing, performance reviews and cross-functional teams across portfolio businesses.', 'Leadership is alignment plus execution.'],
+  ['United Kingdom', 'Goldens nottinghamltd / Store manager', 'Operations, every single day', 'Work in a supermarket as manager brought me closer to stock, suppliers, accounts, customer expectations and closing responsibilities. I began to see the discipline behind daily business.', 'Operations keep a business working.'],
+  ['United Kingdom / Brighton', 'Suit Spot Ventures Limited / Business development manager', 'Learning to win business', 'Healthcare services, business development and hospitality-related marketing exposed me to client relationships, commercial thinking and the work required to create demand.', 'Growth needs a dependable way to serve customers.'],
+  ['Calicut, Kerala', 'Axentro Business Solution / Business development manager', 'Reading the numbers', 'Back in Calicut, I worked in business development at a CA firm. Finance, reporting, bookkeeping, internal controls and operating processes became part of my business education.', 'Understand the business behind the sales.'],
+  ['Cochin,Kerala', 'Bramma / Manager of Consultation', 'Diagnose before you prescribe', 'Business and management consultation work broadened my exposure to business scanning, process improvement, SOPs and Business process re-engineering organisational systems.', 'Good answers begin with better questions.'],
+  ['Kerala, India', 'Nkreatives Creative Studio / Creative Director', 'Making strategy visible', 'Creative direction brought together positioning, brand communication, campaigns, social content and delivery teams. I learned to connect expression to commercial objectives.', 'Creativity works harder with a clear purpose.'],
+  ['Bangalore, India', 'MoonBliss Lifestyle Pvt Ltd / CEO', 'Owning the decisions', 'Leading a wellness venture meant bringing brand, product, marketing, operations and growth planning together, while taking responsibility beyond recommendations.', 'Ownership turns a plan into action.'],
+  ['Bangalore, India', 'DayOne Venture Studio / CEO', 'Building with founders', 'Venture-studio leadership combines founder support, execution systems, marketing, performance reviews and cross-functional teams across portfolio businesses.', 'Leadership is alignment plus execution.'],
 ]
 
 const unit = (n) => Math.min(1, Math.max(0, n))
@@ -207,15 +207,16 @@ function JourneyHead() {
 // right of the road (story on the left), odd chapters on the left (story on the right).
 function Chapter({ c: [place, org, title, body, lesson], i }) {
   const right = i % 2 === 0
+  const featured = i === 1
   const rise = { opacity: 'calc(.3 + var(--r,1) * .7)', transform: 'translate3d(0,calc((1 - var(--r,1)) * 20px),0)' }
   return (
     <li data-stop className={`group relative pl-[68px] lg:pl-0 ${i ? 'mt-16 lg:mt-24' : ''}`}>
       {/* invisible marker the road measures this stop from (same height as the number) */}
       <span data-anchor aria-hidden className="pointer-events-none absolute left-0 top-0 h-[clamp(54px,7.65vw,116px)] w-px" />
-      <article aria-labelledby={`chapter-${i + 1}`} className="lg:grid lg:grid-cols-[36fr_28fr_36fr] lg:items-start">
-        <header style={rise} className={`lg:row-start-1 ${right ? 'lg:col-start-3' : 'lg:col-start-1 lg:text-right'}`}>
-          <span aria-hidden className="block bg-gradient-to-b from-[#a4be2d] to-[#a4be2d]/25 bg-clip-text text-[clamp(64px,9vw,136px)] font-extrabold leading-[.85] tracking-[-.07em] text-transparent">{String(i + 1).padStart(2, '0')}</span>
-          <p className={`m-0 mt-5 text-[clamp(19px,1.7vw,25px)] font-bold leading-[1.12] tracking-[-.025em] text-white`}>
+      <article aria-labelledby={`chapter-${i + 1}`} className="lg:grid lg:grid-cols-[minmax(0,40fr)_minmax(0,20fr)_minmax(0,40fr)] lg:items-start">
+        <header style={rise} className={`lg:row-start-1 ${right ? 'lg:col-start-3 lg:pl-14' : 'lg:col-start-1 lg:pr-14 lg:text-right'}`}>
+          <span aria-hidden className={`block bg-clip-text text-[clamp(64px,9vw,136px)] font-extrabold leading-[.85] tracking-[-.07em] ${featured ? 'bg-gradient-to-b from-[#e8ff83] to-[#a4be2d]/70 text-transparent drop-shadow-[0_0_30px_rgba(197,228,63,.42)]' : 'bg-gradient-to-b from-[#a4be2d] to-[#a4be2d]/25 text-transparent'}`}>{String(i + 1).padStart(2, '0')}</span>
+          <p className="m-0 mt-5 max-w-full text-[clamp(16px,1.25vw,20px)] font-bold leading-[1.15] tracking-[-.03em] text-white [overflow-wrap:anywhere]">
             {org}
           </p>
           <p className={`m-0 mt-2 flex items-center gap-1.5 text-[14px] font-medium text-white/60 ${right ? '' : 'lg:justify-end'}`}>
@@ -223,13 +224,14 @@ function Chapter({ c: [place, org, title, body, lesson], i }) {
             {place}
           </p>
         </header>
-        <div style={rise} className={`relative mt-7 border border-white/10 bg-white/[.04] p-6 transition-colors duration-700 group-data-[on=true]:border-[#a4be2d]/45 md:p-8 lg:row-start-1 lg:mt-0 lg:p-6 xl:p-8 ${right ? 'lg:col-start-1' : 'lg:col-start-3'}`}>
-          <span aria-hidden className="absolute inset-x-0 top-0 h-[2px] origin-left scale-x-0 bg-[#a4be2d] transition-transform duration-[900ms] group-data-[on=true]:scale-x-100 motion-reduce:transition-none" />
+        <div style={rise} className={`relative mt-7 border p-6 transition-colors duration-700 md:p-8 lg:row-start-1 lg:mt-0 lg:p-6 xl:p-8 ${featured ? 'border-[#d5f15a] bg-gradient-to-br from-[#a4be2d]/[.26] via-[#a4be2d]/[.17] to-[#ffffff]/[.07] shadow-[0_22px_72px_rgba(0,0,0,.3),0_0_48px_rgba(164,190,45,.2)] ring-2 ring-[#a4be2d]/45' : 'border-white/10 bg-white/[.04] group-data-[on=true]:border-[#a4be2d]/45'} ${right ? 'lg:col-start-1' : 'lg:col-start-3'}`}>
+          <span aria-hidden className={`absolute inset-x-0 top-0 origin-left bg-[#d5f15a] transition-transform duration-[900ms] motion-reduce:transition-none ${featured ? 'h-1.5 scale-x-100' : 'h-[3px] scale-x-0 group-data-[on=true]:scale-x-100'}`} />
           <h3 id={`chapter-${i + 1}`} className="m-0 text-[clamp(24px,2.5vw,36px)] font-bold leading-[1.08] tracking-[-.045em]">{title}</h3>
           <p className="m-0 mt-4 text-[clamp(15px,1.15vw,17px)] leading-[1.75] text-[#cdd8c6]">{body}</p>
-          <blockquote className="m-0 mt-7 border-t border-white/10 pt-5">
-            <span aria-hidden className="block h-7 text-[64px] font-extrabold leading-[.9] text-[#a4be2d]">“</span>
-            <p className="m-0 mt-1 text-[clamp(19px,1.8vw,25px)] font-semibold leading-[1.25] tracking-[-.025em] text-white">{lesson}</p>
+          <blockquote className={`m-0 mt-7 border-t pt-5 ${featured ? 'rounded-sm border-[#d5f15a]/70 bg-[#153b2b]/45 px-5 pb-5 shadow-[inset_3px_0_0_#d5f15a]' : 'border-white/10'}`}>
+            {featured && <span className="mb-2 inline-flex items-center rounded-full bg-[#d5f15a] px-3 py-1 text-[11px] font-extrabold uppercase tracking-[.16em] text-[#153b2b]">Key takeaway</span>}
+            <span aria-hidden className={`block h-7 text-[64px] font-extrabold leading-[.9] ${featured ? 'text-[#c5e43f]' : 'text-[#a4be2d]'}`}>“</span>
+            <p className={`m-0 mt-1 text-[clamp(19px,1.8vw,25px)] font-semibold leading-[1.25] tracking-[-.025em] text-white ${featured ? 'text-[clamp(24px,2.3vw,32px)] font-bold' : ''}`}>{lesson}</p>
           </blockquote>
         </div>
       </article>
