@@ -361,6 +361,7 @@ const FEATURED = [
 ]
 
 const WORK_FILTERS = [
+  ['all', 'All'],
   ['ceo', 'Business head'],
   ['founder', 'Founder'],
   ['marketing', 'Marketing lead'],
