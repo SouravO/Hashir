@@ -285,7 +285,7 @@ function Hero() {
       <motion.div aria-hidden style={{ background: glow }} className="absolute inset-0 -z-10" />
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 opacity-[.09] mix-blend-overlay" style={{ backgroundImage: "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")" }} />
 
-      <div className={`${wrap} shrink-0 pt-3 sm:pt-5`}><img src={LOGO_IMAGE} alt="Founderverse" className="h-14 w-auto object-contain sm:h-20" /></div>
+      <div className={`${wrap} shrink-0 pt-3 sm:pt-5`}><img src={LOGO_IMAGE} alt="Founderverse" className="h-20 w-auto object-contain sm:h-24 lg:h-28" /></div>
 
       <div className={`${wrap} flex min-h-0 flex-1 items-center py-2 sm:py-[clamp(12px,3svh,28px)]`}>
         <AnimatePresence mode="wait">
@@ -412,13 +412,13 @@ function Marquee({ items, reverse = false, className = '' }) {
   })
   const xp = useTransform(x, (v) => `${v}%`)
   return (
-    <div className={`fv-marq overflow-hidden py-4 sm:py-5 ${className}`} onPointerEnter={() => { hover.current = true }} onPointerLeave={() => { hover.current = false }}>
+    <div className={`fv-marq overflow-hidden py-3 sm:py-4 ${className}`} onPointerEnter={() => { hover.current = true }} onPointerLeave={() => { hover.current = false }}>
       <motion.div style={{ x: xp }} className="flex w-max">
         {[0, 1].map((copy) => (
           <div key={copy} aria-hidden={copy === 1 ? true : undefined} className="flex shrink-0">
             {[...items, ...items].map((text, i) => (
-              <span key={`${copy}-${i}`} className="mr-8 inline-flex items-center gap-8 whitespace-nowrap text-[clamp(22px,3.2vw,44px)] font-extrabold tracking-[-.03em]">
-                {text}<span aria-hidden className="text-[.7em]">✦</span>
+              <span key={`${copy}-${i}`} className="mr-6 inline-flex items-center gap-6 whitespace-nowrap text-[clamp(18px,2.4vw,32px)] font-bold tracking-[-.025em]">
+                {text}<span aria-hidden className="text-[.7em] text-[#C4D638]">✦</span>
               </span>
             ))}
           </div>
@@ -479,8 +479,8 @@ function Problem() {
   return (
     <Stage labelledby="problem-title" className="bg-gradient-to-b from-[#101310] via-[#101310] to-[#0e2018] pb-24 sm:pb-36">
       <div className="overflow-hidden py-14 sm:py-20" aria-label="Questions every founder has">
-        <Marquee items={questionRows[0]} className="-mx-10 w-[calc(100%+5rem)] -rotate-2 bg-[#a4be2d] text-[#101310]" />
-        <Marquee items={questionRows[1]} reverse className="relative -mx-10 -mt-6 w-[calc(100%+5rem)] rotate-1 border-y border-white/20 bg-[#153B2B] text-white" />
+        <Marquee items={questionRows[0]} className="border-y border-[#C4D638]/25 bg-[#153B2B] text-white" />
+        <Marquee items={questionRows[1]} reverse className="mt-2 border-b border-white/10 bg-[#10382D] text-white/90" />
       </div>
 
       <div className={`${wrap} pt-12 sm:pt-20`}>
@@ -616,7 +616,7 @@ function Offer() {
     { key: 'physical', name: 'Physical', price: num(PRICE.physical), regularPrice: REGULAR_PRICE.physical, to: ORDER.physical, track: 'cta-physical', tag: 'In print' },
     ...(DIGITAL_AVAILABLE ? [{ key: 'digital', name: 'Digital', price: num(PRICE.digital), regularPrice: REGULAR_PRICE.digital, to: ORDER.digital, track: 'cta-digital', tag: 'In digital format' }] : []),
   ]
-  const [i, setI] = useState(0)
+  const [i, setI] = useState(DIGITAL_AVAILABLE ? 1 : 0)
   const f = formats[i]
   const off = Math.round((1 - f.price / f.regularPrice) * 100)
   return (
@@ -748,7 +748,6 @@ function Finale() {
       <motion.div aria-hidden animate={reduce ? undefined : { scale: [1, 1.2, 1], opacity: [0.35, 0.65, 0.35] }} transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }} className="absolute left-1/2 top-1/2 -z-10 size-[min(460px,90vw)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#a4be2d]/20 blur-[110px]" />
       <Lit id="finale-title" lines={[{ t: 'Build with knowledge.' }, { t: 'Learn from mistakes.' }, { t: 'Grow with intention.', accent: true }]} className={`m-0 text-[clamp(30px,5.6vw,80px)] ${headline}`} />
       <div className="mt-14 flex justify-center"><RoundBuy to={ORDER.physical} /></div>
-      <img src={LOGO_IMAGE} alt="Founderverse" loading="lazy" className="mx-auto mt-20 h-14 w-auto object-contain opacity-80 sm:mt-28 sm:h-20" />
     </Stage>
   )
 }
